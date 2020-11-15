@@ -7,37 +7,49 @@
         "Charset" => "utf8"
     ]);
 
-    RegisterPublicSource("/\/assets\/(.+)/","./Contents/");
-    RegisterPublicSource("/\/template\/(.+)/","./View/templates/");
-    RegisterPublicSource("/\/(.+)/","./Contents/");
+    setSerialPath("rootPath","\/");
+    $workspaceDir = "";
+
+    RegisterPublicSource("/{rootPath}assets\/(.+)/","./Contents/");
+    RegisterPublicSource("/{rootPath}template\/(.+)/","./View/templates/");
+    RegisterPublicSource("/{rootPath}(.+)/","./Contents/");
 
     RegisterController([
-        "url" => "/",
-        "type" => "text",
+        "url" => "/^{rootPath}$/",
         "method" => "get",
         "name" => "main::redirectpanel"
     ]);
     RegisterController([
-        "url" => "/([^\/]+)\/panel/",
-        "type" => "regex",
-        "method" => "get",
-        "name" => "main"
-    ]);
-    RegisterController([
-        "url" => "/([^\/]+)\/logout/",
-        "type" => "regex",
+        "url" => "/^{rootPath}([^\/]+)\/logout$/",
         "method" => "get",
         "name" => "auth::logout"
     ]);
     RegisterController([
-        "url" => "/login",
-        "type" => "text",
+        "url" => "/^{rootPath}login$/",
         "method" => "post",
         "name" => "auth"
     ]);
     RegisterController([
-        "url" => "/login",
-        "type" => "text",
+        "url" => "/^{rootPath}login$/",
         "method" => "get",
         "name" => "auth"
+    ]);
+
+    
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/panel$/",
+        "method" => "get",
+        "name" => "main"
+    ]);
+
+    
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/yeni$/",
+        "method" => "get",
+        "name" => "form::sendNewForm"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/yeni$/",
+        "method" => "post",
+        "name" => "form::createForm"
     ]);

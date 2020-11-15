@@ -12,6 +12,25 @@
     $MVC_currentRouter = null;
     $MVC_urlArgs = [];
 
+
+    $_paths = [];
+    function setSerialPath($name,$value)
+    {
+        global $_paths;
+        $_paths[$name]=$value;
+    };
+    function getSerialPath($text)
+    {
+        global $_paths;
+        return preg_replace_callback("/({([^}]+)})/",function($matches) use($_paths){
+            if(isset($_paths[$matches[2]]))
+            {
+                return $_paths[$matches[2]];
+            }else{
+                return $matches[0];
+            }
+        },$text);
+    };
     function MySQLConfig($config)
     {
         global $MVC_dbconfig;
@@ -119,8 +138,10 @@
         }
     };
     class Response {
-        public static function view($path)
+        public static function view($path,$data = [])
         {
+            global $workspaceDir;
+            $settings = new Settings();
             if(file_exists("View/$path.php") && is_file("View/$path.php"))
             {
                 include("View/$path.php");
@@ -196,28 +217,17 @@
         global $MVC_currentRouter,$MVC_purl,$MVC_method,$MVC_urlArgs,$MVC_route;
         foreach($MVC_route as $route)
         {
+            $reg = getSerialPath($route["url"]);
             if(strtoupper($route["method"]) == $MVC_method)
             {
-                if($route["type"] == "regex")
+                if(preg_match($reg,$MVC_purl->path,$splice))
                 {
-                    if(preg_match($route["url"],$MVC_purl->path,$splice))
-                    {
-                        $MVC_urlArgs = $splice;
-                        $MVC_currentRouter = (object) $route;
-                        $_name = explode('::',$MVC_currentRouter->name);
-                        $MVC_currentRouter->name = $_name[0];
-                        if(count($_name) == 2) $MVC_currentRouter->func = $_name[1];
-                        break;
-                    }
-                }else if($route["type"] == "text" || !isset($route["type"])){
-                    if($route["url"] == $MVC_purl->path)
-                    {
-                        $MVC_currentRouter = (object) $route;
-                        $_name = explode('::',$MVC_currentRouter->name);
-                        $MVC_currentRouter->name = $_name[0];
-                        if(count($_name) == 2) $MVC_currentRouter->func = $_name[1];
-                        break;
-                    }
+                    $MVC_urlArgs = $splice;
+                    $MVC_currentRouter = (object) $route;
+                    $_name = explode('::',$MVC_currentRouter->name);
+                    $MVC_currentRouter->name = $_name[0];
+                    if(count($_name) == 2) $MVC_currentRouter->func = $_name[1];
+                    break;
                 }
             }
         };
@@ -234,7 +244,7 @@
         global $MVC_purl,$MVC_route_source,$MVC_handledSource;
         foreach($MVC_route_source as $source)
         {
-            preg_match($source[0],$MVC_purl->path,$res);
+            preg_match(getSerialPath($source[0]),$MVC_purl->path,$res);
             if(count($res) != 0)
             {
                 $MVC_handledSource = $source[1].$res[1];
@@ -252,7 +262,7 @@
     function SendFile($filepath)
     {
         global $MVC_mimeTypes;
-        $_s = explode(".",$filepath);
+        $_s = explode(".",getSerialPath($filepath));
         $ext = end($_s);
         if(file_exists($filepath) && is_file($filepath))
         {

@@ -22,12 +22,15 @@
             }else if($user = $User->varifyUser(Request::post("email"),Request::post("password"))){
                 $_SESSION["user"] = $user->email;
                 $_SESSION["name"] = $user->name;
+                $_SESSION["name"] = $user->surname;
+                $_SESSION["image"] = $user->image;
                 $_SESSION["role"] = $user->role;
                 $_SESSION["userid"] = $user->id;
                 Response::soap("success","login",["user"]);
             }else{
+                sleep(3);
                 Response::soap("fail","NOUSER",[
-                    "text" => "Kullanıcı bulunamadı"
+                    "text" => "E-Posta veya şifresi yanlış"
                 ]);
             }
         }
@@ -35,7 +38,7 @@
         {
             if(isset($_SESSION["user"])){
                 $safe = safeName($_SESSION["name"]);
-                Response::tempRedirect("/$safe/panel");
+                Response::tempRedirect("$workspaceDir/$safe/panel");
             }else{
                 Response::view("login");
             }
@@ -43,6 +46,6 @@
         public function logout()
         {
             (new User())->Logout();
-            Response::tempRedirect("/login");
+            Response::tempRedirect("$workspaceDir/login");
         }
     };

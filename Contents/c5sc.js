@@ -123,3 +123,29 @@ Server.Login = function(form)
         }
     });
 };
+$.extend($.fn.dataTable.defaults, {
+    autoWidth: false,
+    dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+    language: {
+        zeroRecords: "Hiç bir şey yok",
+        infoEmpty: "Herhangi bir kayıt yok",
+        search: '<span>Filtre:</span> _INPUT_',
+        searchPlaceholder: 'Arama...',
+        lengthMenu: '<span>Girdi Sayısı:</span> _MENU_',
+        paginate: { 'first': 'İlk', 'last': 'Son', 'next': 'Sonraki', 'previous': 'Önceki' },
+        emptyTable:"Veri yok"
+    },
+    drawCallback: function () {
+        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
+    },
+    preDrawCallback: function() {
+        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
+    }
+});
+$(".datatablepin").DataTable({
+    colReorder: true,
+    fixedHeader: {
+        header: true,
+        footer: true
+    }
+}) 

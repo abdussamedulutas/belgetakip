@@ -1,0 +1,6 @@
+.navbar-brand{
+    padding: 0px;
+}
+.navbar-brand>img{
+    height: 43px; margin-left: 16px; filter: drop-shadow(-1px 1px 1px black);
+}

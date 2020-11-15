@@ -34,4 +34,34 @@
             $adminPass = $settings->getSettings("admin.password");
             return $adminMail == $email && $adminPass == md5($password);
         }
+    };
+    function username()
+    {
+        return $_SESSION["name"];
     }
+    function usernamesurname()
+    {
+        return $_SESSION["name"]." ".$_SESSION["surname"];
+    }
+    function userimage()
+    {
+        if(isset($_SESSION["image"]))
+        {
+            return "assets/images/placeholder.jpg";
+        };
+        return $_SESSION["image"];
+    }
+    function userrole()
+    {
+        switch($_SESSION["role"])
+        {
+            case "admin":{
+                return "Yönetici";
+                break;
+            }
+            case "acente":{
+                return "Acente Personeli";
+                break;
+            }
+        };
+    };
