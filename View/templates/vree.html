@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Limitless - Responsive Web Application Kit by Eugene Kopyov</title>
+
+	<!-- Global stylesheets -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+	<link href="assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/core.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/components.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/colors.css" rel="stylesheet" type="text/css">
+	<!-- /global stylesheets -->
+
+	<!-- Core JS files -->
+	<script type="text/javascript" src="assets/js/plugins/loaders/pace.min.js"></script>
+	<script type="text/javascript" src="assets/js/core/libraries/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/js/core/libraries/bootstrap.min.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/loaders/blockui.min.js"></script>
+	<!-- /core JS files -->
+
+	<!-- Theme JS files -->
+	<script type="text/javascript" src="summernote.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/forms/styling/uniform.min.js"></script>
+
+	<script type="text/javascript" src="assets/js/pages/editor_summernote.js"></script>
+	<!-- /theme JS files -->
+
+</head>
+<body>
+	<div id="summernote">
+
+	</div>
+	<script type="text/javascript">
+		 $('#summernote').summernote({
+			toolbar:[
+				['style', ['bold', 'italic', 'underline', 'clear']],
+				['font', ['strikethrough', 'superscript', 'subscript']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['uploadbutton', ['uploadbutton']]
+			],
+			buttons : {
+				uploadbutton: function (context) {
+				  var ui = $.summernote.ui;
+				  var button = ui.button({
+				    contents: '<i class="fa fa-child"/> Upload Button',
+				    tooltip: 'Upload Button',
+				    click: function () {
+				    	$("#summernoteModal").modal();
+				    	document.querySelector(".summernoteSave").onclick = function()
+				    	{
+							var promise = runAjax("ajaxer", dataForm([["action", "summernotFile"], ["summerFile", "~sendFile"]]));
+							if (promise != 0) {
+								promise.success(function (url) {
+									$('#summernote').summernote('insertImage', "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", function (image) {
+										image.css('width', image.width()/3);
+										image.attr('data-filename', 'retriever');
+									});
+								});
+							}
+				    	}
+				    }
+				  });
+				  return button.render();
+				}
+			}
+		 });
+	</script>
+		<div id="summernoteModal" class="modal fade in">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h5 class="modal-title" duha-lang="common.edit_item">Upload Image</h5>
+					</div>
+					<div class="modal-body">
+						<div class="col-md-8">
+							<input type="file" class="form-control" id="summerFile">
+						</div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary modalinButton summernoteSave" data-dismiss="modal">Upload</button>
+						</div>
+					</div>
+					<div class="modal-footer">
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>

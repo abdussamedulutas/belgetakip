@@ -1,0 +1,48 @@
+<?php
+    include("Model/User.php");
+    $main = new class extends Controller{
+        public function postLogin()
+        {
+            Request::validation("POST","email",[
+                "require"=>true,
+                "regex"=>"/^.+@.+\..+$/"
+            ],"Kullanıcı ismi boş veya geçersiz");
+            Request::validation("POST","password",[
+                "require"=>true,
+                "regex"=>"/^.{6,31}$/"
+            ],"Kullanıcı şifresi boş veya geçersiz");
+
+            $User = new User();
+            if($v = $User->varifyAdmin(Request::post("email"),Request::post("password")))
+            {
+                $_SESSION["user"] = Request::post("email");
+                $_SESSION["role"] = "admin";
+                $_SESSION["name"] = "admin";
+                Response::soap("success","login",["admin"]);
+            }else if($user = $User->varifyUser(Request::post("email"),Request::post("password"))){
+                $_SESSION["user"] = $user->email;
+                $_SESSION["name"] = $user->name;
+                $_SESSION["role"] = $user->role;
+                $_SESSION["userid"] = $user->id;
+                Response::soap("success","login",["user"]);
+            }else{
+                Response::soap("fail","NOUSER",[
+                    "text" => "Kullanıcı bulunamadı"
+                ]);
+            }
+        }
+        public function getView()
+        {
+            if(isset($_SESSION["user"])){
+                $safe = safeName($_SESSION["name"]);
+                Response::tempRedirect("/$safe/panel");
+            }else{
+                Response::view("login");
+            }
+        }
+        public function logout()
+        {
+            (new User())->Logout();
+            Response::tempRedirect("/login");
+        }
+    };
