@@ -44,12 +44,12 @@
 
     
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/yeni$/",
+        "url" => "/^{rootPath}([^\/]+)\/acente\/yeni$/",
         "method" => "get",
-        "name" => "form::sendNewForm"
+        "name" => "acente::yeniFormu"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/yeni$/",
+        "url" => "/^{rootPath}([^\/]+)\/acente\/yeni$/",
         "method" => "post",
-        "name" => "form::createForm"
+        "name" => "acente::yeni"
     ]);

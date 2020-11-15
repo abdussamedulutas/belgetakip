@@ -6,11 +6,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Limitless - Responsive Web Application Kit by Eugene Kopyov</title>
-	<?php include("partials/styles.php"); ?>
+	<?php include(__DIR__."/partials/styles.php"); ?>
 </head>
 
 <body class="navbar-bottom login-container">
-	<?php include("partials/login.navbar.php"); ?>
+	<?php include(__DIR__."/partials/login.navbar.php"); ?>
 	<div class="page-container">
 		<div class="page-content">
 			<div class="content-wrapper">
@@ -43,7 +43,7 @@
 			</div>
 		</div>
 	</div>
-	<?php include("partials/footer.php"); ?>
-	<?php include("partials/scripts.php"); ?>
+	<?php include(__DIR__."partials/footer.php"); ?>
+	<?php include(__DIR__."partials/scripts.php"); ?>
 </body>
 </html>

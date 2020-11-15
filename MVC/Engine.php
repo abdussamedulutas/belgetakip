@@ -160,7 +160,7 @@
             header("Content-Type:application/json;charset=utf8");
             echo json_encode($value);
         }
-        public static function soap($status,$code,$arguments)
+        public static function soap($status,$code="Nil",$arguments=null)
         {
             Response::json([
                 "status" => $status,
@@ -193,7 +193,7 @@
     {
         global $db,$MVC_dbconfig;
         if(isset($db)) return;
-        $db = new PDO("mysql:dbname=$MVC_dbconfig->Database;host=$MVC_dbconfig->Host;charset=$MVC_dbconfig->Charset",$MVC_dbconfig->UserName,$MVC_dbconfig->UserPassword);
+        $db = new PDO("mysql:dbname=$MVC_dbconfig->Database;host=$MVC_dbconfig->Host;charset=$MVC_dbconfig->Charset",$MVC_dbconfig->UserName,$MVC_dbconfig->UserPassword,[ PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     };
     function getRandom()
     {

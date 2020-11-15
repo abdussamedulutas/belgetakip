@@ -1,7 +1,7 @@
 function Notify(){};
 function Server(){};
 
-Server._ajax = function(url,data,callback,uploadEvent){
+Server._ajax = function(url,data,callback,error,uploadEvent){
     var xhttp;
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest();
@@ -15,6 +15,15 @@ Server._ajax = function(url,data,callback,uploadEvent){
             callback(JSON.parse(xhttp.responseText));
         }else{
             callback(xhttp.responseText)
+        }
+    });
+    error && xhttp.addEventListener("error",function(){
+        var t = xhttp.getResponseHeader("Content-Type");
+        if(t.indexOf("application/json") != -1)
+        {
+            error(JSON.parse(xhttp.responseText));
+        }else{
+            error(xhttp.responseText)
         }
     });
     uploadEvent && oReq.upload.addEventListener("progress",function(oEvent){
@@ -110,17 +119,66 @@ Server.Login = function(form)
             {
                 case "REQUIRED_FIELD":
                 case "INVALID_FIELD":{
-                    Notify.failedForm("Form Reddedildi",ans.data.text,progress);
+                    var k = Notify.failedForm("Form Reddedildi",ans.data.text,progress);
+                    setTimeout(function(){k.remove()},3000);
                     var t = $("[name='"+ans.data.fieldName+"']").parent();
                     if(t.find(".validation-error-label").length == 0){
                         t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
                     };
                 }
                 case "NOUSER":{
-                    Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress);
+                    var k = Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress);
+                    setTimeout(function(){k.remove()},3000);
+                }
+                default:{
+                    progress.remove();
                 }
             }
         }
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress);
+    });
+};
+Server.yeniAcente = function(form)
+{
+    var progress = Notify.progress("Acente","Yeni Acente Oluşturuluyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","yeniAcente");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            var k = Notify.successText("Acente Oluşturma","Yeni Acente oluşturdunuz",progress);
+            setTimeout(function(){
+                window.location = ans.data.path;
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    var k = Notify.failedForm("Acente Oluşturma",ans.data.text,progress);
+                    setTimeout(function(){k.remove()},3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                }
+                case "ALREADYEXISTS":{
+                    var k = Notify.failedForm("Acente Oluşturma",ans.data.text,progress);
+                    setTimeout(function(){k.remove()},3000);
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress);
     });
 };
 $.extend($.fn.dataTable.defaults, {

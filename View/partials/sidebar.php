@@ -30,24 +30,7 @@
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
 								<li><a href="<?="$data->userPanelLink/bildirimler/son"?>"><i class="icon-history"></i> <span>Son İşlemler</span></a></li>
-								<li><a href="<?="$data->userPanelLink/form/hepsi"?>"><i class="icon-file-text2"></i> <span>Tüm Formlar</span></a></li>
-								<li><a href="<?="$data->userPanelLink/form/eksik"?>"><i class="icon-file-text2"></i> <span>Tüm Eksik Formlar</span></a></li>
-								<li>
-									<a href="#"><i class="icon-stack2"></i> <span>Form İşlemleri</span></a>
-									<ul>
-										<li><a href="<?="$data->userPanelLink/form/types"?>">Form Türleri</a></li>
-										<li><a href="<?="$data->userPanelLink/form/options"?>">Form Seçeneklerı</a></li>
-									</ul>
-								</li>
-								<li>
-									<a href="#"><i class="icon-stack2"></i> <span>Acente İşlemleri</span></a>
-									<ul>
-										<li><a href="">Yeni Acente Kaydı</a></li>
-										<li><a href="">Yeni Personel Kaydı</a></li>
-										<li><a href="">Acente Listesi</a></li>
-										<li><a href="">Personel Listesi</a></li>
-									</ul>
-								</li>
+								<li><a href="<?="$data->userPanelLink/acente/yeni"?>"><i class="icon-file-text2"></i> <span>Yeni Acente</span></a></li>
 							</ul>
 						</div>
 					</div>

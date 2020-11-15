@@ -39,15 +39,16 @@
         {
             global $db;
             $pre = $db->prepare($sql);
-            foreach($vars as $name => $var)
+            foreach($vars as $_ids => $_names)
             {
-                $pre->bindParam($name,$var);
+                $pre->bindParam($_ids,$_names);
             };
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
             }else{
-                throw new Exception($db->errorInfo());
+                var_dump($db->errorInfo());
+                exit;
             }
         }
     };
@@ -59,18 +60,35 @@
             if(Request::method() == "POST")
             {
                 $action = Request::post("action");
-                if(method_exists($this,"post".$action))
+                if(!isset($MVC_currentRouter->func))
                 {
-                    try{
-                        $this->{"post".$action}();
-                    }catch(Exception $i){
+                    if(method_exists($this,"post".$action))
+                    {
+                        try{
+                            $this->{"post".$action}();
+                        }catch(Exception $i){
+                            SendStatus(403);
+                            var_dump($i);
+                        }
+                    }else{
+                        method_exists($this,"post".$action);
+                        echo "no method exists: (post".$action.")";
                         SendStatus(403);
-                        var_dump($i);
                     }
                 }else{
-                    method_exists($this,"post".$action);
-                    echo "no method exists: (post".$action.")";
-                    SendStatus(403);
+                    if(method_exists($this,$MVC_currentRouter->func))
+                    {
+                        try{
+                            $this->{$MVC_currentRouter->func}();
+                        }catch(Exception $i){
+                            SendStatus(403);
+                            var_dump($i);
+                        }
+                    }else{
+                        method_exists($this,$MVC_currentRouter->func);
+                        echo "no method exists: (".$MVC_currentRouter->func.")";
+                        SendStatus(403);
+                    }
                 }
             }else{
                 try{
