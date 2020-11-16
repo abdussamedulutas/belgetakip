@@ -424,6 +424,19 @@ Server.deleteFormType = function(id,callback)
         Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
     });
 };
+Server.request = function(obj,callback)
+{
+    var data = new FormData();
+    for(var name in obj){
+        data.append(name,obj[name]);
+    };
+    data.append("language",navigator.language);
+    Server._ajax(window.location,data,function(ans) {
+        callback(ans);
+    },function(){
+        errcallback && errcallback();
+    });
+};
 $.extend($.fn.dataTable.defaults, {
     autoWidth: false,
     dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
@@ -443,24 +456,49 @@ $.extend($.fn.dataTable.defaults, {
         $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
     }
 });
-$(".datatablepin").DataTable({
-    colReorder: true,
-    fixedHeader: {
-        header: true,
-        footer: true
-    }
-}) 
-$('.pickadate').pickadate({
-    monthsFull: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
-    monthsShort: ['Ock', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağus', 'Eyl', 'Ekm', 'Kas', 'Ar'],
-    weekdaysFull: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşemde', 'Cuma', 'Cumartesi'],
-    weekdaysShort: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
-    format: 'yyyy-m-d',
-});
-$(".select2").select2({
-    "language": {
-        "noResults": function(){
-            return "Burası Boş";
+function reinitialize()
+{
+    $(".datatablepin:not(.inited)").DataTable({
+        colReorder: true,
+        fixedHeader: {
+            header: true,
+            footer: true
         }
-    },
-});
+    });
+    $('.pickadate:not(.inited)').pickadate({
+        monthsFull: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+        monthsShort: ['Ock', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağus', 'Eyl', 'Ekm', 'Kas', 'Ar'],
+        weekdaysFull: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşemde', 'Cuma', 'Cumartesi'],
+        weekdaysShort: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
+        format: 'yyyy-m-d',
+    });
+    $(".select2:not(.inited)").select2({
+        "language": {
+            "noResults": function(){
+                return "Burası Boş";
+            }
+        },
+    });
+    $('.datatablepin:not(.inited),.pickadate:not(.inited),.select2:not(.inited)').addClass("inited");
+}
+function block(id)
+{
+    var k = $(id).block({ 
+        message: '<i class="icon-spinner2 spinner"></i>',
+        overlayCSS: {
+            backgroundColor: '#fff',
+            opacity: 0.8,
+            cursor: 'wait',
+            'box-shadow': '0 0 0 1px #ddd'
+        },
+        css: {
+            border: 0,
+            padding: 0,
+            backgroundColor: 'none'
+        }
+    });
+    return function(){
+        k.unblock();
+    };
+}
+reinitialize();

@@ -26,6 +26,8 @@
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $form = new Form();
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             $types = $form->getAllType();
             Response::view("form/formayarlari",(object)[
                 "userPanelLink"=>$userPanelLink,
@@ -34,6 +36,8 @@
         }
         public function post()
         {
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             useAuthPOST();
             global $workspaceDir;
             switch(Request::post("action"))
@@ -60,6 +64,18 @@
                         Response::soap("success","CREATE_FORM");
                     else
                         Response::soap("fail","CREATE_FORM");
+                    break;
+                }
+                case "formpanel":{
+                    $form = new Form();
+                    $types = $form->getFields(Request::post("id"));
+                    Response::soap("success","GET_FORMPANEL",$types);
+                    break;
+                }
+                case "createfield":{
+                    $form = new Form();
+                    $types = $form->createField(Request::post("id"),Request::post("name"));
+                    Response::soap("success","CREATE_FIELD");
                     break;
                 }
             };

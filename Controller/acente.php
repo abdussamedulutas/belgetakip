@@ -55,6 +55,8 @@
                 "require"=>true,
                 "regex"=>"/^.{6,31}$/"
             ],"Acente ismi boş veya geçersiz");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             $acente = new Acente();
             if($acente->isUsableName(Request::post("name")))
             {
@@ -79,8 +81,11 @@
             $acente = $acente->getAcente($id);
             if(count($acente) == 0){
                 SendStatus(404);
+                exit;
             }else $acente = $acente[0];
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             $cente = new Acente();
             $tumPersoneller = $cente->getAcentePersonelAll($id);  
             Response::view("acente/duzenle",(object)[
@@ -92,6 +97,8 @@
         public function post()
         {
             useAuthPOST();
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))
             {
                 case "deleteAcente":{
@@ -109,6 +116,8 @@
         public function edit()
         {
             useAuthPOST();
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))
             {
                 case "changeAcenteName":{
@@ -206,7 +215,7 @@
                     if($user->isUsableMail(Request::post("email")))
                     {
                         return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
-                    }
+                    };
                     if(Request::file("image")){
                         $newName = Request::acceptFile("image");
                     }else $newName = "";

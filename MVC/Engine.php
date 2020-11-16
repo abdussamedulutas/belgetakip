@@ -74,17 +74,26 @@
                 if(isset($_FILES[$str]) && isset($_FILES[$str]["tmp_name"]) && $_FILES[$str]["tmp_name"] != "")
                 {
                     return $_FILES[$str];
-                }
+                };
             };
+            Flog("\$_FILES[$str] : null !\n".var_export(debug_backtrace(),true));
             return false;
         }
         public static function acceptFile($str)
         {
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $id = getRandom();
+            Flog(__FUNCTION__."::".$id);
             $file = Request::file($str);
             $exts = explode('.',$file["name"]);
             $ext = array_pop($exts);
-            move_uploaded_file($file["tmp_name"],__DIR__."/../Uploads/$id.$ext");
+            Flog(__FUNCTION__."::(ext:".$ext."|IM=".$file["name"].")");
+            if(move_uploaded_file($file["tmp_name"],__DIR__."/../Uploads/$id.$ext")){
+                Flog("move_uploaded_file(".$file["tmp_name"].", ".__DIR__."/../Uploads/$id.$ext".") : true");
+            }else{
+                Flog("move_uploaded_file(".$file["tmp_name"].", ".__DIR__."/../Uploads/$id.$ext".") : true");
+            }
+            FLog("return \"$id.$ext\"");
             return "$id.$ext";
         }
         public static function method()
