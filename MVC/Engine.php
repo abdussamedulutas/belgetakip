@@ -69,14 +69,23 @@
         }
         public static function file($str)
         {
-            if(!empty($_FILES))
+            if(isset($_FILES))
             {
-                if(isset($_FILES[$str]))
+                if(isset($_FILES[$str]) && isset($_FILES[$str]["tmp_name"]) && $_FILES[$str]["tmp_name"] != "")
                 {
                     return $_FILES[$str];
                 }
             };
             return false;
+        }
+        public static function acceptFile($str)
+        {
+            $id = getRandom();
+            $file = Request::file($str);
+            $exts = explode('.',$file["name"]);
+            $ext = array_pop($exts);
+            move_uploaded_file($file["tmp_name"],__DIR__."/../Uploads/$id.$ext");
+            return "$id.$ext";
         }
         public static function method()
         {
@@ -306,3 +315,8 @@
             '','',''
         ],$str));
     };
+    function getUrlTokens()
+    {
+        global $MVC_urlArgs;
+        return $MVC_urlArgs;
+    }

@@ -4,3 +4,15 @@ Admin
             Kişiler
                 Formlar
                     Form türleri
+
+acente oluşturma
+acente ismi değiştirme
+acente silme
+
+Personel oluşturma
+Personel ismi değiştirme
+Personel silme
+
+kişi oluşturma
+kişi ismi değiştirme
+kişi silme
