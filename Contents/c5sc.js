@@ -472,12 +472,20 @@ function reinitialize()
         weekdaysShort: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
         format: 'yyyy-m-d',
     });
-    $(".select2:not(.inited)").select2({
+    $(".select2:not(.inited):not(.no-search)").select2({
         "language": {
             "noResults": function(){
                 return "Burası Boş";
             }
         },
+    });
+    $(".select2:not(.inited).no-search").select2({
+        "minimumResultsForSearch":-1,
+        "language": {
+            "noResults": function(){
+                return "Burası Boş";
+            }
+        }
     });
     $('.datatablepin:not(.inited),.pickadate:not(.inited),.select2:not(.inited)').addClass("inited");
 }

@@ -45,7 +45,7 @@
         public function getFields($type_id)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`text` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
             $pre->bindParam("formtypeid", $type_id);
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())

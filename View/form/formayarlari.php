@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Forma Oluştur"?></title>
+	<title><?=$settings->get("appname") . " | Forma Türleri"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -89,29 +89,51 @@
 		function pinfo()
 		{
 			var p = block("#pinpanel");
-			Server.request({
-				action:"formpanel",
-				id:$("#formtype").val()
-			},function(json){
-				p();
-				var lastAdded = null;
-				if(json.data instanceof Array)
-				{
-					for(var row of json.data){
-						lastAdded = $("#formpanel").DataTable().row.add([
-							`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" value="${row.text}">`,
-							`<select class="select2 field_data" name="field_data[]" multiple>`+data.values.map(function(value){
-								return `<option value="${value.id}">${value.name}</option>`
-							}).join('')+`</select>`,
-							``
-						]);
+			setTimeout(function(){
+				Server.request({
+					action:"formpanel",
+					id:$("#formtype").val()
+				},function(json){
+					var lastAdded = null;
+					if(json.data instanceof Array)
+					{
+						for(var row of json.data){
+							lastAdded = $("#formpanel").DataTable().row.add([
+								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" value="${row.name}">`,
+								`<select class="select2 field_data" name="field_data[]" multiple>`+[].map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`,
+								`<select class="select2 no-search field_data" onchange="$(this).val('RO').trigger('change');window[this.value]&&window[this.value](this);return false">
+									<option value="RO">İşlem Seç</option>
+									<option value="AddVariable">Değer Ekle</option>
+									<option value="RemoveVariable">Değer Sil</option>
+									<option value="RemoveField">Nitelik Sil</option>
+									<option value="DuplicateField">Nitelik Sil</option>
+								</select>`
+							]);
+						};
+						lastAdded.draw();
+						reinitialize();
 					};
-				}
-			});
+					setTimeout(function(){
+						p();
+					},500);
+				});
+			},1000);
 		}
 		$(document).ready(function(){
 			pinfo();
 		});
+		function AddVariable(ths)
+		{
+			//
+		};
+		function RemoveVariable(ths)
+		{
+			//
+		};
+		function RemoveField(ths)
+		{
+			//
+		};
 		$("#btn_createfield").click(function(){
 			bootbox.prompt("Yeni Giriş Alanı", function(result) {
 				if(result){
