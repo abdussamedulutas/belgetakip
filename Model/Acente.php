@@ -49,11 +49,11 @@
         {
             global $db;
             $pre = $db->prepare("SELECT
-                    `user`.id as id,
+                    HEX(`user`.id) as id,
                     `user`.name as name,
                     `user`.surname as surname,
                     `user`.email as email,
-                    `user`.acente_id as acente_id,
+                    HEX(`user`.acente_id) as acente_id,
                     `user`.image as image,
                     acente.name as acente_name
                 FROM `user`

@@ -63,6 +63,34 @@
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
+        public function createKullanici($name,$surname,$email,$image,$password,$birthday,$acente_id)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("INSERT INTO `user` SET
+                `id` = UNHEX(:id),
+                `name` = :name,
+                `surname` = :surname,
+                `email` = :email,
+                `image` = :image,
+                `role` = 'personel',
+                `password` = MD5(:password),
+                `birthday` = :birthday,
+                `acente_id` = UNHEX(:acente_id),
+                `createdate` = NOW(),
+                `modifydate` = NOW();
+            ");
+            $pre->bindParam("id", $id);
+            $pre->bindParam("name", $name);
+            $pre->bindParam("surname", $surname);
+            $pre->bindParam("email", $email);
+            $pre->bindParam("image", $image);
+            $pre->bindParam("password", $password);
+            $pre->bindParam("birthday", $birthday);
+            $pre->bindParam("acente_id", $acente_id);
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            return $pre->execute();
+        }
         public function isUsableMail($email)
         {
             global $db;

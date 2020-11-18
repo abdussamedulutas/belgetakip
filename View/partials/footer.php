@@ -17,3 +17,8 @@
 			</div>
 		</div>
     </div>
+	<style>
+		.table td{
+			padding: 5px 10px !important;
+		}
+	</style>

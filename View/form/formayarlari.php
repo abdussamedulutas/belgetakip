@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Forma Türleri"?></title>
+	<title><?=$settings->get("appname") . " | Form Ayarları"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -24,7 +24,7 @@
 				<div class="row">
 					<div class="panel panel-flat">
 						<div class="panel-heading">
-							<h6 class="panel-title">Form Tipleri<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
+							<h6 class="panel-title">Form Adı<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
 							<div class="heading-elements">
 								<ul class="icons-list">
 									<li><a data-action="collapse"></a></li>
@@ -34,7 +34,7 @@
 						</div>
 						<div class="panel-body">
 							<div class="col-md-9">
-								<select class="select2" id="formtype">
+								<select class="select2" id="formtype" onchange="pinfo()">
 									<?php foreach($data->types as $type): ?>
 									<option value="<?=$type->id?>"><?=$type->name?></option>
 									<?php endforeach; ?>
@@ -95,44 +95,157 @@
 					id:$("#formtype").val()
 				},function(json){
 					var lastAdded = null;
+					$("#formpanel").DataTable().clear().draw();
+					var db = $("#formpanel").DataTable().row;
 					if(json.data instanceof Array)
 					{
 						for(var row of json.data){
-							lastAdded = $("#formpanel").DataTable().row.add([
-								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" value="${row.name}">`,
-								`<select class="select2 field_data" name="field_data[]" multiple>`+[].map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`,
-								`<select class="select2 no-search field_data" onchange="$(this).val('RO').trigger('change');window[this.value]&&window[this.value](this);return false">
+							lastAdded = db.add([
+								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" onblur="changeField(this)" value="${row.name}">`+
+								`<input type="hidden" class="field_id" value="${row.id}">`,
+								`<select class="select2 field_data" name="field_data[]">`+row.variables.map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`,
+								`<select class="select2 no-search" onchange="window[this.value]&&window[this.value](this);return false">
 									<option value="RO">İşlem Seç</option>
 									<option value="AddVariable">Değer Ekle</option>
+									<option value="ChangeVariable">Değer Değiştir</option>
 									<option value="RemoveVariable">Değer Sil</option>
 									<option value="RemoveField">Nitelik Sil</option>
-									<option value="DuplicateField">Nitelik Sil</option>
 								</select>`
 							]);
 						};
-						lastAdded.draw();
+						if(lastAdded) lastAdded.draw();
+						else{
+							p();
+							p=null
+						};
 						reinitialize();
 					};
 					setTimeout(function(){
-						p();
-					},500);
+						p&&p();
+					},100);
 				});
-			},1000);
+			},100);
 		}
 		$(document).ready(function(){
 			pinfo();
 		});
+		//Notify.confirm
 		function AddVariable(ths)
 		{
-			//
+			var tr = $(ths).closest("tr");
+			var name = tr.find(".field_name").val();
+			var id = tr.find(".field_id").val();
+			wait2(function(){
+				$(ths).val('RO').trigger('change');
+			});
+			bootbox.prompt(`"${name}" alanı için yeni değer`, function(result) {
+				if(result){
+					Server.request({
+						action:"createvariable",
+						id:id,
+						name:result
+					},function(json){
+						pinfo();
+					})
+				}
+			});
 		};
 		function RemoveVariable(ths)
 		{
-			//
+			var tr = $(ths).closest("tr");
+			var field = tr.find(".field_name").val();
+			if(tr.find(".field_data").find(":selected").length == 0){
+				return wait2(function(){
+					$(ths).val('RO').trigger('change');
+				});
+			};
+			var variable = tr.find(".field_data").find(":selected")[0];
+			var name = variable.innerText;
+			var value = variable.value;
+			Notify.confirm({
+				title:"Dikkat!",
+				text:`"${field}" isimli alanın "${name}" değerini formdan çıkarmak istediğinize emin misiniz?`,
+				confirmText:"Evet, Sil",
+				cancelText:"İptal",
+				confirm:function(){
+					Server.request({
+						action:"deletevariable",
+						id:value
+					},function(json){
+						pinfo();
+					})
+				}
+			});
+		};
+		function ChangeVariable(ths)
+		{
+			var tr = $(ths).closest("tr");
+			var field = tr.find(".field_name").val();
+			if(tr.find(".field_data").find(":selected").length == 0){
+				return wait2(function(){
+					$(ths).val('RO').trigger('change');
+				});
+			};
+			var variable = tr.find(".field_data").find(":selected")[0];
+			var name = variable.innerText;
+			var value = variable.value;
+			bootbox.prompt(`"${field} alanının ${name}" değerinin adının yeni ismi?`, function(result) {
+				if(result){
+					Server.request({
+						action:"updatevariable",
+						id:value,
+						name:result
+					},function(json){
+						pinfo();
+					})
+				}
+			})
 		};
 		function RemoveField(ths)
 		{
-			//
+			var tr = $(ths).closest("tr");
+			var name = tr.find(".field_name").val();
+			var id = tr.find(".field_id").val();
+			wait2(function(){
+				$(ths).val('RO').trigger('change');
+			});
+			Notify.confirm({
+				title:"Dikkat!",
+				text:`${name} isimli alanı formdan çıkarmak istediğinize emin misiniz?`,
+				confirmText:"Evet, Sil",
+				cancelText:"İptal",
+				confirm:function(){
+					Server.request({
+						action:"deleteField",
+						id:id
+					},function(json){
+						pinfo();
+					})
+				}
+			});
+		};
+		function changeField(ths)
+		{
+			var oldText = ths.defaultValue;
+			var changedText = ths.value;
+			if(oldText == changedText) return;
+			var tr = $(ths).closest("tr");
+			var id = tr.find(".field_id").val();
+			Notify.confirm({
+				title:"Dikkat!",
+				text:`${oldText} isimli alanı ${changedText} ismi ile değiştirdiniz kalıcı olmak için kaydetmek ister misiniz?`,
+				confirmText:"Değişikliği Gönder",
+				cancelText:"İptal",
+				confirm:function(){
+					Server.request({
+						action:"updateField",
+						id:id,
+						name:changedText
+					},function(json){
+						pinfo();
+					})
+				}
+			});
 		};
 		$("#btn_createfield").click(function(){
 			bootbox.prompt("Yeni Giriş Alanı", function(result) {

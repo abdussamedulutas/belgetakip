@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Acente Düzenle"?></title>
+	<title><?=$settings->get("appname") . " | Acente Listesi"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -45,11 +45,11 @@
                                     <tbody>
                                         <?php foreach($data->acenteler as $acente): ?>
                                         <tr>
-                                            <th><?=$acente->name?></th>
-                                            <th style="white-space:nowrap">
+                                            <td><?=$acente->name?></td>
+                                            <td style="white-space:nowrap">
                                                 <a class="btn btn-default" href="<?="$data->userPanelLink/acente/$acente->id"?>">Düzenle</a>
                                                 <button class="btn btn-danger" onclick="Sil(this,'<?=$acente->id?>');">Kaldır</button>
-                                            </th>
+                                            </td>
                                         </tr>
                                         <?php endforeach;    ?>
                                     </tbody>

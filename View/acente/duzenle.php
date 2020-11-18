@@ -81,14 +81,14 @@
                                     <tbody>
                                         <?php foreach($data->personeller as $personel): ?>
                                         <tr>
-                                            <th><img src="<?=isset($personel->image)?"uploads/".$personel->image:"images/placeholder.jpg"?>" alt="" class="img img-responsize" style="max-width: 100px;max-height:100px;"></th>
-                                            <th><?=$personel->name?></th>
-                                            <th><?=$personel->surname?></th>
-                                            <th><?=$personel->email?></th>
-                                            <th style="white-space:nowrap">
+                                            <td><img src="<?=isset($personel->image)?"uploads/".$personel->image:"images/placeholder.jpg"?>" alt="" class="img img-responsize" style="max-width: 100px;max-height:100px;"></td>
+                                            <td><?=$personel->name?></td>
+                                            <td><?=$personel->surname?></td>
+                                            <td><?=$personel->email?></td>
+                                            <td style="white-space:nowrap">
                                                 <button class="btn btn-default" onclick="Duzenle(this,'<?=bin2hex($personel->id)?>');">Düzenle</button>
                                                 <button class="btn btn-danger" onclick="Sil(this,'<?=bin2hex($personel->id)?>');">Kaldır</button>
-                                            </th>
+                                            </td>
                                         </tr>
                                         <?php endforeach;    ?>
                                     </tbody>

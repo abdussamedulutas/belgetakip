@@ -30,19 +30,21 @@
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
 								<li><a href="<?="$data->userPanelLink/bildirimler/son"?>"><i class="icon-history"></i> <span>Son İşlemler</span></a></li>
+								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
 								<li>
-									<a href="#"><i class="icon-pencil3"></i> <span>Acente işlemleri</span></a>
+									<a href="#"><i class="icon-users4"></i> <span>Acente işlemleri</span></a>
 									<ul>
 										<li><a href="<?="$data->userPanelLink/acente/list"?>">Tüm Acenteler</a></li>
 										<li><a href="<?="$data->userPanelLink/acente/yeni"?>">Yeni Acente</a></li>
 									</ul>
 								</li>
 								<li>
-									<a href="#"><i class="icon-pencil3"></i> <span>Form işlemleri</span></a>
+									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>
 										<li><a href="<?="$data->userPanelLink/form/list"?>">Tüm Formlar</a></li>
-										<li><a href="<?="$data->userPanelLink/form/turleri"?>">Form Türleri</a></li>
-										<li><a href="<?="$data->userPanelLink/form/gerekli"?>">Gerekli Formlar</a></li>
+										<li><a href="<?="$data->userPanelLink/form/eksik"?>">Eksik Formlar</a></li>
+										<li><a href="<?="$data->userPanelLink/form/ayarlar"?>">Form Ayarları</a></li>
+										<li><a href="<?="$data->userPanelLink/form/gerekenler"?>">İşlemler için gerekli Formlar</a></li>
 									</ul>
 								</li>
 							</ul>

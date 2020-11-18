@@ -93,12 +93,32 @@
         "name" => "acente::post"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/turleri$/",
+        "url" => "/^{rootPath}([^\/]+)\/form\/ayarlar$/",
         "method" => "get",
         "name" => "form::viewSettings"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/turleri$/",
+        "url" => "/^{rootPath}([^\/]+)\/form\/ayarlar$/",
         "method" => "post",
         "name" => "form::post"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/gerekenler$/",
+        "method" => "get",
+        "name" => "form::viewRequired"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/gerekenler$/",
+        "method" => "post",
+        "name" => "form::post"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/dosyalar$/",
+        "method" => "get",
+        "name" => "file::viewFiles"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/dosyalar$/",
+        "method" => "post",
+        "name" => "file::post"
     ]);

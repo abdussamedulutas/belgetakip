@@ -1,5 +1,5 @@
 <?php
-    class Form extends Model
+    class File extends Model
     {
         public function createType($name)
         {

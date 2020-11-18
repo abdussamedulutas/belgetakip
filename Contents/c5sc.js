@@ -36,6 +36,19 @@ Server._ajax = function(url,data,callback,error,uploadEvent){
     xhttp.send(data);
     return xhttp;
 }
+Notify.confirm = function(opt){
+    swal({
+        title: opt.title,
+        text: opt.text,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: opt.confirmText || "Tamam",
+        cancelButtonText: opt.cancelText || "İptal"
+    },function(thn){
+        if(thn) opt.confirm();
+        else opt.cancel&&opt.cancel();
+    })
+}
 Notify.errorText = function(title,text,t,delay){
     var k = {
         title: title,
@@ -510,3 +523,4 @@ function block(id)
     };
 }
 reinitialize();
+window.wait2 = (window.requestIdleCallback !== undefined ? window.requestIdleCallback : function(C){setTimeout(C,1)});
