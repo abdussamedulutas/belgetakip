@@ -26,9 +26,9 @@
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $form = new Form();
+            $types = $form->getAllType();
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
-            $types = $form->getAllType();
             Response::view("form/formayarlari",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "types"=>$types

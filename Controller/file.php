@@ -33,6 +33,17 @@
                 "userPanelLink"=>$userPanelLink
             ]);
         }
+        public function addForm()
+        {
+            useAuthGET();
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
+            Response::view("dosya/addform",(object)[
+                "userPanelLink"=>$userPanelLink
+            ]);
+        }
         public function post()
         {
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
@@ -79,6 +90,16 @@
                     Response::soap("success","SAVED_FILE");
                     break;
                 }
+                case "getTypes":{
+                    $types = $form->getAllType();
+                    Response::soap("success","ALL_TYPES",$types);
+                    break;
+                }
+                case "getTypes":{
+                    $types = $form->getAllType();
+                    Response::soap("success","ALL_TYPES",$types);
+                    break;
+                }
                 case "changeFile":{
                     Response::soap("success","CHANGED_FILE");
                     break;
@@ -89,27 +110,43 @@
                 }
                 case "getFiles":{
                     $kle = $file->getAllFiles();
+                    $types = $form->getAllType();
+                    $formtype = [];
                     $formlar = [];
                     $acenteler = [];
                     $personeller = [];
+                    $fakes = [];
                     foreach($kle as $filec)
                     {
-                        $result = $file->getStatus($filec->id);
-                        var_dump($result);
-                        exit;
                         $forms = explode(',',$filec->reqforms);
-                        foreach($filec as $requiredId)
+                        foreach($forms as $requiredId)
                         {
-                            $formlar[$requiredId] = $form->getRequiredForm($requiredId);
+                            $formtype[$requiredId] = $form->getRequiredForm($requiredId);
+                            $forms = explode(',',$formtype[$requiredId]->required);
+                            foreach($forms as $reelform)
+                            {
+                                $formlar[$reelform] = $form->getType($reelform);
+                            };
                         };
-                        $acenteler[$file->acente] = $acente->getAcente($file->acente);
-                        $personeller[$file->personel] = $users->getPersonel($file->personel)[0];
+                        $acenteler[$filec->acente] = $acente->getAcente($filec->acente);
+                        $personeller[$filec->personel] = $users->getPersonel($filec->personel)[0];
+                        $fake = $file->getStatus($filec->id);
+                        foreach($fake as $name => $k)
+                        {
+                            if(!isset($fakes[$name])) $fakes[$name] = [];
+                            foreach($k as $kname => $t)
+                            {
+                                $fakes[$name][$kname] = $t;
+                            };
+                        };
                     };
                     Response::soap("success","FILES_ALL",[
                         "Acente"=>$acenteler,
                         "Files"=>$kle,
+                        "RequiredForms"=>$formtype,
                         "Forms"=>$formlar,
-                        "Personel"=>$personeller
+                        "Personel"=>$personeller,
+                        "Processor"=>$fake
                     ]);
                     break;
                 }

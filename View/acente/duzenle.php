@@ -195,7 +195,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label>Acente</label>
-                                    <input type="text" name="acente_id" readonly class="form-control" value="<?=bin2hex($data->acente->id)?>">
+                                    <input type="text" name="acente_id" readonly class="form-control" value="<?=$data->acente->id?>">
                                 </div>
                             </div>
                         </div>

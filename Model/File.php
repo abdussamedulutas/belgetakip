@@ -81,35 +81,38 @@
             $pre = $db->prepare("SELECT * FROM file WHERE file.id = UNHEX(:id) AND deletedate is null");
             $pre->bindParam("id",$id);
             $pre->execute();
-            $file = $pre->fetch();
-            $formsrequires = explode(",",$file["required_forms"]);
-            $olanlar = [];
-            $olmayanlar = [];
-            foreach($formsrequires as $fileid)
+            $file = $pre->fetch(PDO::FETCH_OBJ);
+            $formsrequires1 = explode(",",$file->required_forms);
+            $shown = [];
+            foreach($formsrequires1 as $fileid)
             {
-                $pre = $db->prepare("SELECT * FROM form_require WHERE id = UNHEX(:id) AND deletedate is null ");
+                $pre = $db->prepare("SELECT HEX(id) as id,name,required_forms FROM form_require WHERE id = UNHEX(:id) AND deletedate is null");
                 $pre->bindParam("id",$fileid);
                 $pre->execute();
-                $req = $pre->fetch();
-                $formsrequires = explode(",",$req["required_forms"]);
-                foreach($formsrequires as $formid)
+                $require = $pre->fetch(PDO::FETCH_OBJ);
+                $formtypes = explode(",",$require->required_forms);
+                $shown[$require->id] = [];
+                foreach($formtypes as $formtype)
                 {
-                    $pre = $db->prepare("SELECT * FROM forms WHERE form_id = UNHEX(:form_id) AND `file_id` = UNHEX(:file_id) AND deletedate is null ");
-                    $pre->bindParam("file_id",$fileid);
-                    $pre->bindParam("form_id",$formid);
-                    $pre->execute();
-                    $req = $pre->fetchAll();
-                    if(count($req) == 0)
+                    $pre1 = $db->prepare("SELECT HEX(id) as id,name as count FROM form_types WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
+                    $pre1->bindParam("id",$formtype);
+                    $pre1->execute();
+                    $rec = $pre1->fetch(PDO::FETCH_OBJ);
+                    $pre2 = $db->prepare("SELECT COUNT(*) as count FROM forms WHERE type_id = UNHEX(:type_id) AND `file_id` = UNHEX(:file_id) AND deletedate is null");
+                    $pre2->bindParam("type_id",$formtype);
+                    $pre2->bindParam("file_id",$fileid);
+                    $pre2->execute();
+                    $req = $pre2->fetch(PDO::FETCH_OBJ);
+                    if($req->count == 0)
                     {
-                        $olmayanlar[] = $formid;
+                        $rec->status = false;
+                        $shown[$require->id][$rec->id] = $rec;
                     }else{
-                        $olanlar[] = $formid;
-                    }
+                        $rec->status = true;
+                        $shown[$require->id][$rec->id] = $rec;
+                    };
                 };
             };
-            return [
-                'olmayanlar' => $olmayanlar,
-                'olanlar' => $olanlar
-            ];
+            return (object) $shown;
         }
     };

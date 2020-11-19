@@ -1,0 +1,26 @@
+Admin kullanıcısı [settings] tablosunda tek bir admin var
+
+acenteler [acente] tablosunda sadece isim var
+
+[personeller] tablosu [acenteler] tablosu altında gruplanmıştır.
+    bir personel birden fazla acentede çalışamaz
+    bir acente bir kaç kez kaydedilemez
+    bir personel emaili başka bir personel kullanamaz
+    [dosyalar] personellere aittir başka personel görmez
+
+dosyalar [file] tablosunda saklanır ve bir personelin görebildiği adminin bir şahıs
+bilgileri kullanarak doldurduğu formlar grubudur. Bir işlemin oluşturulabilmesi veya
+tamamlanabilmesi için gereken tüm formlar doldurulmalıdır.
+
+[formlar] önceden girilmiş bilgilerdir ve gerçek değerleri saklarlar ve seçilmiş değerler
+[forms] tablosunda saklanır
+
+form tipleri bir formun türüdür. bir formun değerlerinin yerini/sırasını ve girilebilecek
+değerlerini belirler. formun alanları ve formun girilebilecek değerleri arasında bir köprü
+olarak tasarlanmıştır ve [form_types] tablosunda saklanır
+
+form fields belirli bir tablodaki bir alanın ismini girilebilecek değerlerin ön ekinin saklandığı
+yerlerdir ve [form_fields] tablosunda saklanırlar
+
+form alanlarında kullanılacak değerlerin önceden belirlenmesi içinde [form_variables] tablosu kullanılır
+var yanlızca bir [form_types] kaydının yanlızca bir [form_fields] kaydına özgü olabilirler

@@ -122,3 +122,13 @@
         "method" => "post",
         "name" => "file::post"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/ekle$/",
+        "method" => "get",
+        "name" => "file::addForm"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/ekle$/",
+        "method" => "post",
+        "name" => "file::post"
+    ]);

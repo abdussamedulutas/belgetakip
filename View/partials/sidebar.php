@@ -31,6 +31,7 @@
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
 								<li><a href="<?="$data->userPanelLink/bildirimler/son"?>"><i class="icon-history"></i> <span>Son İşlemler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
+								<li><a href="<?="$data->userPanelLink/form/ekle"?>"><i class="icon-file-plus"></i> <span>Form Ekle</span></a></li>
 								<li>
 									<a href="#"><i class="icon-users4"></i> <span>Acente işlemleri</span></a>
 									<ul>

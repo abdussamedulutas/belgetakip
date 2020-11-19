@@ -79,10 +79,10 @@
             global $workspaceDir;
             $acente = new Acente();
             $acente = $acente->getAcente($id);
-            if(count($acente) == 0){
+            if(!isset($acente)){
                 SendStatus(404);
                 exit;
-            }else $acente = $acente[0];
+            };
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));

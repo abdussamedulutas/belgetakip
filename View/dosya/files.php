@@ -68,6 +68,8 @@
                 $("#formpanel").DataTable().clear().draw();
                 var db = $("#formpanel").DataTable().row;
                 for(var file of json.data.Files){
+                    var thereis = 0;
+                    var thereisnt = 0;
                     lastAdded = db.add([
                         `${file.name}`,
                         `${json.data.Acente[file.acente].name}`,
