@@ -33,12 +33,12 @@
         public function getAcente($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT * FROM acente WHERE id = UNHEX(:id) AND deletedate is NULL  LIMIT 1");
+            $pre = $db->prepare("SELECT HEX(id) as id,name,image FROM acente WHERE id = UNHEX(:id) AND deletedate is NULL  LIMIT 1");
             $pre->bindParam("id", $id);
             if($pre->execute())
             {
                 Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-                return $pre->fetchall(PDO::FETCH_OBJ);
+                return $pre->fetch(PDO::FETCH_OBJ);
             }else{
                 Flog(__FUNCTION__."(".var_export(func_get_args(),true).") : MysqlError {".var_export($db->errorInfo(),true)."}");
                 var_dump($db->errorInfo());

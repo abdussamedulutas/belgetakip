@@ -57,6 +57,44 @@
     var tumformislemleri = false;
     var tumformlar = false;
     var autoCommit = false;
+    function pinfo()
+    {
+        var p = block("#pinpanel");
+        setTimeout(function(){
+            Server.request({
+                action:"getFiles"
+            },function(json){
+                var lastAdded = null;
+                $("#formpanel").DataTable().clear().draw();
+                var db = $("#formpanel").DataTable().row;
+                for(var file of json.data.Files){
+                    lastAdded = db.add([
+                        `${file.name}`,
+                        `${json.data.Acente[file.acente].name}`,
+                        `${json.data.Personel[file.personel].name}`,
+                        file.reqforms.split(',').map(function(formid){
+                            return `<p>${json.data.Forms[formid].name}</p>`
+                        }).join(''),
+                        `${file.name}`,
+                        `${file.name}`,
+                        `${file.name}`
+                    ]);
+                };
+                if(lastAdded) lastAdded.draw();
+                else{
+                    p();
+                    p=null
+                };
+                reinitialize();
+                setTimeout(function(){
+                    p&&p();
+                },100);
+            });
+        },100);
+    }
+    $(document).ready(function(){
+        pinfo();
+    });
     $(function(){
         Server.request({
             action:"tumacenteler"
@@ -83,9 +121,26 @@
                 id:id
             },function(json){
                 $("#personel").html(json.data.map(function(pers){
-                    return `<option id="${pers.id}">${pers.name} ${pers.surname}</option>`
+                    return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
                 }));
                 $("#personel").trigger("change");
+                p();
+            })
+        })
+        $(".actionbtn").click(function(){
+            var id = $("#acente").val();
+            var ids = $("#requiredForms").val();
+            if(!id || !ids || (ids && ids.length == 0)) return;
+            var p = block(".modal-body");
+            Server.request({
+                action:"saveFile",
+                name:$("#fname").val(),
+                acente:$("#acente").val(),
+                personel:$("#personel").val(),
+                requiredForms:$("#requiredForms").val()
+            },function(json){
+                tumformlar = json.data
+                Notify.successText("Başarılı!","Sistemde yeni bir dosya açıldı");
                 p();
             })
         })
@@ -97,13 +152,11 @@
             action:"tumformislemleri"
         },function(json){
             $("#requiredForms").html(json.data.map(function(pers){
-                return `<option id="${pers.id}">${pers.name} (${pers.required.length})</option>`
+                return `<option value="${pers.id}">${pers.name} (${pers.required.length})</option>`
             }));
             $("#requiredForms").trigger("change");
             p();
         })
-
-
         autoCommit = true;
         if(!tumacenteler) return;
         $("#acente").html(
@@ -128,7 +181,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <label>Dosya İsmi</label>
-                                <input type="text" name="name" class="form-control">
+                                <input type="text" id="fname" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -159,7 +212,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
-                    <button type="submit" class="btn btn-primary actionbtn" actionbtn>Gönder</button>
+                    <button type="submit" class="btn btn-primary actionbtn">Gönder</button>
                 </div>
             </div>
         </div>

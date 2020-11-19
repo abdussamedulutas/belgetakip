@@ -70,6 +70,12 @@
                     break;
                 }
                 case "saveFile":{
+                    $file->createFile(
+                        Request::post("name"),
+                        Request::post("requiredForms"),
+                        Request::post("acente"),
+                        Request::post("personel")
+                    );
                     Response::soap("success","SAVED_FILE");
                     break;
                 }
@@ -79,6 +85,32 @@
                 }
                 case "deleteFile":{
                     Response::soap("success","DELETED_FILE");
+                    break;
+                }
+                case "getFiles":{
+                    $kle = $file->getAllFiles();
+                    $formlar = [];
+                    $acenteler = [];
+                    $personeller = [];
+                    foreach($kle as $filec)
+                    {
+                        $result = $file->getStatus($filec->id);
+                        var_dump($result);
+                        exit;
+                        $forms = explode(',',$filec->reqforms);
+                        foreach($filec as $requiredId)
+                        {
+                            $formlar[$requiredId] = $form->getRequiredForm($requiredId);
+                        };
+                        $acenteler[$file->acente] = $acente->getAcente($file->acente);
+                        $personeller[$file->personel] = $users->getPersonel($file->personel)[0];
+                    };
+                    Response::soap("success","FILES_ALL",[
+                        "Acente"=>$acenteler,
+                        "Files"=>$kle,
+                        "Forms"=>$formlar,
+                        "Personel"=>$personeller
+                    ]);
                     break;
                 }
                 default:{
