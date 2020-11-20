@@ -16,17 +16,14 @@
         }
         public function varifyUser($email,$password)
         {
-            $user = $this->query("SELECT * FROM user WHERE `email` = :email  AND `password` = :password LIMIT 1",[
-                "email" => $email,
-                "password" => $password
-            ]);
+            global $db;
+            $user = $db->prepare("SELECT * FROM user WHERE email = :email AND password = MD5(:password) LIMIT 1");
+            $user->bindParam("email",$email);
+            $user->bindParam("password",$password);
+            $user->execute();
+            $user = $user->fetch(PDO::FETCH_OBJ);
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            if(count($user) == 0)
-            {
-                return false;
-            }else{
-                return $user[0];
-            }
+            return $user;
         }
         public function varifyAdmin($email,$password)
         {
@@ -187,7 +184,7 @@
                 return "Yönetici";
                 break;
             }
-            case "acente":{
+            case "personel":{
                 return "Acente Personeli";
                 break;
             }

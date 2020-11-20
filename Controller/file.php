@@ -19,12 +19,29 @@
         {
             SendStatus(404);
         };
-    }   
+    }
+    function useOnlyAdminAuthGET()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            Response::tempRedirect("$workspaceDir/login");
+            exit;
+        }
+    };
+    function useOnlyAdminPOST()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            SendStatus(404);
+        };
+    }
 
     $main = new class extends Controller{
         public function viewFiles()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
@@ -35,7 +52,7 @@
         }
         public function addForm()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
@@ -46,6 +63,7 @@
         }
         public function post()
         {
+            useOnlyAdminPOST();
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
             useAuthPOST();
@@ -78,6 +96,34 @@
                 case "tumformlar":{
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
+                    break;
+                }
+                case "AddForm":{
+                    $form = new Form();
+                    $fields = $form->getFields(Request::post("typeid"));
+                    $fileid = Request::post("fileid");
+                    $values = [];
+                    foreach($fields as $field)
+                    {
+                        $value = Request::post($field->id);
+                        $values[$field->id] = $value;
+                    };
+                    $id = $form->saveForm(
+                        $fileid,
+                        Request::post("typeid"),
+                        Request::post("userid"),
+                        $values
+                    );
+                    $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+                    Response::soap("success","ADD_FORM",[
+                        "newURL" => $userPanelLink . "/form/" . $id
+                    ]);
+                    break;
+                }
+                case "getFields":{
+                    $form = new Form();
+                    $fields = $form->getFields(Request::post("id"));
+                    Response::soap("success","FORMTYPE_ALL",$fields);
                     break;
                 }
                 case "saveFile":{
@@ -146,7 +192,7 @@
                         "RequiredForms"=>$formtype,
                         "Forms"=>$formlar,
                         "Personel"=>$personeller,
-                        "Processor"=>$fake
+                        "Processor"=>$fakes
                     ]);
                     break;
                 }

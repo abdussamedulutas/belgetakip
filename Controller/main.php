@@ -6,10 +6,18 @@
             global $workspaceDir;
             if(isset($_SESSION["user"]))
             {
-                $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-                Response::view("main",(object)[
-                    "userPanelLink"=>$userPanelLink
-                ]);
+                if($_SESSION["role"] == "admin")
+                {
+                    $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+                    Response::view("main",(object)[
+                        "userPanelLink"=>$userPanelLink
+                    ]);
+                }else{
+                    $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+                    Response::view("personel",(object)[
+                        "userPanelLink"=>$userPanelLink
+                    ]);
+                }
             }else Response::tempRedirect("$workspaceDir/login");
         }
         public function redirectpanel()

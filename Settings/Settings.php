@@ -132,3 +132,8 @@
         "method" => "post",
         "name" => "file::post"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/([^\/]{32})$/",
+        "method" => "get",
+        "name" => "form::viewForm"
+    ]);

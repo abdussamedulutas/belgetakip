@@ -19,11 +19,28 @@
             SendStatus(404);
         };
     }
+    function useOnlyAdminAuthGET()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            Response::tempRedirect("$workspaceDir/login");
+            exit;
+        }
+    };
+    function useOnlyAdminPOST()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            SendStatus(404);
+        };
+    }
 
     $main = new class extends Controller{
         public function yeniFormu()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("acente/yeni",(object)[
@@ -32,7 +49,7 @@
         }
         public function showList()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $acente = new Acente();
@@ -44,7 +61,7 @@
         }
         public function yeni()
         {
-            useAuthPOST();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             if(Request::method() != "POST")
             {
@@ -74,7 +91,7 @@
         }
         public function editForm()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             $id = getUrlTokens()[2];
             global $workspaceDir;
             $acente = new Acente();
@@ -96,7 +113,7 @@
         }
         public function post()
         {
-            useAuthPOST();
+            useOnlyAdminPOST();
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))
@@ -115,7 +132,7 @@
         }
         public function edit()
         {
-            useAuthPOST();
+            useOnlyAdminPOST();
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))

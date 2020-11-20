@@ -18,11 +18,28 @@
             SendStatus(404);
         };
     }
+    function useOnlyAdminAuthGET()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            Response::tempRedirect("$workspaceDir/login");
+            exit;
+        }
+    };
+    function useOnlyAdminPOST()
+    {
+        global $workspaceDir;
+        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
+        {
+            SendStatus(404);
+        };
+    }
 
     $main = new class extends Controller{
         public function viewSettings()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $form = new Form();
@@ -36,7 +53,7 @@
         }
         public function viewRequired()
         {
-            useAuthGET();
+            useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
@@ -45,14 +62,37 @@
                 "userPanelLink"=>$userPanelLink
             ]);
         }
-        public function post()
+        public function viewForm()
         {
+            useOnlyAdminAuthGET();
+            global $workspaceDir;
+            $id = getUrlTokens()[2];
+            $form = new Form();
+            $data = $form->getForm($id);
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
-            useAuthPOST();
+            Response::view("form/gerekenformlar",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "form" =>$data
+            ]);
+        }
+        public function post()
+        {
+            useOnlyAdminPOST();
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            Flog("WITH POST DATA:".var_export($_POST,true));
             global $workspaceDir;
             switch(Request::post("action"))
             {
+                case "changeFieldType":{
+                    $form = new Form();
+                    if($form->changeFieldType(Request::post("id"),Request::post("name")))
+                        Response::soap("success","CHANGE_TYPE");
+                    else
+                        Response::soap("fail","CHANGE_TYPE");
+                    break;
+                }
                 case "createFormType":{
                     $form = new Form();
                     if($form->createType(Request::post("name")))

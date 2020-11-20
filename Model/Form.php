@@ -60,7 +60,7 @@
         public function getFields($type_id)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
             $pre->bindParam("formtypeid", $type_id);
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())
@@ -101,6 +101,15 @@
             global $db;
             $pre = $db->prepare("UPDATE form_fields SET `name` = :text WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
+            $pre->bindParam("id", $id);
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            return $pre->execute();
+        }
+        public function changeFieldType($id,$type)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE form_fields SET `type` = :type WHERE id = UNHEX(:id) LIMIT 1");
+            $pre->bindParam("type", $type);
             $pre->bindParam("id", $id);
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
@@ -225,5 +234,116 @@
                 var_dump($db->errorInfo());
                 exit;
             }
+        }
+        public function saveValue($field,$text)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("INSERT INTO `values`
+                SET `field` = UNHEX(:field),
+                    `text` = :text,
+                    `id` = :id
+            ");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("field",$field);
+            $pre->bindParam("text",$text);
+            $pre->bindParam("id",$id);
+            if($pre->execute())
+            {
+                return $id;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function updateValue($id,$text)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("UPDATE `values`
+                SET `text` = :text
+                WHERE `id` = :id LIMIT 1
+            ");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("text",$text);
+            $pre->bindParam("id",$id);
+            if($pre->execute())
+            {
+                return $id;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function deleteValue($id)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("DELETE FROM `values` WHERE `id` = :id LIMIT 1");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("text",$text);
+            $pre->bindParam("id",$id);
+            if($pre->execute())
+            {
+                return true;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function saveForm($file_id,$type_id,$user,$value)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("INSERT INTO forms
+                SET `type_id` = UNHEX(:type_id),
+                    `file_id` = UNHEX(:file_id),
+                    `user` = UNHEX(:user),
+                    `createdate`  = NOW(),
+                    `modifydate` = NOW(),
+                    `id` = :id
+            ");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("file_id",$file_id);
+            $pre->bindParam("type_id",$type_id);
+            $pre->bindParam("user",$user);
+            $pre->bindParam("id",$id);
+            if($pre->execute())
+            {
+                foreach($value as $fieldid => $value)
+                    $this->saveValue($fieldid,$value);
+                return $id;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getForm($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT type_id FROM forms WHERE `id` = :id LIMIT 1");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("id",$id);
+            $pre->execute();
+            $form = $pre->fetch(PDO::FETCH_OBJ);
+            var_dump($form);
+            exit;
+            $pre = $db->prepare("SELECT
+                    values.text as text,
+                    form_fields.name as name,
+                    values.id as id,
+                    values.field as field,
+                    form_fields.type    
+                FROM form_fields
+                INNER JOIN `values` ON form_fields.id = values.field
+                WHERE
+                    `form_type_id` = UNHEX(:form_type_id)
+                LIMIT 1
+            ");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("form_type_id",$form->type_id);
+            $pre->execute();
+            $values = $pre->fetchall(PDO::FETCH_OBJ);
+            var_export($values);
         }
     };

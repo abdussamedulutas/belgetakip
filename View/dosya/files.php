@@ -34,13 +34,13 @@
 								<table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
 									<thead>
 										<tr>
+											<th>Dosya Kimliği</th>
 											<th>İşlem Adı</th>
 											<th>Acente</th>
 											<th>Acente Personeli</th>
 											<th>Form Adı</th>
 											<th>Durum</th>
-											<th>Oluşturma Tarihi</th>
-											<th width="1%">İşlemler</th>
+											<th>İşlem</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -70,16 +70,23 @@
                 for(var file of json.data.Files){
                     var thereis = 0;
                     var thereisnt = 0;
+                    file.reqforms.split(',').map(function(formid){
+                        Object.values(json.data.Processor[formid]).map(function(form){
+                            if(form.status){
+                                thereis++;
+                            }else{
+                                thereisnt++;
+                            }
+                        })
+                    }).join('')
                     lastAdded = db.add([
+                        file.id,
                         `${file.name}`,
                         `${json.data.Acente[file.acente].name}`,
                         `${json.data.Personel[file.personel].name}`,
-                        file.reqforms.split(',').map(function(formid){
-                            return `<p>${json.data.Forms[formid].name}</p>`
-                        }).join(''),
-                        `${file.name}`,
-                        `${file.name}`,
-                        `${file.name}`
+                        `Toplam girilmiş ${thereis} eklendi ve ${thereisnt} form eksik`,
+                        thereisnt != 0 ? "Belge Eksik" : "Dosya Hazır",
+                        thereisnt != 0 ? `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/form/ekle?id=${file.id}">Ekle</a>` : ''
                     ]);
                 };
                 if(lastAdded) lastAdded.draw();

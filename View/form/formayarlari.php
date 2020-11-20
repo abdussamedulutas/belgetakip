@@ -60,6 +60,7 @@
 									<thead>
 										<tr>
 											<th>Alan Adı</th>
+											<th>Veri Türü</th>
 											<th>Geçerli değerleri</th>
 											<th width="1%">İşlemler</th>
 										</tr>
@@ -103,7 +104,12 @@
 							lastAdded = db.add([
 								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" onblur="changeField(this)" value="${row.name}">`+
 								`<input type="hidden" class="field_id" value="${row.id}">`,
-								`<select class="select2 field_data" name="field_data[]">`+row.variables.map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`,
+								`<select class="select2 no-search field_type" onchange="changeType(this);return false">
+									<option value="select" ${row.type=="select"?"selected":""}>Seçmeli</option>
+									<option value="text" ${row.type=="text"?"selected":""}>Yazı</option>
+									<option value="date" ${row.type=="date"?"selected":""}>Tarih</option>
+								</select>`,
+								`<select class="select2 field_data" name="field_data[]" ${row.type!="select"?"disabled":""}>`+row.variables.map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`,
 								`<select class="select2 no-search" onchange="window[this.value]&&window[this.value](this);return false">
 									<option value="RO">İşlem Seç</option>
 									<option value="AddVariable">Değer Ekle</option>
@@ -246,6 +252,20 @@
 					})
 				}
 			});
+		};
+		function changeType(ths)
+		{
+			var changedText = ths.value;
+			var tr = $(ths).closest("tr");
+			var id = tr.find(".field_id").val();
+			Server.request({
+				action:"changeFieldType",
+				id:id,
+				name:changedText
+			},function(json){
+				pinfo();
+				Notify.successText("Form alanı","Form alanı veri tipi iletildi");
+			})
 		};
 		$("#btn_createfield").click(function(){
 			bootbox.prompt("Yeni Giriş Alanı", function(result) {

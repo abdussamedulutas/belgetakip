@@ -86,8 +86,8 @@
                                             <td><?=$personel->surname?></td>
                                             <td><?=$personel->email?></td>
                                             <td style="white-space:nowrap">
-                                                <button class="btn btn-default" onclick="Duzenle(this,'<?=bin2hex($personel->id)?>');">Düzenle</button>
-                                                <button class="btn btn-danger" onclick="Sil(this,'<?=bin2hex($personel->id)?>');">Kaldır</button>
+                                                <button class="btn btn-default" onclick="Duzenle(this,'<?=$personel->id?>');">Düzenle</button>
+                                                <button class="btn btn-danger" onclick="Sil(this,'<?=$personel->id?>');">Kaldır</button>
                                             </td>
                                         </tr>
                                         <?php endforeach;    ?>
