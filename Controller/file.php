@@ -3,6 +3,7 @@
     include("Model/User.php");
     include("Model/Form.php");
     include("Model/Acente.php");
+    include("Model/Notification.php");
     function useAuthGET()
     {
         global $workspaceDir;

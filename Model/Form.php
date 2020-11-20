@@ -301,7 +301,7 @@
                     `user` = UNHEX(:user),
                     `createdate`  = NOW(),
                     `modifydate` = NOW(),
-                    `id` = :id
+                    `id` = UNHEX(:id)
             ");
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("file_id",$file_id);
@@ -321,29 +321,31 @@
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT type_id FROM forms WHERE `id` = :id LIMIT 1");
+            $pre = $db->prepare("SELECT type_id,user FROM forms WHERE `id` = UNHEX(:id) LIMIT 1");
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);
-            var_dump($form);
-            exit;
+            $pre = $db->prepare("SELECT `name` FROM form_types WHERE `id` = :id LIMIT 1");
+            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("id",$form->type_id);
+            $pre->execute();
+            $typeform = $pre->fetch(PDO::FETCH_OBJ);
             $pre = $db->prepare("SELECT
-                    values.text as text,
-                    form_fields.name as name,
-                    values.id as id,
-                    values.field as field,
-                    form_fields.type    
-                FROM form_fields
-                INNER JOIN `values` ON form_fields.id = values.field
-                WHERE
-                    `form_type_id` = UNHEX(:form_type_id)
-                LIMIT 1
-            ");
+                HEX(`values`.id) as valueid,
+                HEX(`form_fields`.id) as field,
+                `name`,
+                `type`,
+                `values`.text
+            FROM form_fields
+            INNER JOIN `values` ON `values`.field = form_fields.id
+            WHERE `form_type_id` = :form_type_id");
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("form_type_id",$form->type_id);
             $pre->execute();
-            $values = $pre->fetchall(PDO::FETCH_OBJ);
-            var_export($values);
+            return [
+                "FormData" => $pre->fetchall(PDO::FETCH_OBJ),
+                "FormSettings" => $typeform
+            ];
         }
     };

@@ -18,7 +18,7 @@
 		</div>
     </div>
 	<style>
-		.table td{
+		.table:not(.folding) td{
 			padding: 5px 10px !important;
 		}
 	</style>

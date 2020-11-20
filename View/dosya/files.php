@@ -151,6 +151,7 @@
                 tumformlar = json.data
                 Notify.successText("Başarılı!","Sistemde yeni bir dosya açıldı");
                 p();
+                $("#add-file").modal("hide");
             })
         })
     });

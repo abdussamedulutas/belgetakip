@@ -24,7 +24,7 @@
             }else if($user = $User->varifyUser(Request::post("email"),Request::post("password"))){
                 $_SESSION["user"] = $user->email;
                 $_SESSION["name"] = $user->name;
-                $_SESSION["name"] = $user->surname;
+                $_SESSION["surname"] = $user->surname;
                 $_SESSION["image"] = $user->image;
                 $_SESSION["role"] = $user->role;
                 $_SESSION["userid"] = $user->id;

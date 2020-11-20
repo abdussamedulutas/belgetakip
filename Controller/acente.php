@@ -1,6 +1,7 @@
 <?php
     include("Model/Acente.php");
     include("Model/User.php");
+    include("Model/Notification.php");
 
     function useAuthGET()
     {

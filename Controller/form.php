@@ -1,6 +1,7 @@
 <?php
     include("Model/User.php");
     include("Model/Form.php");
+    include("Model/Notification.php");
     function useAuthGET()
     {
         global $workspaceDir;
@@ -64,15 +65,20 @@
         }
         public function viewForm()
         {
-            useOnlyAdminAuthGET();
             global $workspaceDir;
             $id = getUrlTokens()[2];
+
             $form = new Form();
             $data = $form->getForm($id);
+
+            if(){
+
+            };
+
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             Flog("WITH POST DATA:".var_export($_POST,true));
-            Response::view("form/gerekenformlar",(object)[
+            Response::view("form/goster",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "form" =>$data
             ]);
