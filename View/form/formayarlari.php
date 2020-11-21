@@ -258,13 +258,17 @@
 		};
 		function changeOrder(ths)
 		{
-			var changedText = ths.value;
+			var Order = ths.defaultValue;
+			var changedOrder = ths.value;
+			if(Order == changedOrder) return;
 			var tr = $(ths).closest("tr");
 			var id = tr.find(".field_id").val();
+			var name = tr.find(".field_name").val();
 			Server.request({
 				action:"updateFieldOrder",
 				id:id,
-				order:changedText
+				order:changedOrder,
+				name:name
 			},function(json){
 				pinfo();
 				Notify.successText("Form alanı","Form alanı veri önceliği iletildi");

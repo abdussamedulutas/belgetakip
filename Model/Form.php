@@ -53,7 +53,7 @@
         public function getFields($type_id)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type`,`order` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid) ORDER BY `order` ASC");
             $pre->bindParam("formtypeid", $type_id);
             if($pre->execute())
             {
@@ -79,10 +79,20 @@
         public function createField($type_id,$text)
         {
             global $db;
+                $pre = $db->prepare("SELECT MAX(form_fields.`order`)+1 as maxid,COUNT(form_fields.`order`) as nullid FROM form_fields WHERE form_fields.form_type_id = UNHEX(:id) AND deletedate is null LIMIT 1");
+                $pre->bindParam("id", $type_id);
+                $pre->execute();
+                $row = $pre->fetch();
+                if($row["maxid"] == null){
+                    $order = $row["nullid"];
+                }else{
+                    $order = $row["maxid"];
+                };
             $id = getRandom();
-            $pre = $db->prepare("INSERT INTO form_fields SET id = UNHEX(:id),`name` = :text, form_type_id = UNHEX(:formtypeid), createdate = NOW(), modifydate = NOW()");
+            $pre = $db->prepare("INSERT INTO form_fields SET id = UNHEX(:id),`name` = :text, form_type_id = UNHEX(:formtypeid), `order` = :order, `type` = 'text', createdate = NOW(), modifydate = NOW()");
             $pre->bindParam("formtypeid", $type_id);
             $pre->bindParam("text", $text);
+            $pre->bindParam("order", $order);
             $pre->bindParam("id", $id);
             if(!$pre->execute());
                 return true;
@@ -94,21 +104,19 @@
             {
                 $pre = $db->prepare("SELECT MAX(other.`order`)+1 as maxid,COUNT(other.`order`) as nullid FROM form_fields
                 INNER JOIN form_fields as other on other.form_type_id = form_fields.form_type_id
-                WHERE form_fields.id = UNHEX(:id) LIMIT 1");
+                WHERE form_fields.id = UNHEX(:id) AND other.deletedate is null LIMIT 1");
                 $pre->bindParam("id", $id);
                 $pre->execute();
                 $row = $pre->fetch();
                 if($row["maxid"] == null){
-                    $oder = $row["nullid"];
+                    $order = $row["nullid"];
                 }else{
-                    $oder = $row["maxid"];
+                    $order = $row["maxid"];
                 }
-                $order = $maxid;
             };
-            exit;
-            $pre = $db->prepare("UPDATE form_fields SET `name` = :text WHERE id = UNHEX(:id) LIMIT 1");
+            $pre = $db->prepare("UPDATE form_fields SET `name` = :text, `order` = :order,modifydate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
-            $pre->bindParam("type", "text");
+            $pre->bindParam("order", $order);
             $pre->bindParam("id", $id);
             return $pre->execute();
         }

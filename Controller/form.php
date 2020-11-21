@@ -130,9 +130,15 @@
                     Response::soap("success","CREATE_FIELD");
                     break;
                 }
+                case "updateField":{
+                    $form = new Form();
+                    $types = $form->updateField(Request::post("id"),Request::post("name"));
+                    Response::soap("success","UPDATE_FIELD");
+                    break;
+                }
                 case "updateFieldOrder":{
                     $form = new Form();
-                    $types = $form->updateField(Request::post("id"),Request::post("order"));
+                    $types = $form->updateField(Request::post("id"),Request::post("name"),Request::post("order"));
                     Response::soap("success","UPDATE_FIELD");
                     break;
                 }

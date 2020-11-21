@@ -109,8 +109,6 @@
             $("#file").html(Object.values(data.Files).map(function(value){
                 return `<option value="${value.id}|${value.personel}" ${value.id==id||value.id==dosya?"selected":""}>${value.name}</option>`
             }).join('')).trigger("change");
-
-        
         })
         $("#file").change(function(){
             var id = this.value.split('|');

@@ -210,6 +210,8 @@
                 personel:$("#personel").val(),
                 requiredForms:$("#requiredForms").val()
             },function(json){
+                
+            pinfo()
                 tumformlar = json.data
                 Notify.successText("Başarılı!","Sistemde yeni bir dosya açıldı");
                 p();
