@@ -19,6 +19,7 @@
         if(!isset($_SESSION["user"]))
         {
             SendStatus(404);
+            exit;
         };
     }
     function useOnlyAdminAuthGET()
@@ -36,18 +37,26 @@
         if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
         {
             SendStatus(404);
+            exit;
         };
     }
 
     $main = new class extends Controller{
         public function viewFiles()
         {
-            useOnlyAdminAuthGET();
+            useAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Response::view("dosya/files",(object)[
+                "userPanelLink"=>$userPanelLink
+            ]);
+        }
+        public function viewForms()
+        {
+            useAuthGET();
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("form/tumu",(object)[
                 "userPanelLink"=>$userPanelLink
             ]);
         }
@@ -56,17 +65,12 @@
             useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Response::view("dosya/addform",(object)[
                 "userPanelLink"=>$userPanelLink
             ]);
         }
         public function post()
         {
-            useOnlyAdminPOST();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             useAuthPOST();
             global $workspaceDir;
             $form = new Form();
@@ -76,16 +80,19 @@
             switch(Request::post("action"))
             {
                 case "tumpersoneller":{
+                    useOnlyAdminPOST();
                     $allAcente = $acente->getAcentePersonelAll(Request::post("id"));
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
                 case "tumacenteler":{
+                    useOnlyAdminPOST();
                     $allAcente = $acente->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "tumformislemleri":{
+                    useOnlyAdminPOST();
                     $reqforms = $form->getRequiredForms();
                     foreach($reqforms as $tforms)
                     {
@@ -95,22 +102,27 @@
                     break;
                 }
                 case "tumformlar":{
+                    useOnlyAdminPOST();
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
                     break;
                 }
                 case "AddForm":{
+                    useOnlyAdminPOST();
                     $form = new Form();
                     $fields = $form->getFields(Request::post("typeid"));
                     $fileid = Request::post("fileid");
+                    $requireid = Request::post("requireid");
                     $values = [];
                     foreach($fields as $field)
                     {
                         $value = Request::post($field->id);
                         $values[$field->id] = $value;
                     };
+                    
                     $id = $form->saveForm(
                         $fileid,
+                        $requireid,
                         Request::post("typeid"),
                         Request::post("userid"),
                         $values
@@ -128,6 +140,7 @@
                     break;
                 }
                 case "saveFile":{
+                    useOnlyAdminPOST();
                     $file->createFile(
                         Request::post("name"),
                         Request::post("requiredForms"),
@@ -148,15 +161,21 @@
                     break;
                 }
                 case "changeFile":{
+                    useOnlyAdminPOST();
                     Response::soap("success","CHANGED_FILE");
                     break;
                 }
                 case "deleteFile":{
+                    useOnlyAdminPOST();
                     Response::soap("success","DELETED_FILE");
                     break;
                 }
                 case "getFiles":{
-                    $kle = $file->getAllFiles();
+                    if($_SESSION["role"] == "admin"){
+                        $kle = $file->getAllFiles();
+                    }else{
+                        $kle = $file->getAllFilesForUser($_SESSION["userid"]);
+                    }
                     $types = $form->getAllType();
                     $formtype = [];
                     $formlar = [];
@@ -178,12 +197,13 @@
                         $acenteler[$filec->acente] = $acente->getAcente($filec->acente);
                         $personeller[$filec->personel] = $users->getPersonel($filec->personel)[0];
                         $fake = $file->getStatus($filec->id);
+                        if(!isset($fakes[$filec->id])) $fakes[$filec->id] = [];
                         foreach($fake as $name => $k)
                         {
-                            if(!isset($fakes[$name])) $fakes[$name] = [];
+                            if(!isset($fakes[$filec->id][$name])) $fakes[$name] = [];
                             foreach($k as $kname => $t)
                             {
-                                $fakes[$name][$kname] = $t;
+                                $fakes[$filec->id][$name][$kname] = $t;
                             };
                         };
                     };

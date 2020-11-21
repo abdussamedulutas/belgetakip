@@ -17,6 +17,7 @@
         if(!isset($_SESSION["user"]))
         {
             SendStatus(404);
+            exit;
         };
     }
     function useOnlyAdminAuthGET()
@@ -34,6 +35,7 @@
         if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
         {
             SendStatus(404);
+            exit;
         };
     }
 
@@ -45,8 +47,6 @@
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $form = new Form();
             $types = $form->getAllType();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Response::view("form/formayarlari",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "types"=>$types
@@ -57,8 +57,6 @@
             useOnlyAdminAuthGET();
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Response::view("form/gerekenformlar",(object)[
                 "userPanelLink"=>$userPanelLink
             ]);
@@ -71,13 +69,12 @@
             $form = new Form();
             $data = $form->getForm($id);
 
-            if(){
-
-            };
+            if(count($data["FormData"]) == 0){
+                SendStatus(404);
+                exit;
+            }
 
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Response::view("form/goster",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "form" =>$data
@@ -86,8 +83,6 @@
         public function post()
         {
             useOnlyAdminPOST();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             global $workspaceDir;
             switch(Request::post("action"))
             {

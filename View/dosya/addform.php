@@ -75,7 +75,8 @@
         data.append("action","AddForm");
         data.append("language",navigator.language);
         data.append("fileid",$("#file").val().split('|')[0]);
-        data.append("typeid",$("#formtype").val());
+        data.append("typeid",$("#formtype").val().split('|')[0]);
+        data.append("requireid",$("#formtype").val().split('|')[1]);
         data.append("userid",$("#personel").val());
         Server._ajax(window.location.pathname,data,function(ans) {
             if(ans.status == "success")
@@ -90,8 +91,12 @@
             Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
         });
     };
+    var dosya = new URL(window.location).searchParams.get("dosya");
+    var form = new URL(window.location).searchParams.get("form");
+
     $(function(){
         var id = new URL(window.location).searchParams.get("id");
+
         Server.request({
             action:"getFiles"
         },function(json){
@@ -102,8 +107,10 @@
             });
             data.Files = t;
             $("#file").html(Object.values(data.Files).map(function(value){
-                return `<option value="${value.id}|${value.personel}" ${value.id==id?"selected":""}>${value.name}</option>`
+                return `<option value="${value.id}|${value.personel}" ${value.id==id||value.id==dosya?"selected":""}>${value.name}</option>`
             }).join('')).trigger("change");
+
+        
         })
         $("#file").change(function(){
             var id = this.value.split('|');
@@ -114,12 +121,12 @@
                 var gerekliFormlar = data.RequiredForms[ids].required.split(',')
 
                 gerekliFormlar.map(function(formid){
-                    var form = data.Processor[ids][formid];
+                    var form = data.Processor[id[0]][ids][formid];
                     if(!form.status)
                     {
-                        forms.push( `<option value="${form.id}">[${file}] dosyası içerisinde [${gerekliIsim}] için gerekli [${form.count}] formu eksik</option>`)
+                        forms.push( `<option value="${formid}|${ids}" ${formid==form.id?"selected":""}>[${file}] dosyası içerisinde [${gerekliIsim}] için gerekli [${form.count}] formu eksik</option>`)
                     }else{
-                        forms.push( `<option value="${form.id}" disabled>[${file}] dosyası içerisinde [${gerekliIsim}] için [${form.count}] formu</option>`)
+                        forms.push( `<option value="${formid}|${ids}" disabled>[${file}] dosyası içerisinde [${gerekliIsim}] için [${form.count}] formu</option>`)
                     }
                 })
             });
@@ -129,7 +136,7 @@
         $("#formtype").change(function(){
             Server.request({
                 action:"getFields",
-                id:this.value
+                id:this.value.split('|')[0]
             },function(json){
                 var last;
                 $("#formpanel").DataTable().clear()
@@ -152,6 +159,7 @@
                 case "date": return `<input type="date" class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
             }
         };
+        
     });
     </script>
 	<?php include(__DIR__."/../partials/footer.php"); ?>

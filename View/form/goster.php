@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Form Ayarları"?></title>
+	<title><?=$settings->get("appname") . " | Form Görüntüle"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -19,7 +19,11 @@
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
 		<div class="page-content">
+		<?php if($_SESSION["role"]=="admin"): ?>
 			<?php include(__DIR__."/../partials/sidebar.php");?>
+            <?php elseif($_SESSION["role"]=="personel"): ?>
+			<?php include(__DIR__."/../partials/personel-sidebar.php");?>
+            <?php endif;?>	
 			<div class="content-wrapper">
 				<div class="row">
 					<div class="col-md-6 col-md-push-3">

@@ -29,7 +29,7 @@
 							<ul class="navigation navigation-main navigation-accordion">
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/bildirimler/son"?>"><i class="icon-history"></i> <span>Son İşlemler</span></a></li>
-								<li><a href="<?="$data->userPanelLink/form/list"?>"><i class="icon-users4"></i> <span>Tüm Formlar</span></a></li>
+								<li><a href="<?="$data->userPanelLink/form/tumu"?>"><i class="icon-users4"></i> <span>Tüm Formlar</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
 							</ul>
 						</div>

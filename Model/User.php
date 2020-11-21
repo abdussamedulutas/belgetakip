@@ -22,7 +22,6 @@
             $user->bindParam("password",$password);
             $user->execute();
             $user = $user->fetch(PDO::FETCH_OBJ);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $user;
         }
         public function varifyAdmin($email,$password)
@@ -57,7 +56,6 @@
             $pre->bindParam("password", $password);
             $pre->bindParam("birthday", $birthday);
             $pre->bindParam("acente_id", $acente_id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function createKullanici($name,$surname,$email,$image,$password,$birthday,$acente_id)
@@ -85,7 +83,6 @@
             $pre->bindParam("password", $password);
             $pre->bindParam("birthday", $birthday);
             $pre->bindParam("acente_id", $acente_id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function isUsableMail($email)
@@ -94,7 +91,6 @@
             $pre = $db->prepare("SELECT * FROM `user` WHERE email = :email AND deletedate is null LIMIT 1");
             $pre->bindParam("email", $email);
             $pre->execute();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return count($pre->fetchall(PDO::FETCH_OBJ)) != 0;
         }
         public function deletePersonel($id)
@@ -105,7 +101,6 @@
                 WHERE id = UNHEX(:id) AND deletedate is null LIMIT 1;
             ");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute()){
                 return true;
             }else{
@@ -129,7 +124,6 @@
             $pre->bindParam("surname", $surname);
             $pre->bindParam("email", $email);
             $pre->bindParam("image", $image);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute()){
                 return true;
             }else{
@@ -150,7 +144,6 @@
                 acente.name as acente_name
             FROM user INNER JOIN acente ON acente.id = user.acente_id WHERE user.id = UNHEX(:id) AND user.deletedate is null AND acente.deletedate is null LIMIT 1");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);

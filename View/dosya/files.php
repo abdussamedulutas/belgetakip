@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Dosyalar"?></title>
+	<title><?=$settings->get("appname") . " | Dosyalar ve Formlar"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -19,35 +19,67 @@
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
 		<div class="page-content">
+            <?php if($_SESSION["role"]=="admin"): ?>
 			<?php include(__DIR__."/../partials/sidebar.php");?>
+            <?php elseif($_SESSION["role"]=="personel"): ?>
+			<?php include(__DIR__."/../partials/personel-sidebar.php");?>
+            <?php endif;?>
 			<div class="content-wrapper">
 				<div class="row">
-					<div class="panel panel-flat" id="pinpanel">
-						<div class="panel-body">
-							<div class="col-xs-6">
-								<h2 style="margin-top:0">Dosyalar</h2>
-							</div>
-							<div class="col-xs-6 text-right">
-								<button class="btn btn-success" onclick="create()">Yeni Ekle</button>
-							</div>
-							<div class="col-md-12">
-								<table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
-									<thead>
-										<tr>
-											<th>Dosya Kimliği</th>
-											<th>İşlem Adı</th>
-											<th>Acente</th>
-											<th>Acente Personeli</th>
-											<th>Form Adı</th>
-											<th>Durum</th>
-											<th>İşlem</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-						</div>
-					</div>
+					<div class="col-md-12">
+                        <div class="panel panel-flat" id="pinpanel">
+                            <div class="panel-body">
+                                <div class="col-xs-6">
+                                    <h2 style="margin-top:0">Dosyalar</h2>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <?php if($_SESSION["role"]=="admin"): ?><button class="btn btn-success" onclick="create()">Yeni Ekle</button><?php endif;?>
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-striped table-hover datatablepin" id="filepanel">
+                                        <thead>
+                                            <tr>
+                                                <th>Dosya Kimliği</th>
+                                                <th>İşlem Adı</th>
+                                                <th>Acente</th>
+                                                <th>Acente Personeli</th>
+                                                <th>Form Adı</th>
+                                                <th>Durum</th>
+                                                <th>İşlem</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-flat" id="form">
+                            <div class="panel-body">
+                                <div class="col-xs-6">
+                                    <h2 style="margin-top:0">Formlar</h2>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                <?php if($_SESSION["role"]=="admin"): ?><a class="btn btn-success" href="<?="$data->userPanelLink/form/ekle"?>">Yeni Ekle</a><?php endif;?>
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
+                                        <thead>
+                                            <tr>
+                                                <th>Dosya Adı</th>
+                                                <th>İşlem Adı</th>
+                                                <th>Form Adı</th>
+                                                <th>Durum</th>
+                                                <th>İşlem</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -55,8 +87,7 @@
     <script>
     var tumacenteler = false;
     var tumformislemleri = false;
-    var tumformlar = false;
-    var autoCommit = false;
+    var data = null;
     function pinfo()
     {
         var p = block("#pinpanel");
@@ -64,14 +95,15 @@
             Server.request({
                 action:"getFiles"
             },function(json){
+                data = json.data;
                 var lastAdded = null;
-                $("#formpanel").DataTable().clear().draw();
-                var db = $("#formpanel").DataTable().row;
+                $("#filepanel").DataTable().clear().draw();
+                var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
                     var thereis = 0;
                     var thereisnt = 0;
                     file.reqforms.split(',').map(function(formid){
-                        Object.values(json.data.Processor[formid]).map(function(form){
+                        Object.values(json.data.Processor[file.id][formid]).map(function(form){
                             if(form.status){
                                 thereis++;
                             }else{
@@ -86,7 +118,7 @@
                         `${json.data.Personel[file.personel].name}`,
                         `Toplam girilmiş ${thereis} eklendi ve ${thereisnt} form eksik`,
                         thereisnt != 0 ? "Belge Eksik" : "Dosya Hazır",
-                        thereisnt != 0 ? `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/form/ekle?id=${file.id}">Ekle</a>` : ''
+                        `<button class="btn btn-primary" onclick="getForms('${file.id}')">Formlar</button>`
                     ]);
                 };
                 if(lastAdded) lastAdded.draw();
@@ -104,6 +136,36 @@
     $(document).ready(function(){
         pinfo();
     });
+    function getForms(id)
+    {
+        var p = block("#form");
+        setTimeout(function(){
+            $("#formpanel").DataTable().clear().draw();
+            var db = $("#formpanel").DataTable().row;
+            var file = data.Files.filter(function(d){return d.id==id})[0];
+            var thereis = 0;
+            var lastAdded = false;
+            var thereisnt = 0;
+            file.reqforms.split(',').map(function(formid){
+                var red = data.RequiredForms[formid];
+                Object.values(data.Processor[id][formid]).map(function(form){
+                    lastAdded = db.add([
+                        `${file.name}`,
+                        `${red.name}`,
+                        `${form.count}`,
+                        form.status ? `Form Eklendi` : `Eksik Form`,
+                        <?php if($_SESSION["role"]=="admin"): ?>
+                        form.status ? `<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/${form.formid}">Görüntüle</a>` : `<a class="btn btn-danger" href="<?="$data->userPanelLink/form/ekle"?>?dosya=${file.id}&form=${form.id}">Ekle</a>`
+                        <?php elseif($_SESSION["role"]=="personel"): ?>
+                        form.status ? `<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/${form.formid}">Görüntüle</a>` : ``
+                        <?php endif;?>
+                    ]);
+                })
+            })
+            if(lastAdded) lastAdded.draw();
+            p();
+        },1000)
+    }
     $(function(){
         Server.request({
             action:"tumacenteler"

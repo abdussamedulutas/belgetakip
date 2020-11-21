@@ -3,8 +3,6 @@
     $main = new class extends Controller{
         public function postLogin()
         {
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             Request::validation("POST","email",[
                 "require"=>true,
                 "regex"=>"/^.+@.+\..+$/"
@@ -47,8 +45,6 @@
         }
         public function logout()
         {
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             (new User())->Logout();
             Response::tempRedirect("$workspaceDir/login");
         }

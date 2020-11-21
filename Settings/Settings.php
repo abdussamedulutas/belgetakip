@@ -137,3 +137,13 @@
         "method" => "get",
         "name" => "form::viewForm"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/tumu$/",
+        "method" => "get",
+        "name" => "file::viewForms"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/tumu$/",
+        "method" => "post",
+        "name" => "file::post"
+    ]);

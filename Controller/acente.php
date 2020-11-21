@@ -18,6 +18,7 @@
         if(!isset($_SESSION["user"]))
         {
             SendStatus(404);
+            exit;
         };
     }
     function useOnlyAdminAuthGET()
@@ -35,6 +36,7 @@
         if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
         {
             SendStatus(404);
+            exit;
         };
     }
 
@@ -73,9 +75,7 @@
                 "require"=>true,
                 "regex"=>"/^.{6,31}$/"
             ],"Acente ismi boş veya geçersiz");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
-            $acente = new Acente();
+                                    $acente = new Acente();
             if($acente->isUsableName(Request::post("name")))
             {
                 if($id = $acente->createAcente(Request::post("name")))
@@ -102,8 +102,6 @@
                 exit;
             };
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             $cente = new Acente();
             $tumPersoneller = $cente->getAcentePersonelAll($id);  
             Response::view("acente/duzenle",(object)[
@@ -115,8 +113,6 @@
         public function post()
         {
             useOnlyAdminPOST();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))
             {
                 case "deleteAcente":{
@@ -134,8 +130,6 @@
         public function edit()
         {
             useOnlyAdminPOST();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
-            Flog("WITH POST DATA:".var_export($_POST,true));
             switch(Request::post("action"))
             {
                 case "changeAcenteName":{

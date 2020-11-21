@@ -8,7 +8,6 @@
             $pre = $db->prepare("INSERT INTO form_types SET name = :name,id = UNHEX(:id), createdate = NOW()");
             $pre->bindParam("name", $name);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function updateType($id,$name)
@@ -17,7 +16,6 @@
             $pre = $db->prepare("UPDATE form_types SET name = :name, modifydate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("name", $name);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function deleteType($id)
@@ -25,7 +23,6 @@
             global $db;
             $pre = $db->prepare("UPDATE form_types SET deletedate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function getAllType()
@@ -34,11 +31,9 @@
             $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM form_types WHERE deletedate is null");
             if($pre->execute())
             {
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
                 return $pre->fetchall(PDO::FETCH_OBJ);
             }else{
                 return [];
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true).") : Mysqlerror{".var_export($db->errorInfo(),true)."}");
                 var_dump($db->errorInfo());
             }
         }
@@ -49,11 +44,9 @@
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
                 return $pre->fetchall(PDO::FETCH_OBJ);
             }else{
                 return [];
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true).") : Mysqlerror{".var_export($db->errorInfo(),true)."}");
                 var_dump($db->errorInfo());
             }
         }
@@ -62,7 +55,6 @@
             global $db;
             $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid)");
             $pre->bindParam("formtypeid", $type_id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())
             {
                 $vars = $pre->fetchall(PDO::FETCH_OBJ);
@@ -93,8 +85,7 @@
             $pre->bindParam("text", $text);
             $pre->bindParam("id", $id);
             if(!$pre->execute());
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true)."):".var_export($pre->errorInfo(),true));
-            return true;
+                return true;
         }
         public function updateField($id,$text)
         {
@@ -102,7 +93,6 @@
             $pre = $db->prepare("UPDATE form_fields SET `name` = :text WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function changeFieldType($id,$type)
@@ -111,7 +101,6 @@
             $pre = $db->prepare("UPDATE form_fields SET `type` = :type WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("type", $type);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function deleteField($id)
@@ -119,7 +108,6 @@
             global $db;
             $pre = $db->prepare("UPDATE form_fields SET deletedate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
 
@@ -134,8 +122,7 @@
             $pre->bindParam("text", $text);
             $pre->bindParam("id", $id);
             if(!$pre->execute());
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true)."):".var_export($pre->errorInfo(),true));
-            return true;
+                return true;
         }
         public function updateVariable($id,$text)
         {
@@ -143,7 +130,6 @@
             $pre = $db->prepare("UPDATE form_variables SET `name` = :text WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function deleteVariable($id)
@@ -151,7 +137,6 @@
             global $db;
             $pre = $db->prepare("UPDATE form_variables SET deletedate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function getVariables($field_id)
@@ -159,10 +144,22 @@
             global $db;
             $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM form_variables WHERE deletedate is NULL AND field_id = UNHEX(:field_id)");
             $pre->bindParam("field_id", $field_id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getVariable($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT `name` FROM form_variables WHERE deletedate is NULL AND id = UNHEX(:id)");
+            $pre->bindParam("id", $id);
+            if($pre->execute())
+            {
+                return $pre->fetch(PDO::FETCH_OBJ);
             }else{
                 var_dump($db->errorInfo());
                 exit;
@@ -179,8 +176,7 @@
             $pre->bindParam("text", $name);
             $pre->bindParam("id", $id);
             if(!$pre->execute());
-                Flog(__FUNCTION__."(".var_export(func_get_args(),true)."):".var_export($pre->errorInfo(),true));
-            return true;
+                return true;
         }
         public function updateRequiredFormName($id,$name)
         {
@@ -188,7 +184,6 @@
             $pre = $db->prepare("UPDATE form_require SET `name` = :name WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("name", $name);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function updateRequiredFormList($id,$text)
@@ -197,7 +192,6 @@
             $pre = $db->prepare("UPDATE form_require SET required_forms = :text WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function deleteRequiredForm($id)
@@ -205,14 +199,12 @@
             global $db;
             $pre = $db->prepare("UPDATE form_require SET deletedate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function getRequiredForms()
         {
             global $db;
             $pre = $db->prepare("SELECT HEX(id) as id,`name`,required_forms as 'required' FROM form_require WHERE deletedate is NULL");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
@@ -225,7 +217,6 @@
         {
             global $db;
             $pre = $db->prepare("SELECT HEX(id) as id,`name`,required_forms as 'required' FROM form_require WHERE deletedate is NULL AND id = UNHEX(:id) LIMIT 1");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
@@ -235,16 +226,17 @@
                 exit;
             }
         }
-        public function saveValue($field,$text)
+        public function saveValue($field,$formid,$text)
         {
             global $db;
             $id = getRandom();
             $pre = $db->prepare("INSERT INTO `values`
                 SET `field` = UNHEX(:field),
                     `text` = :text,
-                    `id` = :id
+                    `id` = :id,
+                    formid = UNHEX(:formid)
             ");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre->bindParam("formid",$formid);
             $pre->bindParam("field",$field);
             $pre->bindParam("text",$text);
             $pre->bindParam("id",$id);
@@ -264,7 +256,6 @@
                 SET `text` = :text
                 WHERE `id` = :id LIMIT 1
             ");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("text",$text);
             $pre->bindParam("id",$id);
             if($pre->execute())
@@ -280,7 +271,6 @@
             global $db;
             $id = getRandom();
             $pre = $db->prepare("DELETE FROM `values` WHERE `id` = :id LIMIT 1");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("text",$text);
             $pre->bindParam("id",$id);
             if($pre->execute())
@@ -291,27 +281,43 @@
                 exit;
             }
         }
-        public function saveForm($file_id,$type_id,$user,$value)
+        public function getValue($field,$form)
+        {
+            global $db;
+            $id = getRandom();
+            $pre = $db->prepare("SELECT `text` FROM  `values` WHERE field = UNHEX(:field) AND formid = UNHEX(:formid) LIMIT 1");
+            $pre->bindParam("field",$field);
+            $pre->bindParam("formid",$form);
+            if($pre->execute())
+            {
+                return $pre->fetch(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function saveForm($file_id,$required_id,$type_id,$user,$value)
         {
             global $db;
             $id = getRandom();
             $pre = $db->prepare("INSERT INTO forms
                 SET `type_id` = UNHEX(:type_id),
+                    `require_id` = UNHEX(:required_id),
                     `file_id` = UNHEX(:file_id),
                     `user` = UNHEX(:user),
                     `createdate`  = NOW(),
                     `modifydate` = NOW(),
                     `id` = UNHEX(:id)
             ");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("file_id",$file_id);
             $pre->bindParam("type_id",$type_id);
+            $pre->bindParam("required_id",$required_id);
             $pre->bindParam("user",$user);
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
                 foreach($value as $fieldid => $value)
-                    $this->saveValue($fieldid,$value);
+                    $this->saveValue($fieldid,$id,$value);
                 return $id;
             }else{
                 var_dump($db->errorInfo());
@@ -321,16 +327,22 @@
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT type_id,user FROM forms WHERE `id` = UNHEX(:id) LIMIT 1");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            $pre = $db->prepare("SELECT type_id,user,require_id FROM forms WHERE `id` = UNHEX(:id) LIMIT 1");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);
+            if($form == false){
+                return [
+                    "FormData" => [],
+                    "FormSettings" => []
+                ];
+            };
             $pre = $db->prepare("SELECT `name` FROM form_types WHERE `id` = :id LIMIT 1");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("id",$form->type_id);
             $pre->execute();
             $typeform = $pre->fetch(PDO::FETCH_OBJ);
+
+
             $pre = $db->prepare("SELECT
                 HEX(`values`.id) as valueid,
                 HEX(`form_fields`.id) as field,
@@ -338,13 +350,26 @@
                 `type`,
                 `values`.text
             FROM form_fields
-            INNER JOIN `values` ON `values`.field = form_fields.id
+            INNER JOIN `values` ON `values`.field = form_fields.id AND `values`.formid = UNHEX(:formid)
             WHERE `form_type_id` = :form_type_id");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre->bindParam("form_type_id",$form->type_id);
+            $pre->bindParam("formid",$id);
             $pre->execute();
+            $kle = $pre->fetchall(PDO::FETCH_OBJ);
+
+
+            foreach($kle as $field)
+            {
+                if($field->type == "select")
+                {
+                    
+                    $variableId = $this->getValue($field->field,$id);
+                    $value = $this->getVariable($variableId->text);
+                    $field->text = $value->name;
+                };
+            };
             return [
-                "FormData" => $pre->fetchall(PDO::FETCH_OBJ),
+                "FormData" => $kle,
                 "FormSettings" => $typeform
             ];
         }

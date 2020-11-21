@@ -5,7 +5,6 @@
         {
             global $db;
             $id = getRandom();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre = $db->prepare("INSERT INTO `file` SET
                 `id` = UNHEX(:id),
                 `name` = :name,
@@ -27,7 +26,6 @@
         public function updateFile($name,$forms,$acente,$personel)
         {
             global $db;
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $id = getRandom();
             $pre = $db->prepare("INSERT INTO `file` SET
                 id = UNHEX(:id),
@@ -52,7 +50,6 @@
                 WHERE id = UNHEX(:id) LIMIT 1;
             ");
             $pre->bindParam("id", $id);
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             return $pre->execute();
         }
         public function getAllFiles()
@@ -65,7 +62,25 @@
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
                 lastinsetdate FROM `file` WHERE deletedate is null");
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
+            if($pre->execute())
+            {
+                return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getAllFilesForUser($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT
+                HEX(id) as 'id',
+                `name` as 'name',
+                required_forms as 'reqforms',
+                HEX(acente_id) as 'acente',
+                hex(personel_id) as 'personel',
+                lastinsetdate FROM `file` WHERE deletedate is null AND personel_id = :user");
+            $pre->bindParam("user",$id);
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
@@ -84,31 +99,33 @@
             $file = $pre->fetch(PDO::FETCH_OBJ);
             $formsrequires1 = explode(",",$file->required_forms);
             $shown = [];
-            foreach($formsrequires1 as $fileid)
+            foreach($formsrequires1 as $required_id)
             {
                 $pre = $db->prepare("SELECT HEX(id) as id,name,required_forms FROM form_require WHERE id = UNHEX(:id) AND deletedate is null");
-                $pre->bindParam("id",$fileid);
+                $pre->bindParam("id",$required_id);
                 $pre->execute();
                 $require = $pre->fetch(PDO::FETCH_OBJ);
                 $formtypes = explode(",",$require->required_forms);
                 $shown[$require->id] = [];
-                foreach($formtypes as $formtype)
+                foreach($formtypes as $formtype_id)
                 {
                     $pre1 = $db->prepare("SELECT HEX(id) as id,name as count FROM form_types WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
-                    $pre1->bindParam("id",$formtype);
+                    $pre1->bindParam("id",$formtype_id);
                     $pre1->execute();
                     $rec = $pre1->fetch(PDO::FETCH_OBJ);
-                    $pre2 = $db->prepare("SELECT COUNT(*) as count FROM forms WHERE type_id = UNHEX(:type_id) AND `file_id` = UNHEX(:file_id) AND deletedate is null");
-                    $pre2->bindParam("type_id",$formtype);
-                    $pre2->bindParam("file_id",$fileid);
+                    $pre2 = $db->prepare("SELECT HEX(id) as id FROM forms WHERE type_id = UNHEX(:type_id) AND `file_id` = UNHEX(:file_id) and `require_id` = UNHEX(:require_id) AND deletedate is null");
+                    $pre2->bindParam("type_id",$formtype_id);
+                    $pre2->bindParam("file_id",$id);
+                    $pre2->bindParam("require_id",$required_id);
                     $pre2->execute();
                     $req = $pre2->fetch(PDO::FETCH_OBJ);
-                    if($req->count == 0)
+                    if($req != false)
                     {
-                        $rec->status = false;
+                        $rec->status = true;
+                        $rec->formid = $req->id;
                         $shown[$require->id][$rec->id] = $rec;
                     }else{
-                        $rec->status = true;
+                        $rec->status = false;
                         $shown[$require->id][$rec->id] = $rec;
                     };
                 };

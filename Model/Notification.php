@@ -10,7 +10,6 @@
         {
             global $db;
             $id = getRandom();
-            Flog(__FUNCTION__."(".var_export(func_get_args(),true).")");
             $pre = $db->prepare("INSERT INTO `notification` SET
                 `id` = UNHEX(:id),
                 `islem` = :islem,

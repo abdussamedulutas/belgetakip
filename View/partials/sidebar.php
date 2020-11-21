@@ -42,8 +42,7 @@
 								<li>
 									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>
-										<li><a href="<?="$data->userPanelLink/form/list"?>">Tüm Formlar</a></li>
-										<li><a href="<?="$data->userPanelLink/form/eksik"?>">Eksik Formlar</a></li>
+										<li><a href="<?="$data->userPanelLink/form/tumu"?>">Tüm Formlar</a></li>
 										<li><a href="<?="$data->userPanelLink/form/ayarlar"?>">Form Ayarları</a></li>
 										<li><a href="<?="$data->userPanelLink/form/gerekenler"?>">İşlemler için gerekli Formlar</a></li>
 									</ul>
