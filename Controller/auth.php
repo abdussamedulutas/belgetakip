@@ -3,6 +3,7 @@
     $main = new class extends Controller{
         public function postLogin()
         {
+            global $workspaceDir;
             Request::validation("POST","email",[
                 "require"=>true,
                 "regex"=>"/^.+@.+\..+$/"
@@ -18,7 +19,10 @@
                 $_SESSION["user"] = Request::post("email");
                 $_SESSION["role"] = "admin";
                 $_SESSION["name"] = "admin";
-                Response::soap("success","login",["admin"]);
+                $safe = safeName($_SESSION["name"]);
+                Response::soap("success","login",[
+                    "newURL"=>"$workspaceDir/$safe/panel"
+                ]);
             }else if($user = $User->varifyUser(Request::post("email"),Request::post("password"))){
                 $_SESSION["user"] = $user->email;
                 $_SESSION["name"] = $user->name;
@@ -26,7 +30,10 @@
                 $_SESSION["image"] = $user->image;
                 $_SESSION["role"] = $user->role;
                 $_SESSION["userid"] = $user->id;
-                Response::soap("success","login",["user"]);
+                $safe = safeName($_SESSION["name"]);
+                Response::soap("success","login",[
+                    "newURL"=>"$workspaceDir/$safe/panel"
+                ]);
             }else{
                 sleep(3);
                 Response::soap("fail","NOUSER",[
@@ -36,6 +43,7 @@
         }
         public function getView()
         {
+            global $workspaceDir;
             if(isset($_SESSION["user"])){
                 $safe = safeName($_SESSION["name"]);
                 Response::tempRedirect("$workspaceDir/$safe/panel");
@@ -45,6 +53,7 @@
         }
         public function logout()
         {
+            global $workspaceDir;
             (new User())->Logout();
             Response::tempRedirect("$workspaceDir/login");
         }

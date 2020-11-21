@@ -130,7 +130,7 @@ Server.Login = function(form)
             setTimeout(function(){
                 Notify.successText("Kullanıcı Hesabı","Oturum Açıldı<br>Yönlendiriliyorsunuz...",progress);
                 setTimeout(function(){
-                    window.location = '/'
+                    window.location = ans.data.newURL;
                 },500)
             },1000);
         }else if(ans.status == "fail"){
@@ -471,12 +471,15 @@ $.extend($.fn.dataTable.defaults, {
 });
 function reinitialize()
 {
-    $(".datatablepin:not(.inited)").DataTable({
-        colReorder: true,
-        fixedHeader: {
-            header: true,
-            footer: true
-        }
+    $(".datatablepin:not(.inited)").each(function(){
+        $(this).DataTable({
+            colReorder: true,
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            paginate:!$(this).hasClass("no-paginate")
+        });
     });
     $('.pickadate:not(.inited)').pickadate({
         monthsFull: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],

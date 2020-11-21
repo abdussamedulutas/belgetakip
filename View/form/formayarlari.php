@@ -56,9 +56,10 @@
 								<button class="btn btn-danger" id="btn_createfield">Alan Ekle</button>
 							</div>
 							<div class="col-md-12">
-								<table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
+								<table class="table table-bordered table-striped table-hover datatablepin no-paginate" id="formpanel">
 									<thead>
 										<tr>
+											<th width="1%">Sıra</th>
 											<th>Alan Adı</th>
 											<th>Veri Türü</th>
 											<th>Geçerli değerleri</th>
@@ -89,6 +90,7 @@
 	<script>
 		function pinfo()
 		{
+			pinfo.order = 0;
 			var p = block("#pinpanel");
 			setTimeout(function(){
 				Server.request({
@@ -102,6 +104,7 @@
 					{
 						for(var row of json.data){
 							lastAdded = db.add([
+								`<input type="text" style="width:50px" class="form-control field_order" name="field_order[]" onblur="changeOrder(this)" value="${row.order}">`,
 								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" onblur="changeField(this)" value="${row.name}">`+
 								`<input type="hidden" class="field_id" value="${row.id}">`,
 								`<select class="select2 no-search field_type" onchange="changeType(this);return false">
@@ -131,7 +134,7 @@
 					},100);
 				});
 			},100);
-		}
+		};
 		$(document).ready(function(){
 			pinfo();
 		});
@@ -252,6 +255,20 @@
 					})
 				}
 			});
+		};
+		function changeOrder(ths)
+		{
+			var changedText = ths.value;
+			var tr = $(ths).closest("tr");
+			var id = tr.find(".field_id").val();
+			Server.request({
+				action:"updateFieldOrder",
+				id:id,
+				order:changedText
+			},function(json){
+				pinfo();
+				Notify.successText("Form alanı","Form alanı veri önceliği iletildi");
+			})
 		};
 		function changeType(ths)
 		{

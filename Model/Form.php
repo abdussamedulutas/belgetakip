@@ -87,11 +87,28 @@
             if(!$pre->execute());
                 return true;
         }
-        public function updateField($id,$text)
+        public function updateField($id,$text,$order = -1)
         {
             global $db;
+            if($order == -1)
+            {
+                $pre = $db->prepare("SELECT MAX(other.`order`)+1 as maxid,COUNT(other.`order`) as nullid FROM form_fields
+                INNER JOIN form_fields as other on other.form_type_id = form_fields.form_type_id
+                WHERE form_fields.id = UNHEX(:id) LIMIT 1");
+                $pre->bindParam("id", $id);
+                $pre->execute();
+                $row = $pre->fetch();
+                if($row["maxid"] == null){
+                    $oder = $row["nullid"];
+                }else{
+                    $oder = $row["maxid"];
+                }
+                $order = $maxid;
+            };
+            exit;
             $pre = $db->prepare("UPDATE form_fields SET `name` = :text WHERE id = UNHEX(:id) LIMIT 1");
             $pre->bindParam("text", $text);
+            $pre->bindParam("type", "text");
             $pre->bindParam("id", $id);
             return $pre->execute();
         }
