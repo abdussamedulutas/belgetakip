@@ -81,7 +81,7 @@
             {
                 case "tumpersoneller":{
                     useOnlyAdminPOST();
-                    $allAcente = $acente->getAcentePersonelAll(Request::post("id"));
+                    $allAcente = $acente->getAcentePersonelAll();
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }

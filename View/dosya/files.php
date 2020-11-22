@@ -86,6 +86,7 @@
 	</div>
     <script>
     var tumacenteler = false;
+    var tumpersoneller = false;
     var tumformislemleri = false;
     var data = null;
     function pinfo()
@@ -116,7 +117,7 @@
                         `${file.name}`,
                         `${json.data.Acente[file.acente].name}`,
                         `${json.data.Personel[file.personel].name}`,
-                        `Toplam girilmiş ${thereis} eklendi ve ${thereisnt} form eksik`,
+                        `${thereis} form eklendi<br>${thereisnt} form eksik`,
                         thereisnt != 0 ? "Belge Eksik" : "Dosya Hazır",
                         `<button class="btn btn-primary" onclick="getForms('${file.id}')">Formlar</button>`
                     ]);
@@ -155,7 +156,7 @@
                         `${form.count}`,
                         form.status ? `Form Eklendi` : `Eksik Form`,
                         <?php if($_SESSION["role"]=="admin"): ?>
-                        form.status ? `<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/${form.formid}">Görüntüle</a>` : `<a class="btn btn-danger" href="<?="$data->userPanelLink/form/ekle"?>?dosya=${file.id}&form=${form.id}">Ekle</a>`
+                        form.status ? `<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/${form.formid}">Görüntüle</a>&nbsp;<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/duzenle/${form.formid}">Düzenle</a>` : `<a class="btn btn-danger" href="<?="$data->userPanelLink/form/ekle"?>?dosya=${file.id}&form=${form.id}">Ekle</a>`
                         <?php elseif($_SESSION["role"]=="personel"): ?>
                         form.status ? `<a class="btn btn-success" href="<?=$data->userPanelLink?>/form/${form.formid}">Görüntüle</a>` : ``
                         <?php endif;?>
@@ -177,26 +178,10 @@
         },function(json){
             tumformlar = json.data
         })
-       /* Server.request({
-            action:"    "
+        Server.request({
+            action:"tumpersoneller"
         },function(json){
-            tumformlar = json.data
-        })*/
-        $("#acente").change(function(){
-            if(autoCommit) return;
-            if(!tumacenteler) return;
-            var id = $(this).val();
-            var p = block(".modal-body");
-            Server.request({
-                action:"tumpersoneller",
-                id:id
-            },function(json){
-                $("#personel").html(json.data.map(function(pers){
-                    return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
-                }));
-                $("#personel").trigger("change");
-                p();
-            })
+            tumpersoneller = json.data;
         })
         $(".actionbtn").click(function(){
             var id = $("#acente").val();
@@ -233,12 +218,19 @@
         })
         autoCommit = true;
         if(!tumacenteler) return;
+
         $("#acente").html(
-        `<option>Acente Seç</option>`+
         tumacenteler.map(function(acente){
             return `<option value="${acente.id}">${acente.name}</option>`
         }));
         $("#acente").trigger("change");
+
+
+        $("#personel").html(tumpersoneller.map(function(pers){
+            return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
+        }));
+        $("#personel").trigger("change");
+
         $("#add-file").modal("show");
         autoCommit = false;
     }

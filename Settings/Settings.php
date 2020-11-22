@@ -42,46 +42,6 @@
         "method" => "get",
         "name" => "main"
     ]);
-
-    
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/yeni$/",
-        "method" => "get",
-        "name" => "acente::yeniFormu"
-    ]);
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/yeni$/",
-        "method" => "post",
-        "name" => "acente::yeni"
-    ]);
-
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/([^\/]{32})$/",
-        "method" => "get",
-        "name" => "acente::editForm"
-    ]);
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/([^\/]{32})$/",
-        "method" => "post",
-        "name" => "acente::edit"
-    ]);
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/([^\/]{32})$/",
-        "method" => "get",
-        "name" => "acente::editForm"
-    ]);
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/list$/",
-        "method" => "get",
-        "name" => "acente::showList"
-    ]);
-    RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/acente\/list$/",
-        "method" => "post",
-        "name" => "acente::post"
-    ]);
-
-    
     RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/list$/",
         "method" => "get",
@@ -138,6 +98,11 @@
         "name" => "form::viewForm"
     ]);
     RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/([^\/]{32})$/",
+        "method" => "post",
+        "name" => "form::post"
+    ]);
+    RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/tumu$/",
         "method" => "get",
         "name" => "file::viewForms"
@@ -146,4 +111,36 @@
         "url" => "/^{rootPath}([^\/]+)\/form\/tumu$/",
         "method" => "post",
         "name" => "file::post"
+    ]);
+
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/acenteler$/",
+        "method" => "get",
+        "name" => "acente::viewAcente"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/acenteler$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);
+
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/personeller$/",
+        "method" => "get",
+        "name" => "acente::viewPersonel"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/personeller$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/duzenle\/([^\/]{32})$/",
+        "method" => "get",
+        "name" => "form::editForm"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/form\/duzenle\/([^\/]{32})$/",
+        "method" => "post",
+        "name" => "form::post"
     ]);

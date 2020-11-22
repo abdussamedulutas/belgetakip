@@ -40,7 +40,7 @@
                 exit;
             }
         }
-        public function getAcentePersonelAll($acente)
+        public function getAcentePersonelAll()
         {
             global $db;
             $pre = $db->prepare("SELECT
@@ -49,13 +49,10 @@
                     `user`.surname as surname,
                     `user`.email as email,
                     HEX(`user`.acente_id) as acente_id,
-                    `user`.image as image,
-                    acente.name as acente_name
+                    `user`.image as image
                 FROM `user`
-                INNER JOIN acente ON `user`.acente_id = acente.id
-                WHERE `user`.acente_id = UNHEX(:id) AND `user`.role = 'personel' AND acente.deletedate is NULL AND `user`.deletedate is NULL
+                WHERE `user`.role = 'personel' AND `user`.deletedate is NULL
             ");
-            $pre->bindParam("id", $acente);
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
@@ -80,7 +77,6 @@
                 FROM `acente`
                 WHERE acente.deletedate is NULL
             ");
-            $pre->bindParam("id", $id);
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
@@ -99,7 +95,7 @@
         public function isExistsName($name)
         {
             global $db;
-            $pre = $db->prepare("SELECT * FROM acente WHERE `name` = :name LIMIT 1");
+            $pre = $db->prepare("SELECT * FROM acente WHERE `name` = :name AND deletedate is null LIMIT 1");
             $pre->bindParam("name", $name);
             $pre->execute();
             return count($pre->fetchall(PDO::FETCH_OBJ)) != 0;

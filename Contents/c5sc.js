@@ -478,7 +478,9 @@ function reinitialize()
                 header: true,
                 footer: true
             },
-            paginate:!$(this).hasClass("no-paginate")
+            paginate:!$(this).hasClass("no-paginate"),
+            searching:!$(this).hasClass("no-searching"),
+            ordering: !$(this).hasClass("no-order")
         });
     });
     $('.pickadate:not(.inited)').pickadate({

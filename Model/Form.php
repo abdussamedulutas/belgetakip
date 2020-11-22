@@ -273,19 +273,21 @@
                 exit;
             }
         }
-        public function updateValue($id,$text)
+        public function updateValue($field,$formid,$text)
         {
             global $db;
-            $id = getRandom();
             $pre = $db->prepare("UPDATE `values`
                 SET `text` = :text
-                WHERE `id` = :id LIMIT 1
+                WHERE
+                    `field` = UNHEX(:field) AND
+                    formid = UNHEX(:formid)
             ");
+            $pre->bindParam("formid",$formid);
+            $pre->bindParam("field",$field);
             $pre->bindParam("text",$text);
-            $pre->bindParam("id",$id);
             if($pre->execute())
             {
-                return $id;
+                return;
             }else{
                 var_dump($db->errorInfo());
                 exit;
@@ -349,10 +351,23 @@
                 exit;
             }
         }
+        public function removeForm($id)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE `forms` SET deletedate = NOW() WHERE `id` = UNHEX(:id) LIMIT 1");
+            $pre->bindParam("id",$id);
+            if($pre->execute())
+            {
+                return true;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT type_id,user,require_id FROM forms WHERE `id` = UNHEX(:id) LIMIT 1");
+            $pre = $db->prepare("SELECT type_id,user,require_id FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);
@@ -362,7 +377,7 @@
                     "FormSettings" => []
                 ];
             };
-            $pre = $db->prepare("SELECT `name` FROM form_types WHERE `id` = :id LIMIT 1");
+            $pre = $db->prepare("SELECT `name` FROM form_types WHERE `id` = :id AND deletedate is null LIMIT 1");
             $pre->bindParam("id",$form->type_id);
             $pre->execute();
             $typeform = $pre->fetch(PDO::FETCH_OBJ);
@@ -376,7 +391,7 @@
                 `values`.text
             FROM form_fields
             INNER JOIN `values` ON `values`.field = form_fields.id AND `values`.formid = UNHEX(:formid)
-            WHERE `form_type_id` = :form_type_id");
+            WHERE `form_type_id` = :form_type_id AND deletedate is null");
             $pre->bindParam("form_type_id",$form->type_id);
             $pre->bindParam("formid",$id);
             $pre->execute();
@@ -391,11 +406,13 @@
                     $variableId = $this->getValue($field->field,$id);
                     $value = $this->getVariable($variableId->text);
                     $field->text = $value->name;
+                    $field->textid = $variableId->text;
                 };
             };
             return [
                 "FormData" => $kle,
-                "FormSettings" => $typeform
+                "FormSettings" => $typeform,
+                "Form" => $form
             ];
         }
     };

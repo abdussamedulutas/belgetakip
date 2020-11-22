@@ -17,7 +17,7 @@
         public function varifyUser($email,$password)
         {
             global $db;
-            $user = $db->prepare("SELECT * FROM user WHERE email = :email AND password = MD5(:password) LIMIT 1");
+            $user = $db->prepare("SELECT * FROM user WHERE email = :email AND password = MD5(:password) AND deletedate is null LIMIT 1");
             $user->bindParam("email",$email);
             $user->bindParam("password",$password);
             $user->execute();
@@ -31,7 +31,7 @@
             $adminPass = $settings->getSettings("admin.password");
             return $adminMail == $email && $adminPass == md5($password);
         }
-        public function createPersonel($name,$surname,$email,$image,$password,$birthday,$acente_id)
+        public function createPersonel($name,$surname,$email,$image,$password)
         {
             global $db;
             $id = getRandom();
@@ -43,8 +43,6 @@
                 `image` = :image,
                 `role` = 'personel',
                 `password` = MD5(:password),
-                `birthday` = :birthday,
-                `acente_id` = UNHEX(:acente_id),
                 `createdate` = NOW(),
                 `modifydate` = NOW();
             ");
@@ -54,11 +52,9 @@
             $pre->bindParam("email", $email);
             $pre->bindParam("image", $image);
             $pre->bindParam("password", $password);
-            $pre->bindParam("birthday", $birthday);
-            $pre->bindParam("acente_id", $acente_id);
             return $pre->execute();
         }
-        public function createKullanici($name,$surname,$email,$image,$password,$birthday,$acente_id)
+        public function createKullanici($name,$surname,$email,$image,$password)
         {
             global $db;
             $id = getRandom();
@@ -70,8 +66,6 @@
                 `image` = :image,
                 `role` = 'personel',
                 `password` = MD5(:password),
-                `birthday` = :birthday,
-                `acente_id` = UNHEX(:acente_id),
                 `createdate` = NOW(),
                 `modifydate` = NOW();
             ");
@@ -81,7 +75,6 @@
             $pre->bindParam("email", $email);
             $pre->bindParam("image", $image);
             $pre->bindParam("password", $password);
-            $pre->bindParam("birthday", $birthday);
             $pre->bindParam("acente_id", $acente_id);
             return $pre->execute();
         }
@@ -130,6 +123,25 @@
                 echo var_dump([$name,$surname,$email,$image]);
             }
         }
+        public function getPersonelAll()
+        {
+            global $db;
+            $pre = $db->prepare("SELECT
+                HEX(user.id) as id,
+                user.name as name,
+                user.surname as surname,
+                user.image as image,
+                user.email as email
+            FROM user WHERE user.deletedate is null LIMIT 1");
+            $pre->bindParam("id", $id);
+            if($pre->execute())
+            {
+                return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
         public function getPersonel($id)
         {
             global $db;
@@ -137,12 +149,9 @@
                 HEX(user.id) as id,
                 user.name as name,
                 user.surname as surname,
-                user.birthday as birthday,
                 user.image as image,
-                user.email as email,
-                HEX(user.acente_id) as acente_id,
-                acente.name as acente_name
-            FROM user INNER JOIN acente ON acente.id = user.acente_id WHERE user.id = UNHEX(:id) AND user.deletedate is null AND acente.deletedate is null LIMIT 1");
+                user.email as email
+            FROM user WHERE user.id = UNHEX(:id) AND user.deletedate is null LIMIT 1");
             $pre->bindParam("id", $id);
             if($pre->execute())
             {

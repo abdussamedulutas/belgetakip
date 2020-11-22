@@ -41,73 +41,32 @@
     }
 
     $main = new class extends Controller{
-        public function yeniFormu()
+        public function viewAcente()
         {
             useOnlyAdminAuthGET();
             global $workspaceDir;
-            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Response::view("acente/yeni",(object)[
-                "userPanelLink"=>$userPanelLink
-            ]);
-        }
-        public function showList()
-        {
-            useOnlyAdminAuthGET();
-            global $workspaceDir;
-            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+
             $acente = new Acente();
             $acenteler = $acente->getAll();
-            Response::view("acente/liste",(object)[
+
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("acente/acenteler",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "acenteler"=>$acenteler
             ]);
         }
-        public function yeni()
+        public function viewPersonel()
         {
             useOnlyAdminAuthGET();
             global $workspaceDir;
-            if(Request::method() != "POST")
-            {
-                SendStatus(403);
-                exit;
-            };
-            Request::validation("POST","name",[
-                "require"=>true,
-                "regex"=>"/^.{6,31}$/"
-            ],"Acente ismi boş veya geçersiz");
-                                    $acente = new Acente();
-            if($acente->isUsableName(Request::post("name")))
-            {
-                if($id = $acente->createAcente(Request::post("name")))
-                {
-                    Response::soap("success","CREATED_ACENTE",[
-                        "path"=>$workspaceDir."/".username()."/acente/".$id
-                    ]);
-                }else{
-                    SendStatus(500);
-                }
-            }else{
-                Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
-            }
-        }
-        public function editForm()
-        {
-            useOnlyAdminAuthGET();
-            $id = getUrlTokens()[2];
-            global $workspaceDir;
-            $acente = new Acente();
-            $acente = $acente->getAcente($id);
-            if(!isset($acente)){
-                SendStatus(404);
-                exit;
-            };
+
+            $acente = new User();
+            $personeller = $acente->getPersonelAll();
+
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            $cente = new Acente();
-            $tumPersoneller = $cente->getAcentePersonelAll($id);  
-            Response::view("acente/duzenle",(object)[
+            Response::view("acente/personeller",(object)[
                 "userPanelLink"=>$userPanelLink,
-                "acente"=>$acente,
-                "personeller" => $tumPersoneller
+                "personeller"=>$personeller
             ]);
         }
         public function post()
@@ -115,6 +74,22 @@
             useOnlyAdminPOST();
             switch(Request::post("action"))
             {
+                case "getAcenteList":{
+                    $acente = new Acente();
+                    $personeller = $acente->getAll();
+                    Response::soap("success","ALL_ACENTE",$personeller);
+                    break;
+                }
+                case "createAcente":{
+                    $acente = new Acente();
+                    $name = Request::post("name");
+                    if($acente->createAcente($name)){
+                        Response::soap("success","CREATE_ACENTE");
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
                 case "deleteAcente":{
                     $acente = new Acente();
                     $id = Request::post("id");
@@ -125,19 +100,12 @@
                     }
                     break;
                 }
-            }
-        }
-        public function edit()
-        {
-            useOnlyAdminPOST();
-            switch(Request::post("action"))
-            {
                 case "changeAcenteName":{
-                    $id = getUrlTokens()[2];
                     global $workspaceDir;
                     $acente = new Acente();
+                    $id = Request::post("id");
                     $a = $acente->getAcente($id);
-                    if(count($a) == 0){
+                    if(!isset($a)){
                         Response::soap("fail","ACENTE_WRONGID");
                         return;
                     };
@@ -208,15 +176,12 @@
                     break;
                 }
                 case "createPersonel":{
-                    $id = getUrlTokens()[2];
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
                     Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
                     Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
                     Request::validation("POST","password1",["require"=>true],"Parola alanı boş veya geçersiz");
                     Request::validation("POST","password2",["require"=>true],"Parola alanı boş veya geçersiz");
-                    Request::validation("POST","birthday",["require"=>true],"Doğum tarihi alanı boş veya geçersiz");
-                    Request::validation("POST","acente_id",["require"=>true],"Acente alanı boş veya geçersiz");
                     if(Request::post("password1") != Request::post("password2")){
                         return Response::soap("fail","INVALID_FIELD",[
                             "fieldName" => "password2",
@@ -226,7 +191,7 @@
                     $user = new User();
                     if($user->isUsableMail(Request::post("email")))
                     {
-                        return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
+                        return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail Adresi mevcut lütfen başka bir adres deneyiniz"]);
                     };
                     if(Request::file("image")){
                         $newName = Request::acceptFile("image");
@@ -237,9 +202,7 @@
                         Request::post("surname"),
                         Request::post("email"),
                         $newName,
-                        Request::post("password1"),
-                        Request::post("birthday"),
-                        Request::post("acente_id")
+                        Request::post("password1")
                     )){
                         Response::soap("success","PERSONEL_CREATEDPERSONEL");
                     }else{

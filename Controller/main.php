@@ -26,7 +26,7 @@
             if(isset($_SESSION["user"]))
             {
                 $safe = safeName($_SESSION["name"]);
-                Response::tempRedirect("$workspaceDir/$safe/panel");
+                Response::tempRedirect("$workspaceDir/$safe/dosyalar");
             }else Response::tempRedirect("$workspaceDir/login");
         }
     };

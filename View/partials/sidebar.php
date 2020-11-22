@@ -29,22 +29,21 @@
 							<ul class="navigation navigation-main navigation-accordion">
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
-								<li><a href="<?="$data->userPanelLink/bildirimler/son"?>"><i class="icon-history"></i> <span>Son İşlemler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
 								<li><a href="<?="$data->userPanelLink/form/ekle"?>"><i class="icon-file-plus"></i> <span>Form Ekle</span></a></li>
-								<li>
-									<a href="#"><i class="icon-users4"></i> <span>Acente işlemleri</span></a>
-									<ul>
-										<li><a href="<?="$data->userPanelLink/acente/list"?>">Tüm Acenteler</a></li>
-										<li><a href="<?="$data->userPanelLink/acente/yeni"?>">Yeni Acente</a></li>
-									</ul>
-								</li>
 								<li>
 									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>
 										<li><a href="<?="$data->userPanelLink/form/tumu"?>">Tüm Formlar</a></li>
 										<li><a href="<?="$data->userPanelLink/form/ayarlar"?>">Form Ayarları</a></li>
 										<li><a href="<?="$data->userPanelLink/form/gerekenler"?>">İşlemler için gerekli Formlar</a></li>
+									</ul>
+								</li>
+								<li>
+									<a href="#"><i class="icon-users4"></i> <span>Acente & Personel</span></a>
+									<ul>
+										<li><a href="<?="$data->userPanelLink/acenteler"?>">Acenteler</a></li>
+										<li><a href="<?="$data->userPanelLink/personeller"?>">Personeller</a></li>
 									</ul>
 								</li>
 							</ul>

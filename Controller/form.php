@@ -1,7 +1,7 @@
 <?php
     include("Model/User.php");
     include("Model/Form.php");
-    include("Model/Notification.php");
+    include("Model/Notes.php");
     function useAuthGET()
     {
         global $workspaceDir;
@@ -68,6 +68,32 @@
 
             $form = new Form();
             $data = $form->getForm($id);
+            $note = new Notes();
+            $note = $note->get($id);
+
+            if(count($data["FormData"]) == 0){
+                SendStatus(404);
+                exit;
+            }
+            $user = new User();
+            $personel = $user->getPersonel(bin2hex($data["Form"]->user));
+
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("form/goster",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "formid" =>$id,
+                "form" =>$data,
+                "note" => $note,
+                "personel" => $personel
+            ]);
+        }
+        public function editForm()
+        {
+            global $workspaceDir;
+            $id = getUrlTokens()[2];
+
+            $form = new Form();
+            $data = $form->getForm($id);
 
             if(count($data["FormData"]) == 0){
                 SendStatus(404);
@@ -75,17 +101,71 @@
             }
 
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-            Response::view("form/goster",(object)[
+            Response::view("dosya/editform",(object)[
                 "userPanelLink"=>$userPanelLink,
-                "form" =>$data
+                "id" =>bin2hex($data["Form"]->type_id),
+                "formid" =>$id,
+                "values" => $data["FormData"]
             ]);
         }
         public function post()
         {
-            useOnlyAdminPOST();
             global $workspaceDir;
             switch(Request::post("action"))
             {
+                case "addNote":{
+                    $note = new Notes();
+                    $note->add(
+                        Request::post("formid"),
+                        Request::post("text")
+                    );
+                    Response::soap("success","ADD_NOTE");
+                    break;
+                }
+                case "removeNote":{
+                    $note = new Notes();
+                    $note->delete(
+                        Request::post("id")
+                    );
+                    Response::soap("success","DEL_NOTE");
+                    break;
+                }
+                case "editNote":{
+                    $note = new Notes();
+                    $note->edit(
+                        Request::post("id"),
+                        Request::post("text")
+                    );
+                    Response::soap("success","DEL_NOTE");
+                    break;
+                }
+                case "deleteForm":{
+                    useOnlyAdminPOST();
+                    $form = new Form();
+                    $fields = $form->removeForm(Request::post("id"));
+                    Response::soap("success","FORM_REMOVE",$fields);
+                    break;
+                }
+                case "EditForm":{
+                    useOnlyAdminPOST();
+                    $form = new Form();
+                    $fields = $form->getFields(Request::post("typeid"));
+                    $id = Request::post("id");
+                    $values = [];
+                    foreach($fields as $field)
+                    {
+                        $value = Request::post($field->id);
+                        $form->updateValue($field->id,$id,$value);
+                    };
+                    Response::soap("success","EDIT_FORM");
+                    break;
+                }
+                case "getFields":{
+                    $form = new Form();
+                    $fields = $form->getFields(Request::post("id"));
+                    Response::soap("success","FORMTYPE_ALL",$fields);
+                    break;
+                }
                 case "changeFieldType":{
                     $form = new Form();
                     if($form->changeFieldType(Request::post("id"),Request::post("name")))

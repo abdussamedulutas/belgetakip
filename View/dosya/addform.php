@@ -43,7 +43,7 @@
 					<div class="panel panel-flat">
 						<div class="panel-body" id="pane">
                             <form class="col-md-6 col-md-push-3" id="form">
-                                <table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
+                                <table class="table table-bordered table-striped table-hover datatablepin no-paginate no-searching no-order" id="formpanel">
                                     <thead>
                                         <tr>
                                             <th>İsim</th>
@@ -92,7 +92,7 @@
         });
     };
     var dosya = new URL(window.location).searchParams.get("dosya");
-    var form = new URL(window.location).searchParams.get("form");
+    var form_id = new URL(window.location).searchParams.get("form");
 
     $(function(){
         var id = new URL(window.location).searchParams.get("id");
@@ -122,7 +122,7 @@
                     var form = data.Processor[id[0]][ids][formid];
                     if(!form.status)
                     {
-                        forms.push( `<option value="${formid}|${ids}" ${formid==form.id?"selected":""}>[${file}] dosyası içerisinde [${gerekliIsim}] için gerekli [${form.count}] formu eksik</option>`)
+                        forms.push( `<option value="${formid}|${ids}" ${formid==form_id?"selected":""}>[${file}] dosyası içerisinde [${gerekliIsim}] için gerekli [${form.count}] formu eksik</option>`)
                     }else{
                         forms.push( `<option value="${formid}|${ids}" disabled>[${file}] dosyası içerisinde [${gerekliIsim}] için [${form.count}] formu</option>`)
                     }
