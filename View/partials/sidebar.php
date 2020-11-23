@@ -42,8 +42,10 @@
 								<li>
 									<a href="#"><i class="icon-users4"></i> <span>Acente & Personel</span></a>
 									<ul>
+										<li><a href="<?="$data->userPanelLink/yoneticiler"?>">Yöneticiler</a></li>
 										<li><a href="<?="$data->userPanelLink/acenteler"?>">Acenteler</a></li>
 										<li><a href="<?="$data->userPanelLink/personeller"?>">Personeller</a></li>
+										<li><a href="<?="$data->userPanelLink/kullanicilar"?>">Kullanıcılar</a></li>
 									</ul>
 								</li>
 							</ul>

@@ -4,47 +4,11 @@
     include("Model/Form.php");
     include("Model/Acente.php");
     include("Model/Notification.php");
-    function useAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useAuthPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
-    function useOnlyAdminAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useOnlyAdminPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
 
     $main = new class extends Controller{
         public function viewFiles()
         {
-            useAuthGET();
+            permission("admin|kullanici|personel");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/files",(object)[
@@ -53,7 +17,7 @@
         }
         public function viewForms()
         {
-            useAuthGET();
+            permission("admin|kullanici|personel");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("form/tumu",(object)[
@@ -62,7 +26,7 @@
         }
         public function addForm()
         {
-            useOnlyAdminAuthGET();
+            permission("admin");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/addform",(object)[
@@ -71,7 +35,6 @@
         }
         public function post()
         {
-            useAuthPOST();
             global $workspaceDir;
             $form = new Form();
             $users = new User();
@@ -80,19 +43,19 @@
             switch(Request::post("action"))
             {
                 case "tumpersoneller":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $allAcente = $acente->getAcentePersonelAll();
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
                 case "tumacenteler":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $allAcente = $acente->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "tumformislemleri":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $reqforms = $form->getRequiredForms();
                     foreach($reqforms as $tforms)
                     {
@@ -102,13 +65,13 @@
                     break;
                 }
                 case "tumformlar":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
                     break;
                 }
                 case "AddForm":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $form = new Form();
                     $fields = $form->getFields(Request::post("typeid"));
                     $fileid = Request::post("fileid");
@@ -140,7 +103,7 @@
                     break;
                 }
                 case "saveFile":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     $file->createFile(
                         Request::post("name"),
                         Request::post("requiredForms"),
@@ -161,16 +124,17 @@
                     break;
                 }
                 case "changeFile":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     Response::soap("success","CHANGED_FILE");
                     break;
                 }
                 case "deleteFile":{
-                    useOnlyAdminPOST();
+                    permission( "admin");
                     Response::soap("success","DELETED_FILE");
                     break;
                 }
                 case "getFiles":{
+                    permission("admin|personel|kullanici");
                     if($_SESSION["role"] == "admin"){
                         $kle = $file->getAllFiles();
                     }else{
@@ -195,7 +159,7 @@
                             };
                         };
                         $acenteler[$filec->acente] = $acente->getAcente($filec->acente);
-                        $personeller[$filec->personel] = $users->getPersonel($filec->personel)[0];
+                        $personeller[$filec->personel] = $users->get($filec->personel);
                         $fake = $file->getStatus($filec->id);
                         if(!isset($fakes[$filec->id])) $fakes[$filec->id] = [];
                         foreach($fake as $name => $k)

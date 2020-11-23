@@ -17,21 +17,14 @@
         public function varifyUser($email,$password)
         {
             global $db;
-            $user = $db->prepare("SELECT * FROM user WHERE email = :email AND password = MD5(:password) AND deletedate is null LIMIT 1");
+            $user = $db->prepare("SELECT * FROM `user` WHERE `email` = :email AND `password` = MD5(:password) LIMIT 1");
             $user->bindParam("email",$email);
             $user->bindParam("password",$password);
             $user->execute();
-            $user = $user->fetch(PDO::FETCH_OBJ);
-            return $user;
+            $usert = $user->fetch(PDO::FETCH_OBJ);
+            return $usert;
         }
-        public function varifyAdmin($email,$password)
-        {
-            $settings = new Settings();
-            $adminMail = $settings->getSettings("admin.email");
-            $adminPass = $settings->getSettings("admin.password");
-            return $adminMail == $email && $adminPass == md5($password);
-        }
-        public function createPersonel($name,$surname,$email,$image,$password)
+        public function createUser($name,$surname,$role,$email,$image,$password)
         {
             global $db;
             $id = getRandom();
@@ -41,7 +34,7 @@
                 `surname` = :surname,
                 `email` = :email,
                 `image` = :image,
-                `role` = 'personel',
+                `role` = :role,
                 `password` = MD5(:password),
                 `createdate` = NOW(),
                 `modifydate` = NOW();
@@ -51,32 +44,49 @@
             $pre->bindParam("surname", $surname);
             $pre->bindParam("email", $email);
             $pre->bindParam("image", $image);
+            $pre->bindParam("role", $role);
             $pre->bindParam("password", $password);
             return $pre->execute();
         }
-        public function createKullanici($name,$surname,$email,$image,$password)
+        public function getAll($role)
         {
             global $db;
-            $id = getRandom();
-            $pre = $db->prepare("INSERT INTO `user` SET
-                `id` = UNHEX(:id),
-                `name` = :name,
-                `surname` = :surname,
-                `email` = :email,
-                `image` = :image,
-                `role` = 'personel',
-                `password` = MD5(:password),
-                `createdate` = NOW(),
-                `modifydate` = NOW();
-            ");
+            $pre = $db->prepare("SELECT
+                HEX(user.id) as id,
+                user.name as name,
+                user.surname as surname,
+                user.image as image,
+                user.role as role,
+                user.email as email
+            FROM user WHERE user.deletedate is null AND role = :role");
+            $pre->bindParam("role", $role);
+            if($pre->execute())
+            {
+                return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function get($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT
+                HEX(user.id) as id,
+                user.name as name,
+                user.surname as surname,
+                user.image as image,
+                user.role as role,
+                user.email as email
+            FROM user WHERE user.deletedate is null AND id = UNHEX(:id)");
             $pre->bindParam("id", $id);
-            $pre->bindParam("name", $name);
-            $pre->bindParam("surname", $surname);
-            $pre->bindParam("email", $email);
-            $pre->bindParam("image", $image);
-            $pre->bindParam("password", $password);
-            $pre->bindParam("acente_id", $acente_id);
-            return $pre->execute();
+            if($pre->execute())
+            {
+                return $pre->fetch(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
         }
         public function isUsableMail($email)
         {
@@ -86,7 +96,7 @@
             $pre->execute();
             return count($pre->fetchall(PDO::FETCH_OBJ)) != 0;
         }
-        public function deletePersonel($id)
+        public function delete($id)
         {
             global $db;
             $pre = $db->prepare("UPDATE `user` SET
@@ -100,7 +110,7 @@
                 echo var_dump([$name,$surname,$email,$image]);
             }
         }
-        public function updatePersonel($id,$name,$surname,$email,$image)
+        public function update($id,$name,$surname,$role,$email,$image)
         {
             global $db;
             $pre = $db->prepare("UPDATE `user` SET
@@ -108,7 +118,7 @@
                 `surname` = :surname,
                 `email` = :email,
                 `image` = :image,
-                `role` = 'personel',
+                `role` = :role,
                 `modifydate` = NOW()
                 WHERE id = UNHEX(:id) AND deletedate is null LIMIT 1;
             ");
@@ -117,48 +127,11 @@
             $pre->bindParam("surname", $surname);
             $pre->bindParam("email", $email);
             $pre->bindParam("image", $image);
+            $pre->bindParam("role", $role);
             if($pre->execute()){
                 return true;
             }else{
                 echo var_dump([$name,$surname,$email,$image]);
-            }
-        }
-        public function getPersonelAll()
-        {
-            global $db;
-            $pre = $db->prepare("SELECT
-                HEX(user.id) as id,
-                user.name as name,
-                user.surname as surname,
-                user.image as image,
-                user.email as email
-            FROM user WHERE user.deletedate is null LIMIT 1");
-            $pre->bindParam("id", $id);
-            if($pre->execute())
-            {
-                return $pre->fetchall(PDO::FETCH_OBJ);
-            }else{
-                var_dump($db->errorInfo());
-                exit;
-            }
-        }
-        public function getPersonel($id)
-        {
-            global $db;
-            $pre = $db->prepare("SELECT
-                HEX(user.id) as id,
-                user.name as name,
-                user.surname as surname,
-                user.image as image,
-                user.email as email
-            FROM user WHERE user.id = UNHEX(:id) AND user.deletedate is null LIMIT 1");
-            $pre->bindParam("id", $id);
-            if($pre->execute())
-            {
-                return $pre->fetchall(PDO::FETCH_OBJ);
-            }else{
-                var_dump($db->errorInfo());
-                exit;
             }
         }
     };
@@ -191,4 +164,40 @@
                 break;
             }
         };
+    };
+    function permission($permissions)
+    {
+        global $workspaceDir;
+        $split = explode("|",$permissions);
+        
+        if(isset($_SESSION["user"]))
+        {
+            foreach($split as $role)
+                if($role == $_SESSION["role"])
+                    return;
+            Response::tempRedirect("$workspaceDir/login");
+            exit;
+        }else if(count($split) != 0){
+            if(Request::method() == "POST"){
+                SendStatus(403);
+            }else{
+                SendStatus(403);
+            }
+            exit;
+        }
+    };
+    function ipermission($permissions)
+    {
+        global $workspaceDir;
+        $split = explode("|",$permissions);
+        
+        if(isset($_SESSION["user"]))
+        {
+            foreach($split as $role)
+                if($role == $_SESSION["role"])
+                    return true;
+            return false;
+        }else if(count($split) != 0){
+            return false;
+        }
     };

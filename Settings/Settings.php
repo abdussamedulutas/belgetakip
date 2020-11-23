@@ -83,6 +83,16 @@
         "name" => "file::post"
     ]);
     RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/([^\/]{32})$/",
+        "method" => "get",
+        "name" => "file::viewFile"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/([^\/]{32})$/",
+        "method" => "post",
+        "name" => "file::post"
+    ]);
+    RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/ekle$/",
         "method" => "get",
         "name" => "file::addForm"
@@ -134,6 +144,27 @@
         "method" => "post",
         "name" => "acente::post"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/kullanicilar$/",
+        "method" => "get",
+        "name" => "acente::viewKullanici"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/kullanicilar$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/yoneticiler$/",
+        "method" => "get",
+        "name" => "acente::viewYoneticiler"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/yoneticiler$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);
+    
     RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/duzenle\/([^\/]{32})$/",
         "method" => "get",

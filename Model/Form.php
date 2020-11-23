@@ -367,7 +367,7 @@
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT type_id,user,require_id FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
+            $pre = $db->prepare("SELECT type_id,user,require_id,`file_id` FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);

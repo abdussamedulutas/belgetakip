@@ -42,11 +42,11 @@
 								</div>
 							</div>
 							<div class="panel-body">
-								<table class="table table-bordered folding">
+								<table class="table table-bordered folding mb-15">
 									<tbody>
 										<?php foreach($data->form["FormData"] as $field): ?>
 										<tr>
-											<td>
+											<td width="50%">
 												<?=$field->name?>
 											</td>
 											<td>
@@ -54,6 +54,35 @@
 											</td>
 										</tr>
 										<?php endforeach; ?>
+									</tbody>
+								</table>
+								<table class="table table-bordered folding">
+									<tbody>
+										<tr>
+											<td>
+												Form Kimliği
+											</td>
+											<td width="50%">
+											<?=strtoupper($data->formid)?>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Personel
+											</td>
+											<td>
+												<?=$data->personel->name; ?><br>
+												<span class="text-muted"><?=strtoupper($data->personel->id)?></span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Dosya Kimliği
+											</td>
+											<td>
+												<?=strtoupper(bin2hex($data->form["Form"]->file_id)) ?>
+											</td>
+										</tr>
 									</tbody>
 								</table>
 							</div>

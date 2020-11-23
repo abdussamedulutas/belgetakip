@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Personel Düzenle"?></title>
+	<title><?=$settings->get("appname") . " | Kullanıcı Düzenle"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -24,7 +24,7 @@
 				<div class="row">
 					<div class="panel panel-flat">
 						<div class="panel-heading">
-							<h6 class="panel-title">Personeller<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
+							<h6 class="panel-title">Kullanıcılar<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
 							<div class="heading-elements">
 								<ul class="icons-list">
 									<li><a data-action="collapse"></a></li>
@@ -38,7 +38,7 @@
                                 
                             </div>
                             <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#add-personel">Yeni Personel Ekle</button>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#add-personel">Yeni Kullanıcı Ekle</button>
                             </div>
                             <div class="col-md-12">
                                 <table class="table table-bordered table-striped table-hover datatablepin">
@@ -52,15 +52,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach($data->personeller as $personel): ?>
+                                        <?php foreach($data->kullanicilar as $kullanici): ?>
                                         <tr>
-                                            <td><img src="<?=isset($personel->image)?"uploads/".$personel->image:"images/placeholder.jpg"?>" alt="" class="img img-responsize" style="max-width: 100px;max-height:100px;"></td>
-                                            <td><?=$personel->name?></td>
-                                            <td><?=$personel->surname?></td>
-                                            <td><?=$personel->email?></td>
+                                            <td><img src="<?=isset($kullanici->image)?"uploads/".$kullanici->image:"images/placeholder.jpg"?>" alt="" class="img img-responsize" style="max-width: 100px;max-height:100px;"></td>
+                                            <td><?=$kullanici->name?></td>
+                                            <td><?=$kullanici->surname?></td>
+                                            <td><?=$kullanici->email?></td>
                                             <td style="white-space:nowrap">
-                                                <button class="btn btn-default" onclick="Duzenle(this,'<?=$personel->id?>');">Düzenle</button>
-                                                <button class="btn btn-danger" onclick="Sil(this,'<?=$personel->id?>');">Kaldır</button>
+                                                <button class="btn btn-default" onclick="Duzenle(this,'<?=$kullanici->id?>');">Düzenle</button>
+                                                <button class="btn btn-danger" onclick="Sil(this,'<?=$kullanici->id?>');">Kaldır</button>
                                             </td>
                                         </tr>
                                         <?php endforeach;    ?>
@@ -76,7 +76,7 @@
     <script>
         function Duzenle(btn,id)
         {
-            Server.getPersonelInfo(id,btn,function(data){
+            Server.getKullaniciInfo(id,btn,function(data){
                 for(var name in data) if(name != "image"){
                     $("#edit-personel").find("[name='"+name+"']").length != 0 && $("#edit-personel").find("[name='"+name+"']").val(data[name]);
                 };
@@ -90,7 +90,7 @@
         {
             swal({
                 title: "Dikkat",
-                text: "Personel silme işlemi gerçekleştirmek istediğinize emin misiniz?",
+                text: "Kullanıcı silme işlemi gerçekleştirmek istediğinize emin misiniz?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#EF5350",
@@ -101,13 +101,13 @@
             },
             function(isConfirm){
                 if (isConfirm) {
-                    Server.deletePersonel(id,function(){
+                    Server.deleteKullanici(id,function(){
                         swal.close();
                         $(btn).closest("tr").remove();
-                        Notify.successText("Personel Hesabı","Personel Silme işlemi başarılı");
+                        Notify.successText("Kullanıcı Hesabı","Kullanıcı Silme işlemi başarılı");
                     },function(){
                         swal.close();
-                        Notify.errorText("Personel Hesabı","Personel Silme işlemi başarısız");
+                        Notify.errorText("Kullanıcı Hesabı","Kullanıcı Silme işlemi başarısız");
                     });
                 }
             });
@@ -118,9 +118,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h5 class="modal-title">Personel Hesabı Ekle</h5>
+                    <h5 class="modal-title">Kullanıcı Hesabı Ekle</h5>
                 </div>
-                <form onsubmit="Server.createPersonel(this);return false;">
+                <form onsubmit="Server.createKullanici(this);return false;">
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="row">
@@ -174,9 +174,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h5 class="modal-title">Personel Hesabı Düzenle</h5>
+                    <h5 class="modal-title">Kullanıcı Hesabı Düzenle</h5>
                 </div>
-                <form onsubmit="Server.editPersonel(this);return false;">
+                <form onsubmit="Server.editKullanici(this);return false;">
                     <input type="hidden" name="id">
                     <div class="modal-body">
                         <div class="form-group">

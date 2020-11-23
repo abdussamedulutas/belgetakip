@@ -259,6 +259,41 @@ Server.deletePersonel = function(id,callback,infoCallback)
         Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
     });
 };
+Server.deleteKullanici = function(id,callback,infoCallback)
+{
+    var data = new FormData();
+    data.append("action","deleteKullanici");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        if(ans.status == "success")
+        {
+            callback();
+        }else if(ans.status == "fail"){
+            infoCallback();
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    });
+};
+
+Server.deleteYonetici = function(id,callback,infoCallback)
+{
+    var data = new FormData();
+    data.append("action","deleteAdmin");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        if(ans.status == "success")
+        {
+            callback();
+        }else if(ans.status == "fail"){
+            infoCallback();
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    });
+};
 Server.deleteAcente = function(id,callback,infoCallback)
 {
     var data = new FormData();
@@ -368,6 +403,218 @@ Server.getPersonelInfo = function(id,btn,callback)
     $(btn).html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
     var data = new FormData();
     data.append("action","getPersonelInfo");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(btn).html(btnText).removeAttr("disabled","");
+        if(ans.status == "success")
+        {
+            progress.remove();
+            callback(ans.data);
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        $(btn).html(btnText);
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.createKullanici = function(form)
+{
+    var progress = Notify.progress("Kullanıcı Oluşturma","Kullanıcı Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","createKullanici");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            $("#add-personel").modal("hide");
+            Notify.successText("Kullanıcı Oluşturma","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS":{
+                    Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.editKullanici = function(form)
+{
+    var progress = Notify.progress("Kullanıcı Düzenleme","Kullanıcı Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","editKullanici");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            Notify.successText("Kullanıcı Düzenleme","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS ":{
+                    Notify.failedForm("Kullanıcı Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.getKullaniciInfo = function(id,btn,callback)
+{
+    var progress = Notify.progress("Kullanıcı","Kullanıcı Bilgileri Alınıyor");
+    var btnText = $(btn).text();
+    $(btn).html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData();
+    data.append("action","getKullaniciInfo");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(btn).html(btnText).removeAttr("disabled","");
+        if(ans.status == "success")
+        {
+            progress.remove();
+            callback(ans.data);
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        $(btn).html(btnText);
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.createAdmin = function(form)
+{
+    var progress = Notify.progress("Yönetici Oluşturma","Yönetici Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","createAdmin");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            $("#add-personel").modal("hide");
+            Notify.successText("Yönetici Oluşturma","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Yönetici Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS":{
+                    Notify.failedForm("Yönetici Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.editAdmin = function(form)
+{
+    var progress = Notify.progress("Yönetici Düzenleme","Yönetici Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","editAdmin");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            Notify.successText("Yönetici Düzenleme","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Yönetici Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS ":{
+                    Notify.failedForm("Yönetici Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.getAdminInfo = function(id,btn,callback)
+{
+    var progress = Notify.progress("Yönetici","Yönetici Bilgileri Alınıyor");
+    var btnText = $(btn).text();
+    $(btn).html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData();
+    data.append("action","getAdminInfo");
     data.append("id",id);
     data.append("language",navigator.language);
     Server._ajax(window.location.pathname,data,function(ans) {

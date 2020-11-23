@@ -12,18 +12,9 @@
                 "require"=>true,
                 "regex"=>"/^.{6,31}$/"
             ],"Kullanıcı şifresi boş veya geçersiz");
-
             $User = new User();
-            if($v = $User->varifyAdmin(Request::post("email"),Request::post("password")))
-            {
-                $_SESSION["user"] = Request::post("email");
-                $_SESSION["role"] = "admin";
-                $_SESSION["name"] = "admin";
-                $safe = safeName($_SESSION["name"]);
-                Response::soap("success","login",[
-                    "newURL"=>"$workspaceDir/$safe/panel"
-                ]);
-            }else if($user = $User->varifyUser(Request::post("email"),Request::post("password"))){
+            $user = $User->varifyUser(Request::post("email"),Request::post("password"));
+            if($user != false){
                 $_SESSION["user"] = $user->email;
                 $_SESSION["name"] = $user->name;
                 $_SESSION["surname"] = $user->surname;
@@ -35,7 +26,7 @@
                     "newURL"=>"$workspaceDir/$safe/panel"
                 ]);
             }else{
-                sleep(3);
+                //sleep(3);
                 Response::soap("fail","NOUSER",[
                     "text" => "E-Posta veya şifresi yanlış"
                 ]);

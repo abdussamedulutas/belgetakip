@@ -2,47 +2,11 @@
     include("Model/User.php");
     include("Model/Form.php");
     include("Model/Notes.php");
-    function useAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useAuthPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
-    function useOnlyAdminAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useOnlyAdminPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
 
     $main = new class extends Controller{
         public function viewSettings()
         {
-            useOnlyAdminAuthGET();
+            permission("admin");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             $form = new Form();
@@ -54,7 +18,7 @@
         }
         public function viewRequired()
         {
-            useOnlyAdminAuthGET();
+            permission("admin");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("form/gerekenformlar",(object)[
@@ -63,6 +27,7 @@
         }
         public function viewForm()
         {
+            permission("admin|personel|kullanici");
             global $workspaceDir;
             $id = getUrlTokens()[2];
 
@@ -76,7 +41,7 @@
                 exit;
             }
             $user = new User();
-            $personel = $user->getPersonel(bin2hex($data["Form"]->user));
+            $personel = $user->get(bin2hex($data["Form"]->user));
 
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("form/goster",(object)[
@@ -140,14 +105,14 @@
                     break;
                 }
                 case "deleteForm":{
-                    useOnlyAdminPOST();
+                    permission("admin");
                     $form = new Form();
                     $fields = $form->removeForm(Request::post("id"));
                     Response::soap("success","FORM_REMOVE",$fields);
                     break;
                 }
                 case "EditForm":{
-                    useOnlyAdminPOST();
+                    permission("admin");
                     $form = new Form();
                     $fields = $form->getFields(Request::post("typeid"));
                     $id = Request::post("id");

@@ -2,48 +2,10 @@
     include("Model/Acente.php");
     include("Model/User.php");
     include("Model/Notification.php");
-
-    function useAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useAuthPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
-    function useOnlyAdminAuthGET()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
-        }
-    };
-    function useOnlyAdminPOST()
-    {
-        global $workspaceDir;
-        if(!isset($_SESSION["user"]) || (isset($_SESSION["user"]) && $_SESSION["role"] != "admin"))
-        {
-            SendStatus(404);
-            exit;
-        };
-    }
-
     $main = new class extends Controller{
         public function viewAcente()
         {
-            useOnlyAdminAuthGET();
+            permission("personel|admin");
             global $workspaceDir;
 
             $acente = new Acente();
@@ -55,13 +17,42 @@
                 "acenteler"=>$acenteler
             ]);
         }
-        public function viewPersonel()
+        public function viewKullanici()
         {
-            useOnlyAdminAuthGET();
+            permission("personel|admin");
             global $workspaceDir;
 
             $acente = new User();
-            $personeller = $acente->getPersonelAll();
+            $kullanicilar = $acente->getAll('kullanici');
+
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("acente/kullanicilar",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "kullanicilar"=>$kullanicilar
+            ]);
+        }
+        public function viewYoneticiler()
+        {
+            permission("personel|admin");
+            global $workspaceDir;
+
+            $acente = new User();
+            $admin = $acente->getAll('admin');
+
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("acente/yoneticiler",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "admin"=>$admin
+            ]);
+        }
+        
+        public function viewPersonel()
+        {
+            permission("personel|admin");
+            global $workspaceDir;
+
+            $acente = new User();
+            $personeller = $acente->getAll('personel');
 
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("acente/personeller",(object)[
@@ -71,7 +62,6 @@
         }
         public function post()
         {
-            useOnlyAdminPOST();
             switch(Request::post("action"))
             {
                 case "getAcenteList":{
@@ -124,7 +114,7 @@
                 case "getPersonelInfo":{
                     $user = new User();
                     $id = Request::post("id");
-                    $personel = $user->getPersonel($id);
+                    $personel = $user->get($id);
                     if(count($personel) != 0){
                         Response::soap("success","PERSONEL_INFO",$personel[0]);
                     }else{
@@ -135,7 +125,7 @@
                 case "deletePersonel":{
                     $user = new User();
                     $id = Request::post("id");
-                    if($user->deletePersonel($id)){
+                    if($user->delete($id)){
                         Response::soap("success","DELETEPERSONEL");
                     }else{
                         SendStatus(404);
@@ -149,7 +139,7 @@
                     Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
                     Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
                     $user = new User();
-                    $personel = $user->getPersonel($id)[0];
+                    $personel = $user->get($id);
                     if($personel->email != Request::post("email")){
                         if($user->isUsableMail(Request::post("email")))
                         {
@@ -162,10 +152,11 @@
                         $newName = $personel->image;
                     }
                     $user = new User();
-                    if($user->updatePersonel(
+                    if($user->update(
                         $id,
                         Request::post("name"),
                         Request::post("surname"),
+                        'personel',
                         Request::post("email"),
                         $newName
                     )){
@@ -197,9 +188,192 @@
                         $newName = Request::acceptFile("image");
                     }else $newName = "";
                     $user = new User();
-                    if($user->createPersonel(
+                    if($user->createUser(
                         Request::post("name"),
                         Request::post("surname"),
+                        'personel',
+                        Request::post("email"),
+                        $newName,
+                        Request::post("password1")
+                    )){
+                        Response::soap("success","PERSONEL_CREATEDPERSONEL");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "getKullaniciInfo":{
+                    $user = new User();
+                    $id = Request::post("id");
+                    $personel = $user->get($id);
+                    if(count($personel) != 0){
+                        Response::soap("success","PERSONEL_INFO",$personel[0]);
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
+                case "deleteKullanici":{
+                    $user = new User();
+                    $id = Request::post("id");
+                    if($user->delete($id)){
+                        Response::soap("success","DELETEPERSONEL");
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
+                case "editKullanici":{
+                    $id = Request::post("id");
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    $user = new User();
+                    $personel = $user->get($id);
+                    if($personel->email != Request::post("email")){
+                        if($user->isUsableMail(Request::post("email")))
+                        {
+                            return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
+                        }
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else{
+                        $newName = $personel->image;
+                    }
+                    $user = new User();
+                    if($user->updateKullanici(
+                        $id,
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'kullanici',
+                        Request::post("email"),
+                        $newName
+                    )){
+                        Response::soap("success","PERSONEL_UPDATE");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "createKullanici":{
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    Request::validation("POST","password1",["require"=>true],"Parola alanı boş veya geçersiz");
+                    Request::validation("POST","password2",["require"=>true],"Parola alanı boş veya geçersiz");
+                    if(Request::post("password1") != Request::post("password2")){
+                        return Response::soap("fail","INVALID_FIELD",[
+                            "fieldName" => "password2",
+                            "text" => "Parolalar eşleşmiyor"
+                        ]);
+                    };
+                    $user = new User();
+                    if($user->isUsableMail(Request::post("email")))
+                    {
+                        return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail Adresi mevcut lütfen başka bir adres deneyiniz"]);
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else $newName = "";
+                    $user = new User();
+                    if($user->createUser(
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'kullanici',
+                        Request::post("email"),
+                        $newName,
+                        Request::post("password1")
+                    )){
+                        Response::soap("success","PERSONEL_CREATEDPERSONEL");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "getAdminInfo":{
+                    $user = new User();
+                    $id = Request::post("id");
+                    $personel = $user->get($id);
+                    if($personel != false){
+                        Response::soap("success","PERSONEL_INFO",$personel);
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
+                case "deleteAdmin":{
+                    $user = new User();
+                    $id = Request::post("id");
+                    if($user->delete($id)){
+                        Response::soap("success","DELETEPERSONEL");
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
+                case "editAdmin":{
+                    $id = Request::post("id");
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    $user = new User();
+                    $personel = $user->get($id);
+                    if($personel->email != Request::post("email")){
+                        if($user->isUsableMail(Request::post("email")))
+                        {
+                            return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
+                        }
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else{
+                        $newName = $personel->image;
+                    }
+                    $user = new User();
+                    if($user->update(
+                        $id,
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'admin',
+                        Request::post("email"),
+                        $newName
+                    )){
+                        Response::soap("success","PERSONEL_UPDATE");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "createAdmin":{
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    Request::validation("POST","password1",["require"=>true],"Parola alanı boş veya geçersiz");
+                    Request::validation("POST","password2",["require"=>true],"Parola alanı boş veya geçersiz");
+                    if(Request::post("password1") != Request::post("password2")){
+                        return Response::soap("fail","INVALID_FIELD",[
+                            "fieldName" => "password2",
+                            "text" => "Parolalar eşleşmiyor"
+                        ]);
+                    };
+                    $user = new User();
+                    if($user->isUsableMail(Request::post("email")))
+                    {
+                        return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail Adresi mevcut lütfen başka bir adres deneyiniz"]);
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else $newName = "";
+                    $user = new User();
+                    if($user->createUser(
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'admin',
                         Request::post("email"),
                         $newName,
                         Request::post("password1")
