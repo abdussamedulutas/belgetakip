@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | İşlemler için Gerekli Formlar"?></title>
+	<title><?=$settings->get("appname") . " | Acente Düzenle"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -22,147 +22,236 @@
 			<?php include(__DIR__."/../partials/sidebar.php");?>
 			<div class="content-wrapper">
 				<div class="row">
-					<div class="panel panel-flat" id="pinpanel">
+					<div class="panel panel-flat">
+						<div class="panel-heading">
+							<h6 class="panel-title">Zorunlu Evrak Listesi<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
+							<div class="heading-elements">
+								<ul class="icons-list">
+									<li><a data-action="collapse"></a></li>
+									<li><a data-action="reload"></a></li>
+								</ul>
+							</div>
+						</div>
 						<div class="panel-body">
-							<div class="col-xs-6">
-								<h2 style="margin-top:0">Gereken Formlar</h2>
-							</div>
-							<div class="col-xs-6 text-right">
-								<button class="btn btn-success" onclick="AddRequired()">Yeni Ekle</button>
-							</div>
-							<div class="col-md-12">
-								<table class="table table-bordered table-striped table-hover datatablepin" id="formpanel">
-									<thead>
-										<tr>
-											<th>Gerekli Neden</th>
-											<th>Gerekli formlar</th>
-											<th width="1%">İşlemler</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6 text-right">
+                                <button class="btn btn-primary" onclick="AddReFile()">Yeni Evrak türü Ekle</button>
+                            </div>
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
+                                    <thead>
+                                        <tr>
+                                            <th>İsim</th>
+                                            <th width="1%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<script>
-		function pinfo()
+    </div>
+    <script>
+        function pinfo()
 		{
 			var p = block("#pinpanel");
 			setTimeout(function(){
 				Server.request({
-					action:"requiredformpanel"
+					action:"getReqFilesList"
 				},function(json){
 					var lastAdded = null;
-					$("#formpanel").DataTable().clear().draw();
-					var db = $("#formpanel").DataTable().row;
-					if(json.data.requiredForms instanceof Array)
-					{
-						for(var row of json.data.requiredForms){
-							lastAdded = db.add([
-								`<input type="text" style="min-width:150px" class="form-control field_name" name="field_name[]" onblur="changeReqFormName(this)" value="${row.name}">`+
-								`<input type="hidden" class="field_id" value="${row.id}">`,
-								`<select class="select2 field_data" name="field_data[]" multiple>`+json.data.allForms.map(function(value){return `<option value="${value.id}"${row.required.includes(value.id)?" selected":""}>${value.name}</option>`}).join('')+`</select>`,
-								`<select class="select2 no-search" onchange="window[this.value]&&window[this.value](this);return false">
-									<option value="RO">İşlem Seç</option>
-									<option value="updateReqForm">Güncelle</option>
-									<option value="removeReqForm">Kaldır</option>
-								</select>`
-							]);
-						};
-						if(lastAdded) lastAdded.draw();
-						else{
-							p();
-							p=null
-						};
-						reinitialize();
-					};
+					$("#pinpanel").DataTable().clear().draw();
+					var db = $("#pinpanel").DataTable().row;
+                    for(var row of json.data){
+                        lastAdded = db.add([
+                            `${row.name}`,
+                            `<span style="white-space:nowrap"><button class="btn btn-default" onclick="updateReFile('${row.name}','${row.id}')">Düzenle</button>&nbsp;`+
+                            `<button class="btn btn-danger" onclick="removeAcente('${row.name}','${row.id}')">Kaldır</button></span>`
+                        ]);
+                    };
+                    if(lastAdded) lastAdded.draw();
+                    else{
+                        p();
+                        p=null
+                    };
+                    reinitialize();
 					setTimeout(function(){
 						p&&p();
 					},100);
 				});
 			},100);
-		}
-		$(document).ready(function(){
-			pinfo();
-		});
-		function AddRequired(ths)
+		};
+        $(function(){
+            pinfo();
+        });
+		function AddReFile()
 		{
-			bootbox.prompt(`Yeni form grubu oluştur için isim?`, function(result) {
+			bootbox.prompt(`Yeni evrak ismi?`, function(result) {
 				if(result){
 					Server.request({
-						action:"createreqform",
+						action:"createReqFile",
 						name:result
 					},function(json){
-						pinfo();
+						window.location.reload()
 					})
 				}
 			});
 		};
-		function updateReqForm(ths)
+		function updateReFile(name,id)
 		{
-			var tr = $(ths).closest("tr");
-			var id = tr.find(".field_id").val();
-			var field = tr.find(".field_name").val();
-			var value = tr.find(".field_data").val() && tr.find(".field_data").val().join(',') || "";
-			Server.request({
-				action:"updatereqformlist",
-				list:value,
-				id:id
-			},function(json){
-				pinfo();
-			})
-		};
-		function removeReqForm(ths)
-		{
-			var tr = $(ths).closest("tr");
-			var name = tr.find(".field_name").val();
-			var id = tr.find(".field_id").val();
-			wait2(function(){
-				$(ths).val('RO').trigger('change');
+			bootbox.prompt(`<b>${name}</b> zorunlu evrağın yeni ismi?`, function(result) {
+				if(result){
+					Server.request({
+						action:"updateReqFile",
+                        id:id,
+						name:result
+					},function(json){
+						window.location.reload()
+					})
+				}
 			});
+		};
+		function removeAcente(name,id)
+		{
 			Notify.confirm({
 				title:"Dikkat!",
-				text:`${name} form grubunu çıkarmak istediğinize emin misiniz?`,
+				text:`${name} isimli evrak zorunluluğunu silmek istediğinize emin misiniz?`,
 				confirmText:"Evet, Sil",
 				cancelText:"İptal",
 				confirm:function(){
 					Server.request({
-						action:"deletereqform",
+						action:"deleteReqFile",
 						id:id
 					},function(json){
-						pinfo();
+						window.location.reload()
 					})
 				}
 			});
 		};
-		function changeReqFormName(ths)
-		{
-			var oldText = ths.defaultValue;
-			var changedText = ths.value;
-			if(oldText == changedText) return;
-			var tr = $(ths).closest("tr");
-			var id = tr.find(".field_id").val();
-			Notify.confirm({
-				title:"Dikkat!",
-				text:`${oldText} form alanı ${changedText} ismi ile değiştirdiniz kalıcı olmak için kaydetmek ister misiniz?`,
-				confirmText:"Değişikliği Gönder",
-				cancelText:"İptal",
-				confirm:function(){
-					Server.request({
-						action:"updatereqformname",
-						id:id,
-						name:changedText
-					},function(json){
-						pinfo();
-					})
-				}
-			});
-		};
-	</script>
+    </script>
+    <div id="add-personel" class="modal fade">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title">Personel Hesabı Ekle</h5>
+                </div>
+                <form onsubmit="Server.createPersonel(this);return false;">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>İsmi</label>
+                                    <input type="text" name="name" class="form-control">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label>Soyismi</label>
+                                    <input type="text" name="surname" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>E-Mail Adresi</label>
+                                    <input type="text" name="email" class="form-control">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label>Profil Resmi</label>
+                                    <input type="file" name="image" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Şifre</label>
+                                    <input type="password" name="password1" class="form-control">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Şifre tekrar</label>
+                                    <input type="password" name="password2" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Doğum Tarihi</label>
+                                    <input type="text" name="birthday" class="form-control pickadate" placeholder="Doğum Tarihi">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Acente</label>
+                                    <input type="text" name="acente_id" readonly class="form-control" value="<?=$data->acente->id?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-primary actionbtn" actionbtn>Gönder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="edit-personel" class="modal fade">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title">Personel Hesabı Düzenle</h5>
+                </div>
+                <form onsubmit="Server.editPersonel(this);return false;">
+                    <input type="hidden" name="id">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <img class="img" style="max-width:100px;max-height:100px" alt="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>İsmi</label>
+                                    <input type="text" name="name" class="form-control">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label>Soyismi</label>
+                                    <input type="text" name="surname" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>E-Mail Adresi</label>
+                                    <input type="text" name="email" class="form-control">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label>Profil Resmi (varsa Değiştirilecek)</label>
+                                    <input type="file" name="image" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-primary actionbtn" actionbtn>Gönder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
 </body>

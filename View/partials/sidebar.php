@@ -30,13 +30,12 @@
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
-								<li><a href="<?="$data->userPanelLink/form/ekle"?>"><i class="icon-file-plus"></i> <span>Form Ekle</span></a></li>
+								<li><a href="<?="$data->userPanelLink/dosya/ekle"?>"><i class="icon-file-plus"></i> <span>Dosya Ekle</span></a></li>
 								<li>
 									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>
-										<li><a href="<?="$data->userPanelLink/form/tumu"?>">Tüm Formlar</a></li>
-										<li><a href="<?="$data->userPanelLink/form/ayarlar"?>">Form Ayarları</a></li>
-										<li><a href="<?="$data->userPanelLink/form/gerekenler"?>">İşlemler için gerekli Formlar</a></li>
+										<li><a href="<?="$data->userPanelLink/form/ayarlar"?>">Dosya Düzeni</a></li>
+										<li><a href="<?="$data->userPanelLink/form/gerekenler"?>">Zorunlu Evraklar</a></li>
 									</ul>
 								</li>
 								<li>

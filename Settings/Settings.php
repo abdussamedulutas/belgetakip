@@ -83,22 +83,22 @@
         "name" => "file::post"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/dosya\/([^\/]{32})$/",
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/(\d+)$/",
         "method" => "get",
         "name" => "file::viewFile"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/dosya\/([^\/]{32})$/",
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/(\d+)$/",
         "method" => "post",
         "name" => "file::post"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/ekle$/",
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/ekle$/",
         "method" => "get",
         "name" => "file::addForm"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}([^\/]+)\/form\/ekle$/",
+        "url" => "/^{rootPath}([^\/]+)\/dosya\/ekle$/",
         "method" => "post",
         "name" => "file::post"
     ]);

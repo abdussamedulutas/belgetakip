@@ -1,27 +1,59 @@
 <?php
     class File extends Model
     {
-        public function createFile($name,$forms,$acente,$personel)
+        public function lastNumber()
+        {
+            global $db;
+            $pre = $db->prepare("SELECT MAX(`order`)+1 as num FROM `file` WHERE deletedate is null");
+            $pre->execute();
+            $if = $pre->fetch();
+            if(isset($if["num"]))
+            {   
+                return $if["num"];
+            }else{
+                return 1;
+            }
+        }
+        public function createFile($name,$acente,$personel)
         {
             global $db;
             $id = getRandom();
+            $num = $this->lastNumber();
             $pre = $db->prepare("INSERT INTO `file` SET
                 `id` = UNHEX(:id),
                 `name` = :name,
-                required_forms = :forms,
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
                 createdate = NOW(),
-                modifydate = NOW()
+                modifydate = NOW(),
+                `order` = :num
             ");
             $pre->bindParam("id", $id);
-            $pre->bindParam("forms", $forms);
             $pre->bindParam("acente", $acente);
             $pre->bindParam("personel", $personel);
             $pre->bindParam("name", $name);
+            $pre->bindParam("num", $num);
             if(!$pre->execute()){
                 var_dump($pre->errorInfo());
-            }else return true;
+            }else return $id;
+        }
+        public function getFileId($id)
+        {
+            global $db;
+            $num = $this->lastNumber();
+            $pre = $db->prepare("SELECT * FROM `file` WHERE deletedate is null AND id = UNHEX(:id)");
+            $pre->bindParam("id", $id);
+            $pre->execute();
+            return $pre->fetch(PDO::FETCH_OBJ);
+        }
+        public function getFileNum($id)
+        {
+            global $db;
+            $num = $this->lastNumber();
+            $pre = $db->prepare("SELECT * FROM `file` WHERE deletedate is null AND `order` =:num");
+            $pre->bindParam("num", $id);
+            $pre->execute();
+            return $pre->fetch(PDO::FETCH_OBJ);
         }
         public function updateFile($name,$forms,$acente,$personel)
         {
@@ -30,13 +62,11 @@
             $pre = $db->prepare("INSERT INTO `file` SET
                 id = UNHEX(:id),
                 `name` = :name,
-                required_forms = :forms,
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
                 modifydate = NOW()
             ");
             $pre->bindParam("id", $id);
-            $pre->bindParam("forms", $forms);
             $pre->bindParam("acente", $acente);
             $pre->bindParam("personel", $personel);
             $pre->bindParam("name", $name);
@@ -58,7 +88,7 @@
             $pre = $db->prepare("SELECT
                 HEX(id) as 'id',
                 `name` as 'name',
-                required_forms as 'reqforms',
+                `order` as 'order',
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
                 lastinsetdate FROM `file` WHERE deletedate is null");
@@ -76,7 +106,7 @@
             $pre = $db->prepare("SELECT
                 HEX(id) as 'id',
                 `name` as 'name',
-                required_forms as 'reqforms',
+                `order` as 'order',
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
                 lastinsetdate FROM `file` WHERE deletedate is null AND personel_id = :user");

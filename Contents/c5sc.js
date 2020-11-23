@@ -686,10 +686,15 @@ Server.deleteFormType = function(id,callback)
 };
 Server.request = function(obj,callback)
 {
-    var data = new FormData();
-    for(var name in obj){
-        data.append(name,obj[name]);
-    };
+    var data;
+    if(obj instanceof FormData){
+        data = obj;
+    }else{
+        data = new FormData();
+        for(var name in obj){
+            data.append(name,obj[name]);
+        };
+    }
     data.append("language",navigator.language);
     Server._ajax(window.location,data,function(ans) {
         callback(ans);

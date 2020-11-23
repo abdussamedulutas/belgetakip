@@ -15,6 +15,21 @@
                 "userPanelLink"=>$userPanelLink
             ]);
         }
+        public function viewFile()
+        {
+            $id = getUrlTokens()[2];
+            $form = new Form();
+            $file = new File();
+            $id = bin2hex($file->getFileNum($id)->id);
+            $data = $form->getFileForm($id);
+            permission("admin|kullanici|personel");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("dosya/file",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "form"=>$data
+            ]);
+        }
         public function viewForms()
         {
             permission("admin|kullanici|personel");
@@ -57,10 +72,6 @@
                 case "tumformislemleri":{
                     permission( "admin");
                     $reqforms = $form->getRequiredForms();
-                    foreach($reqforms as $tforms)
-                    {
-                        $tforms->required = explode(',',$tforms->required);
-                    };
                     Response::soap("success","FORMREQTYPE_ALL",$reqforms);
                     break;
                 }
@@ -68,32 +79,6 @@
                     permission( "admin");
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
-                    break;
-                }
-                case "AddForm":{
-                    permission( "admin");
-                    $form = new Form();
-                    $fields = $form->getFields(Request::post("typeid"));
-                    $fileid = Request::post("fileid");
-                    $requireid = Request::post("requireid");
-                    $values = [];
-                    foreach($fields as $field)
-                    {
-                        $value = Request::post($field->id);
-                        $values[$field->id] = $value;
-                    };
-                    
-                    $id = $form->saveForm(
-                        $fileid,
-                        $requireid,
-                        Request::post("typeid"),
-                        Request::post("userid"),
-                        $values
-                    );
-                    $userPanelLink = $workspaceDir."/".$_SESSION["name"];
-                    Response::soap("success","ADD_FORM",[
-                        "newURL" => $userPanelLink . "/form/" . $id
-                    ]);
                     break;
                 }
                 case "getFields":{
@@ -104,13 +89,29 @@
                 }
                 case "saveFile":{
                     permission( "admin");
-                    $file->createFile(
+                    $form = new Form();
+                    $fileid = $file->createFile(
                         Request::post("name"),
-                        Request::post("requiredForms"),
                         Request::post("acente"),
                         Request::post("personel")
                     );
-                    Response::soap("success","SAVED_FILE");
+                    $fields = $form->getFields();
+                    $values = [];
+                    foreach($fields as $field)
+                    {
+                        $value = Request::post($field->id);
+                        $values[$field->id] = $value;
+                    };
+                    $num = $file->getFileId($fileid)->order;
+                    $id = $form->saveForm(
+                        $fileid,
+                        Request::post("personel"),
+                        $values
+                    );
+                    $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+                    Response::soap("success","ADD_FORM",[
+                        "newURL" => $userPanelLink . "/dosya/" . $num
+                    ]);
                     break;
                 }
                 case "getTypes":{
@@ -141,43 +142,20 @@
                         $kle = $file->getAllFilesForUser($_SESSION["userid"]);
                     }
                     $types = $form->getAllType();
-                    $formtype = [];
-                    $formlar = [];
-                    $acenteler = [];
-                    $personeller = [];
-                    $fakes = [];
-                    foreach($kle as $filec)
-                    {
-                        $forms = explode(',',$filec->reqforms);
-                        foreach($forms as $requiredId)
-                        {
-                            $formtype[$requiredId] = $form->getRequiredForm($requiredId);
-                            $forms = explode(',',$formtype[$requiredId]->required);
-                            foreach($forms as $reelform)
-                            {
-                                $formlar[$reelform] = $form->getType($reelform);
-                            };
-                        };
-                        $acenteler[$filec->acente] = $acente->getAcente($filec->acente);
-                        $personeller[$filec->personel] = $users->get($filec->personel);
-                        $fake = $file->getStatus($filec->id);
-                        if(!isset($fakes[$filec->id])) $fakes[$filec->id] = [];
-                        foreach($fake as $name => $k)
-                        {
-                            if(!isset($fakes[$filec->id][$name])) $fakes[$name] = [];
-                            foreach($k as $kname => $t)
-                            {
-                                $fakes[$filec->id][$name][$kname] = $t;
-                            };
-                        };
+                    $acenteler = $acente->getAll();
+                    $personeller = $users->getAll('personel');
+                    $personels = [];
+                    foreach($personeller as $p){
+                        $personels[$p->id] = $p;
+                    };
+                    $acentes = [];
+                    foreach($acenteler as $p){
+                        $acentes[$p->id] = $p;
                     };
                     Response::soap("success","FILES_ALL",[
-                        "Acente"=>$acenteler,
+                        "Acente"=>$acentes,
                         "Files"=>$kle,
-                        "RequiredForms"=>$formtype,
-                        "Forms"=>$formlar,
-                        "Personel"=>$personeller,
-                        "Processor"=>$fakes
+                        "Personel"=>$personels
                     ]);
                     break;
                 }

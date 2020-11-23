@@ -50,11 +50,10 @@
                 var_dump($db->errorInfo());
             }
         }
-        public function getFields($type_id)
+        public function getFields()
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type`,`order` FROM form_fields WHERE deletedate is NULL AND form_type_id = UNHEX(:formtypeid) ORDER BY `order` ASC");
-            $pre->bindParam("formtypeid", $type_id);
+            $pre = $db->prepare("SELECT HEX(id) as id,`name`,`type`,`order` FROM form_fields WHERE deletedate is NULL ORDER BY `order` ASC");
             if($pre->execute())
             {
                 $vars = $pre->fetchall(PDO::FETCH_OBJ);
@@ -76,11 +75,10 @@
                 exit;
             }
         }
-        public function createField($type_id,$text)
+        public function createField($text)
         {
             global $db;
-                $pre = $db->prepare("SELECT MAX(form_fields.`order`)+1 as maxid,COUNT(form_fields.`order`) as nullid FROM form_fields WHERE form_fields.form_type_id = UNHEX(:id) AND deletedate is null LIMIT 1");
-                $pre->bindParam("id", $type_id);
+                $pre = $db->prepare("SELECT MAX(form_fields.`order`)+1 as maxid,COUNT(form_fields.`order`) as nullid FROM form_fields WHERE deletedate is null LIMIT 1");
                 $pre->execute();
                 $row = $pre->fetch();
                 if($row["maxid"] == null){
@@ -89,8 +87,7 @@
                     $order = $row["maxid"];
                 };
             $id = getRandom();
-            $pre = $db->prepare("INSERT INTO form_fields SET id = UNHEX(:id),`name` = :text, form_type_id = UNHEX(:formtypeid), `order` = :order, `type` = 'text', createdate = NOW(), modifydate = NOW()");
-            $pre->bindParam("formtypeid", $type_id);
+            $pre = $db->prepare("INSERT INTO form_fields SET id = UNHEX(:id),`name` = :text, `order` = :order, `type` = 'text', createdate = NOW(), modifydate = NOW()");
             $pre->bindParam("text", $text);
             $pre->bindParam("order", $order);
             $pre->bindParam("id", $id);
@@ -102,23 +99,17 @@
             global $db;
             if($order == -1)
             {
-                $pre = $db->prepare("SELECT MAX(other.`order`)+1 as maxid,COUNT(other.`order`) as nullid FROM form_fields
-                INNER JOIN form_fields as other on other.form_type_id = form_fields.form_type_id
-                WHERE form_fields.id = UNHEX(:id) AND other.deletedate is null LIMIT 1");
+                $pre = $db->prepare("UPDATE form_fields SET `name` = :text,modifydate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
+                $pre->bindParam("text", $text);
                 $pre->bindParam("id", $id);
-                $pre->execute();
-                $row = $pre->fetch();
-                if($row["maxid"] == null){
-                    $order = $row["nullid"];
-                }else{
-                    $order = $row["maxid"];
-                }
-            };
-            $pre = $db->prepare("UPDATE form_fields SET `name` = :text, `order` = :order,modifydate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
-            $pre->bindParam("text", $text);
-            $pre->bindParam("order", $order);
-            $pre->bindParam("id", $id);
-            return $pre->execute();
+                return $pre->execute();
+            }else{
+                $pre = $db->prepare("UPDATE form_fields SET `name` = :text, `order` = :order,modifydate = NOW() WHERE id = UNHEX(:id) LIMIT 1");
+                $pre->bindParam("text", $text);
+                $pre->bindParam("order", $order);
+                $pre->bindParam("id", $id);
+                return $pre->execute();
+            }
         }
         public function changeFieldType($id,$type)
         {
@@ -197,7 +188,7 @@
         {
             global $db;
             $id = getRandom();
-            $pre = $db->prepare("INSERT INTO form_require SET id = UNHEX(:id),`name` = :text,required_forms = '', createdate = NOW(), modifydate = NOW()");
+            $pre = $db->prepare("INSERT INTO form_require SET id = UNHEX(:id),`name` = :text, createdate = NOW(), modifydate = NOW()");
             $pre->bindParam("text", $name);
             $pre->bindParam("id", $id);
             if(!$pre->execute());
@@ -211,14 +202,6 @@
             $pre->bindParam("id", $id);
             return $pre->execute();
         }
-        public function updateRequiredFormList($id,$text)
-        {
-            global $db;
-            $pre = $db->prepare("UPDATE form_require SET required_forms = :text WHERE id = UNHEX(:id) LIMIT 1");
-            $pre->bindParam("text", $text);
-            $pre->bindParam("id", $id);
-            return $pre->execute();
-        }
         public function deleteRequiredForm($id)
         {
             global $db;
@@ -229,23 +212,10 @@
         public function getRequiredForms()
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name`,required_forms as 'required' FROM form_require WHERE deletedate is NULL");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM form_require WHERE deletedate is NULL");
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
-            }else{
-                var_dump($db->errorInfo());
-                exit;
-            }
-        }
-        public function getRequiredForm($id)
-        {
-            global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name`,required_forms as 'required' FROM form_require WHERE deletedate is NULL AND id = UNHEX(:id) LIMIT 1");
-            $pre->bindParam("id",$id);
-            if($pre->execute())
-            {
-                return $pre->fetch(PDO::FETCH_OBJ);
             }else{
                 var_dump($db->errorInfo());
                 exit;
@@ -258,12 +228,12 @@
             $pre = $db->prepare("INSERT INTO `values`
                 SET `field` = UNHEX(:field),
                     `text` = :text,
-                    `id` = :id,
-                    formid = UNHEX(:formid)
+                    `formid` = UNHEX(:formid),
+                    `id` = UNHEX(:id)
             ");
-            $pre->bindParam("formid",$formid);
             $pre->bindParam("field",$field);
             $pre->bindParam("text",$text);
+            $pre->bindParam("formid",$formid);
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
@@ -273,16 +243,14 @@
                 exit;
             }
         }
-        public function updateValue($field,$formid,$text)
+        public function updateValue($field,$text)
         {
             global $db;
             $pre = $db->prepare("UPDATE `values`
                 SET `text` = :text
                 WHERE
-                    `field` = UNHEX(:field) AND
-                    formid = UNHEX(:formid)
+                    `field` = UNHEX(:field)
             ");
-            $pre->bindParam("formid",$formid);
             $pre->bindParam("field",$field);
             $pre->bindParam("text",$text);
             if($pre->execute())
@@ -298,7 +266,6 @@
             global $db;
             $id = getRandom();
             $pre = $db->prepare("DELETE FROM `values` WHERE `id` = :id LIMIT 1");
-            $pre->bindParam("text",$text);
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
@@ -308,13 +275,12 @@
                 exit;
             }
         }
-        public function getValue($field,$form)
+        public function getValue($field)
         {
             global $db;
             $id = getRandom();
-            $pre = $db->prepare("SELECT `text` FROM  `values` WHERE field = UNHEX(:field) AND formid = UNHEX(:formid) LIMIT 1");
+            $pre = $db->prepare("SELECT `text` FROM  `values` WHERE field = UNHEX(:field) LIMIT 1");
             $pre->bindParam("field",$field);
-            $pre->bindParam("formid",$form);
             if($pre->execute())
             {
                 return $pre->fetch(PDO::FETCH_OBJ);
@@ -323,29 +289,39 @@
                 exit;
             }
         }
-        public function saveForm($file_id,$required_id,$type_id,$user,$value)
+        public function saveForm($file_id,$user,$values)
         {
             global $db;
             $id = getRandom();
             $pre = $db->prepare("INSERT INTO forms
-                SET `type_id` = UNHEX(:type_id),
-                    `require_id` = UNHEX(:required_id),
-                    `file_id` = UNHEX(:file_id),
+                SET `file_id` = UNHEX(:file_id),
                     `user` = UNHEX(:user),
                     `createdate`  = NOW(),
                     `modifydate` = NOW(),
                     `id` = UNHEX(:id)
             ");
             $pre->bindParam("file_id",$file_id);
-            $pre->bindParam("type_id",$type_id);
-            $pre->bindParam("required_id",$required_id);
             $pre->bindParam("user",$user);
             $pre->bindParam("id",$id);
             if($pre->execute())
             {
-                foreach($value as $fieldid => $value)
+                foreach($values as $fieldid => $value)
                     $this->saveValue($fieldid,$id,$value);
                 return $id;
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getFileForm($file_id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT HEX(id) as id FROM `forms` WHERE `file_id` = UNHEX(:fileid) LIMIT 1");
+            $pre->bindParam("fileid",$file_id);
+            if($pre->execute())
+            {
+                $id = $pre->fetch()["id"];
+                return $this->getForm($id);
             }else{
                 var_dump($db->errorInfo());
                 exit;
@@ -367,7 +343,7 @@
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT type_id,user,require_id,`file_id` FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
+            $pre = $db->prepare("SELECT user,`file_id` FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);
@@ -377,22 +353,16 @@
                     "FormSettings" => []
                 ];
             };
-            $pre = $db->prepare("SELECT `name` FROM form_types WHERE `id` = :id AND deletedate is null LIMIT 1");
-            $pre->bindParam("id",$form->type_id);
-            $pre->execute();
-            $typeform = $pre->fetch(PDO::FETCH_OBJ);
-
-
             $pre = $db->prepare("SELECT
                 HEX(`values`.id) as valueid,
                 HEX(`form_fields`.id) as field,
+                HEX(`values`.formid) as formid,
                 `name`,
                 `type`,
                 `values`.text
             FROM form_fields
             INNER JOIN `values` ON `values`.field = form_fields.id AND `values`.formid = UNHEX(:formid)
-            WHERE `form_type_id` = :form_type_id AND deletedate is null");
-            $pre->bindParam("form_type_id",$form->type_id);
+            WHERE  deletedate is null");
             $pre->bindParam("formid",$id);
             $pre->execute();
             $kle = $pre->fetchall(PDO::FETCH_OBJ);
@@ -411,7 +381,6 @@
             };
             return [
                 "FormData" => $kle,
-                "FormSettings" => $typeform,
                 "Form" => $form
             ];
         }

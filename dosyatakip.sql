@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 22 Kas 2020, 22:49:08
+-- Üretim Zamanı: 23 Kas 2020, 23:04:44
 -- Sunucu sürümü: 10.1.31-MariaDB
 -- PHP Sürümü: 7.2.3
 
@@ -37,7 +37,8 @@ CREATE TABLE `acente` (
   `deletedate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
+-- --------------------------------------------------------
+
 --
 -- Tablo için tablo yapısı `forms`
 --
@@ -54,10 +55,14 @@ CREATE TABLE `forms` (
   `deletedate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `form_fields`
+--
 
 CREATE TABLE `form_fields` (
   `id` binary(16) NOT NULL,
-  `form_type_id` binary(16) DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
@@ -66,25 +71,56 @@ CREATE TABLE `form_fields` (
   `deletedate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
 
-CREATE TABLE `form_notes` (
+--
+-- Tablo için tablo yapısı `form_files`
+--
+
+CREATE TABLE `form_files` (
   `id` binary(16) NOT NULL,
-  `formid` binary(16) DEFAULT NULL,
-  `text` text,
+  `name` text,
+  `filepath` text,
   `createdate` datetime DEFAULT NULL,
   `modifydate` datetime DEFAULT NULL,
   `deletedate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `form_notes`
+--
+
+CREATE TABLE `form_notes` (
+  `id` binary(16) NOT NULL,
+  `file_id` binary(16) DEFAULT NULL,
+  `text` text,
+  `type` varchar(45) DEFAULT NULL,
+  `createdate` datetime DEFAULT NULL,
+  `modifydate` datetime DEFAULT NULL,
+  `deletedate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `form_require`
+--
+
 CREATE TABLE `form_require` (
   `id` binary(16) DEFAULT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
-  `required_forms` text,
   `createdate` datetime DEFAULT NULL,
   `modifydate` datetime DEFAULT NULL,
   `deletedate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `form_types`
+--
 
 CREATE TABLE `form_types` (
   `id` binary(16) NOT NULL,
@@ -93,6 +129,12 @@ CREATE TABLE `form_types` (
   `modifydate` datetime NOT NULL,
   `deletedate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `form_variables`
+--
 
 CREATE TABLE `form_variables` (
   `id` binary(16) NOT NULL,
@@ -104,6 +146,11 @@ CREATE TABLE `form_variables` (
   `deletedate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `file`
+--
 
 CREATE TABLE `file` (
   `id` binary(16) DEFAULT NULL,
@@ -114,9 +161,15 @@ CREATE TABLE `file` (
   `lastinsetdate` datetime DEFAULT NULL,
   `createdate` datetime DEFAULT NULL,
   `modifydate` datetime DEFAULT NULL,
-  `deletedate` datetime DEFAULT NULL
+  `deletedate` datetime DEFAULT NULL,
+  `order` int(11) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `notification`
+--
 
 CREATE TABLE `notification` (
   `id` binary(16) DEFAULT NULL,
@@ -174,6 +227,10 @@ CREATE TABLE `user` (
   `modifydate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `values`
 --
 
 CREATE TABLE `values` (
@@ -203,6 +260,12 @@ ALTER TABLE `forms`
 -- Tablo için indeksler `form_fields`
 --
 ALTER TABLE `form_fields`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Tablo için indeksler `form_files`
+--
+ALTER TABLE `form_files`
   ADD PRIMARY KEY (`id`);
 
 --

@@ -78,6 +78,34 @@
             global $workspaceDir;
             switch(Request::post("action"))
             {
+                case "updateReqFile":{
+                    permission("admin");
+                    $form = new Form();
+                    $form->updateRequiredFormName(Request::post("id"),Request::post("name"));
+                    Response::soap("success","OK");
+                    break;
+                }
+                case "deleteReqFile":{
+                    permission("admin");
+                    $form = new Form();
+                    $form->deleteRequiredForm(Request::post("id"));
+                    Response::soap("success","OK");
+                    break;
+                }
+                case "createReqFile":{
+                    permission("admin");
+                    $form = new Form();
+                    $form->createRequiredForm(Request::post("name"));
+                    Response::soap("success","OK");
+                    break;
+                }
+                case "getReqFilesList":{
+                    permission("admin");
+                    $form = new Form();
+                    $allAcente = $form->getRequiredForms();
+                    Response::soap("success","ACENTE_ALL",$allAcente);
+                    break;
+                }
                 case "addNote":{
                     $note = new Notes();
                     $note->add(
@@ -171,7 +199,7 @@
                 }
                 case "createfield":{
                     $form = new Form();
-                    $types = $form->createField(Request::post("id"),Request::post("name"));
+                    $types = $form->createField(Request::post("name"));
                     Response::soap("success","CREATE_FIELD");
                     break;
                 }

@@ -22,35 +22,10 @@
 			<?php include(__DIR__."/../partials/sidebar.php");?>
 			<div class="content-wrapper">
 				<div class="row">
-					<div class="panel panel-flat">
-						<div class="panel-heading">
-							<h6 class="panel-title">Form Adı<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
-							<div class="heading-elements">
-								<ul class="icons-list">
-									<li><a data-action="collapse"></a></li>
-									<li><a data-action="close"></a></li>
-								</ul>
-							</div>
-						</div>
-						<div class="panel-body">
-							<div class="col-md-9">
-								<select class="select2" id="formtype" onchange="pinfo()">
-									<?php foreach($data->types as $type): ?>
-									<option value="<?=$type->id?>"><?=$type->name?></option>
-									<?php endforeach; ?>
-								</select>
-							</div>
-							<div class="col-md-3">
-								<button class="btn btn-success" id="btn_create">Yeni Ekle</button>
-								<button class="btn btn-primary" id="btn_change">Değiştir</button>
-								<button class="btn btn-danger" id="btn_delete">Sil</button>
-							</div>
-						</div>
-					</div>
 					<div class="panel panel-flat" id="pinpanel">
 						<div class="panel-body">
 							<div class="col-xs-6">
-								<h2 style="margin-top:0">Form giriş alanları</h2>
+								<h2 style="margin-top:0">Dosya giriş alanları</h2>
 							</div>
 							<div class="col-xs-6 text-right">
 								<button class="btn btn-danger" id="btn_createfield">Alan Ekle</button>
@@ -94,8 +69,7 @@
 			var p = block("#pinpanel");
 			setTimeout(function(){
 				Server.request({
-					action:"formpanel",
-					id:$("#formtype").val()
+					action:"formpanel"
 				},function(json){
 					var lastAdded = null;
 					$("#formpanel").DataTable().clear().draw();
@@ -294,7 +268,6 @@
 					var p = block("#pinpanel");
 					Server.request({
 						action:"createfield",
-						id:$("#formtype").val(),
 						name:result
 					},function(json){
 						pinfo();
@@ -302,46 +275,6 @@
 				}
 			});
 		})
-		$("#btn_create").click(function(){
-			bootbox.prompt("Yeni Form Türü İsmi", function(result) {
-				if(result){
-					Server.createFormType(result,function(){
-						window.location.reload();
-					});
-				}
-			});
-		})
-		$("#btn_change").click(function(){
-			bootbox.prompt("İsim", function(result) {
-				var id = $("#formtype").val();
-				if(result){
-					Server.updateFormType(id,result,function(){
-						window.location.reload();
-					});
-				}
-			});
-		});
-		$("#btn_delete").click(function(){
-			var id = $("#formtype").val();
-			swal({
-				title: "Dikkat",
-				text: "Form türü silme işlemi gerçekleştirmek istediğinize emin misiniz?",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#EF5350",
-				confirmButtonText: "Evet, Sil",
-				cancelButtonText: "Geri",
-				closeOnConfirm: false,
-				closeOnCancel: true
-			},
-			function(isConfirm){
-				if (isConfirm) {
-					Server.deleteFormType(id,function(){
-						window.location.reload();
-					});
-				}
-			});
-		});
 	</script>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
