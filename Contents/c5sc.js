@@ -702,27 +702,29 @@ Server.request = function(obj,callback)
         errcallback && errcallback();
     });
 };
-$.extend($.fn.dataTable.defaults, {
-    autoWidth: false,
-    dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-    language: {
-        zeroRecords: "Hiç bir şey yok",
-        infoEmpty: "Herhangi bir kayıt yok",
-        search: '<span>Filtre:</span> _INPUT_',
-        searchPlaceholder: 'Arama...',
-        lengthMenu: '<span>Girdi Sayısı:</span> _MENU_',
-        paginate: { 'first': 'İlk', 'last': 'Son', 'next': 'Sonraki', 'previous': 'Önceki' },
-        emptyTable:"Veri yok"
-    },
-    drawCallback: function () {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
-    },
-    preDrawCallback: function() {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
-    }
-});
 function reinitialize()
 {
+    $.extend($.fn.dataTable.defaults, {
+        autoWidth: false,
+        dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+        language: {
+            infoFiltered:"(_MAX_ kayıt filtrelendi)",
+            info:"_TOTAL_ kayıttan _START_ ile _END_ arası gösteriliyor",
+            zeroRecords: "Hiç bir şey yok",
+            infoEmpty: "Herhangi bir kayıt yok",
+            search: '<span>Filtre:</span> _INPUT_',
+            searchPlaceholder: 'Arama...',
+            lengthMenu: '<span>Girdi Sayısı:</span> _MENU_',
+            paginate: { 'first': 'İlk', 'last': 'Son', 'next': 'Sonraki', 'previous': 'Önceki' },
+            emptyTable:"Veri yok"
+        },
+        drawCallback: function () {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
+        },
+        preDrawCallback: function() {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
+        }
+    });
     $(".datatablepin:not(.inited)").each(function(){
         $(this).DataTable({
             colReorder: true,
@@ -730,7 +732,7 @@ function reinitialize()
                 header: true,
                 footer: true
             },
-            paginate:!$(this).hasClass("no-paginate"),
+            paginate:false,
             searching:!$(this).hasClass("no-searching"),
             ordering: !$(this).hasClass("no-order")
         });

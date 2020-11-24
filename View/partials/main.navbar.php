@@ -12,13 +12,12 @@
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown dropdown-user">
 					<a class="dropdown-toggle" data-toggle="dropdown">
-						<img src="images/placeholder.jpg" alt="">
+						<img src="uploads/<?=userimage()?>" alt="">
 						<span><?=$_SESSION["name"]?></span>
 						<i class="caret"></i>
 					</a>
 
 					<ul class="dropdown-menu dropdown-menu-right">
-						<li><a href="<?=$workspaceDir?>/<?=safeName($_SESSION["name"])?>/profil"><i class="icon-cog5"></i> Hesap Ayarları</a></li>
 						<li><a href="<?=$workspaceDir?>/<?=safeName($_SESSION["name"])?>/logout"><i class="icon-switch2"></i> Logout</a></li>
 					</ul>
 				</li>

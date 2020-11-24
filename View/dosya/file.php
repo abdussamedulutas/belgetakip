@@ -13,10 +13,27 @@
 	$breadcrumb = [
 		"Anasayfa" => "$data->userPanelLink/panel",
 		"Dosyalar" => "$data->userPanelLink/dosyalar"
-	];
+    ];
+    function addRemoveTD($note)
+    {
+        if(ipermission("admin"))
+        {
+?>
+<td> <button class="btn btn-danger" onclick="NotSil('<?=$note->id?>')">Sil</button> </td>
+<?php
+        }
+    };
+    function addRemoveTH()
+    {
+        if(ipermission("admin"))
+        {
+?>
+<th width="1%">İşlem</th>
+<?php
+        }
+    };
 ?>
 <body class="navbar-bottom navbar-top">
-	
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
@@ -37,6 +54,14 @@
 							<div class="panel-body">
 								<table class="table table-bordered folding mb-15">
 									<tbody>
+                                        <tr>
+											<td>
+											    Dosya Numarası
+											</td>
+											<td width="50%">
+											    <?=$data->order?>
+                                            </td>
+										</tr>
                                         <?php foreach($data->form["FormData"] as $field): ?>
                                         <tr>
 											<td>
@@ -49,7 +74,7 @@
                                         <?php endforeach; ?>
 									</tbody>
 								</table>
-								<table class="table table-bordered folding">
+								<table class="table table-bordered folding text-muted">
 									<tbody>
 										<tr>
 											<td>
@@ -104,69 +129,200 @@
 
                                                     <div class="tab-content">
                                                         <div class="tab-pane has-padding active" id="tab1">
-                                                            <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
+                                                            <table class="table table-bordered table-striped table-hover datatablepin">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Tarih</th>
-                                                                        <th>Personel</th>
+                                                                        <th width="1%">Tarih</th>
+                                                                        <th width="1%">Personel</th>
                                                                         <th>Yazı</th>
+                                                                        <?php addRemoveTH(); ?>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody></tbody>
+                                                                <tbody>
+                                                                <?php foreach($data->notes as $note): if($note->type!= "Hasar") continue; ?>
+                                                                <tr>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->tarih?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->username?> <?=$note->usersurname?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->text?>
+                                                                    </td>
+                                                                    <?php addRemoveTD($note); ?>
+                                                                </tbody>
+                                                                 <?php endforeach; ?>
                                                             </table>
+                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <div class="row send-note">
+                                                                <div class="col-md-12">
+                                                                    <h2>Hasar için gelişme gönder</h2>
+                                                                </div>
+                                                                <div class="col-md-11">
+                                                                    <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <button class="btn btn-success" onclick="sendNote(this,'Hasar')">Gönder</button>
+                                                                </div>
+                                                            </div>
+                                                            <?php endif; ?>
                                                         </div>
 
                                                         <div class="tab-pane has-padding" id="tab2">
-                                                            <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
-                                                                <thead>
+                                                            <table class="table table-bordered table-striped table-hover datatablepin">
+                                                            <thead>
                                                                     <tr>
-                                                                        <th>Tarih</th>
-                                                                        <th>Personel</th>
+                                                                        <th width="1%">Tarih</th>
+                                                                        <th width="1%">Personel</th>
                                                                         <th>Yazı</th>
+                                                                        <?php addRemoveTH(); ?>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody></tbody>
+                                                                <tbody>
+                                                                <?php foreach($data->notes as $note): if($note->type!= "Adli Tıp") continue; ?>
+                                                                <tr>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->tarih?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->username?> <?=$note->usersurname?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->text?>
+                                                                    </td>
+                                                                    <?php addRemoveTD($note); ?>
+                                                                </tbody>
+                                                                 <?php endforeach; ?>
                                                             </table>
+                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <div class="row send-note">
+                                                                <div class="col-md-12">
+                                                                    <h2>Adli tıp için gelişme gönder</h2>
+                                                                </div>
+                                                                <div class="col-md-11">
+                                                                    <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <button class="btn btn-success" onclick="sendNote(this,'Adli Tıp')">Gönder</button>
+                                                                </div>
+                                                            </div>
+                                                            <?php endif; ?>
                                                         </div>
 
                                                         <div class="tab-pane has-padding" id="tab3">
-                                                            <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
+                                                            <table class="table table-bordered table-striped table-hover datatablepin">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Tarih</th>
-                                                                        <th>Personel</th>
+                                                                        <th width="1%">Tarih</th>
+                                                                        <th width="1%">Personel</th>
                                                                         <th>Yazı</th>
+                                                                        <?php addRemoveTH(); ?>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody></tbody>
+                                                                <tbody>
+                                                                <?php foreach($data->notes as $note): if($note->type!= "Avukat") continue; ?>
+                                                                <tr>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->tarih?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->username?> <?=$note->usersurname?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->text?>
+                                                                    </td>
+                                                                    <?php addRemoveTD($note); ?>
+                                                                </tbody>
+                                                                 <?php endforeach; ?>
                                                             </table>
+                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <div class="row send-note">
+                                                                <div class="col-md-12">
+                                                                    <h2>Avukat için gelişme gönder</h2>
+                                                                </div>
+                                                                <div class="col-md-11">
+                                                                    <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <button class="btn btn-success" onclick="sendNote(this,'Avukat')">Gönder</button>
+                                                                </div>
+                                                            </div>
+                                                            <?php endif; ?>
                                                         </div>
 
                                                         <div class="tab-pane has-padding" id="tab4">
-                                                            <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
-                                                                <thead>
+                                                            <table class="table table-bordered table-striped table-hover datatablepin">
+                                                            <thead>
                                                                     <tr>
-                                                                        <th>Tarih</th>
-                                                                        <th>Personel</th>
+                                                                        <th width="1%">Tarih</th>
+                                                                        <th width="1%">Personel</th>
                                                                         <th>Yazı</th>
+                                                                        <?php addRemoveTH(); ?>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody></tbody>
+                                                                <tbody>
+                                                                <?php foreach($data->notes as $note): if($note->type != "İş Kazası") continue; ?>
+                                                                <tr>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->tarih?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->username?> <?=$note->usersurname?>
+                                                                    </td>
+                                                                    <td style="white-space:nowrap">
+                                                                        <?=$note->text?>
+                                                                    </td>
+                                                                    <?php addRemoveTD($note); ?>
+                                                                </tbody>
+                                                                 <?php endforeach; ?>
                                                             </table>
+                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <div class="row send-note">
+                                                                <div class="col-md-12">
+                                                                    <h2>İş kazası için gelişme gönder</h2>
+                                                                </div>
+                                                                <div class="col-md-11">
+                                                                    <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <button class="btn btn-success" onclick="sendNote(this,'İş Kazası')">Gönder</button>
+                                                                </div>
+                                                            </div>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
                                                 </div>
                                         </div>
 
                                         <div class="tab-pane has-padding" id="tab-2">
-                                            <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
+                                            <table class="table table-bordered table-striped table-hover datatablepin" id="eksikevraklar">
                                                 <thead>
                                                     <tr>
                                                         <th>İsim</th>
                                                         <th width="1%"></th>
+                                                        <th width="1%"></th>
                                                     </tr>
                                                 </thead>
-                                                <tbody></tbody>
+                                                <tbody>
+                                                    <?php foreach($data->status->RequiredFormFile as $file): if($file->status) continue; ?>
+                                                    <tr class="text-danger">
+                                                        <td>
+                                                            <?=$file->name?>
+                                                        </td>
+                                                        <td style="white-space:nowrap">
+                                                            Eksik Evrak
+                                                        </td>
+                                                        <?php if(ipermission("admin|personel")): ?>
+                                                            <td style="white-space:nowrap">
+                                                                <button class="btn btn-success" onclick="sendFormFile('<?=$file->id?>','<?=$file->name?>')">Ekle</button>
+                                                            </td>
+                                                        <?php else: ?>
+                                                            <td style="white-space:nowrap"></td>
+                                                        <?php endif; ?>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -178,6 +334,90 @@
 			</div>
 		</div>
 	</div>
+    <script>
+        function sendNote(btn,type)
+        {
+            var text = $(btn).closest(".send-note").find("textarea").val();
+            if(!text || text.length == 0 || text.trim().length == 0) return;
+            Notify.confirm({
+                title:"Dikkat!",
+                text:`Bu notu göndermek istediğinize emin misiniz?`,
+                confirmText:"Evet, Gönder",
+                cancelText:"İptal",
+                confirm:function(){
+                    Server.request({
+                        action:"sendNote",
+                        text:text,
+                        type:type,
+                        fileid:"<?=bin2hex($data->form["Form"]->file_id)?>"
+                    },function(json){
+                        window.location.reload();
+                    })
+                }
+            });
+        };
+        function NotSil(id)
+        {
+            Notify.confirm({
+                title:"Dikkat!",
+                text:`Bu notu silmek istediğinize emin misiniz?`,
+                confirmText:"Evet, Gönder",
+                cancelText:"İptal",
+                confirm:function(){
+                    Server.request({
+                        action:"deleteNote",
+                        id:id
+                    },function(json){
+                        window.location.reload();
+                    })
+                }
+            });
+        };
+        var fileid;
+        function sendFormFile(_fileid,name)
+        {
+            fileid = _fileid;
+            $("#add-file #evrakname").html(name);
+            $("#add-file").modal("show");
+        };
+        $(function(){
+            $(".actionbtn").click(function(){
+                Server.request({
+                    action:"sendEvrak",
+                    fileid:"<?=bin2hex($data->form["Form"]->file_id)?>",
+                    requireid:fileid,
+                    file:$("#dosya")[0].files[0]
+                },function(json){
+                    confirm("Evrak başarılı bir şekilde sisteme yüklendi");
+                   window.location.reload();
+                })
+            });
+        });
+    </script>
+        <div id="add-file" class="modal fade">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title">Dosyaya Evrak Yükle</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label><span id="evrakname"></span> evrağı için dosya yükle</label>
+                                <input type="file" class="form-control" id="dosya" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-primary actionbtn" actionbtn>Gönder</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
 </body>

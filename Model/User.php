@@ -24,7 +24,7 @@
             $usert = $user->fetch(PDO::FETCH_OBJ);
             return $usert;
         }
-        public function createUser($name,$surname,$role,$email,$image,$password)
+        public function createUser($name,$surname,$role,$email,$image,$password,$acente = -1)
         {
             global $db;
             $id = getRandom();
@@ -46,6 +46,16 @@
             $pre->bindParam("image", $image);
             $pre->bindParam("role", $role);
             $pre->bindParam("password", $password);
+            $pre->execute();
+            if($acente != -1) $this->updateUserAcente($id,$acente);
+            return $id;
+        }
+        public function updateUserAcente($id,$acente)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE `user` SET `acente_id` = UNHEX(:acente) WHERE `id` = UNHEX(:id) ");
+            $pre->bindParam("id", $id);
+            $pre->bindParam("acente", $acente);
             return $pre->execute();
         }
         public function getAll($role)
@@ -72,6 +82,7 @@
         {
             global $db;
             $pre = $db->prepare("SELECT
+                HEX(user.acente_id) as acente,
                 HEX(user.id) as id,
                 user.name as name,
                 user.surname as surname,
@@ -145,7 +156,7 @@
     }
     function userimage()
     {
-        if(!isset($_SESSION["image"]))
+        if(!isset($_SESSION["image"]) || empty($_SESSION["image"]))
         {
             return "assets/images/placeholder.jpg";
         };

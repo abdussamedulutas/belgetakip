@@ -21,6 +21,7 @@
                 $_SESSION["image"] = $user->image;
                 $_SESSION["role"] = $user->role;
                 $_SESSION["userid"] = $user->id;
+                $_SESSION["acente"] = $user->acente_id;
                 $safe = safeName($_SESSION["name"]);
                 Response::soap("success","login",[
                     "newURL"=>"$workspaceDir/$safe/panel"

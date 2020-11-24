@@ -93,6 +93,27 @@
         "name" => "file::post"
     ]);
     RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/eksikevraklar$/",
+        "method" => "get",
+        "name" => "file::eksikler"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/sondurum$/",
+        "method" => "get",
+        "name" => "file::sondurum"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/sondurum$/",
+        "method" => "post",
+        "name" => "form::post"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/eksikevraklar$/",
+        "method" => "post",
+        "name" => "file::post"
+    ]);
+
+    RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/dosya\/ekle$/",
         "method" => "get",
         "name" => "file::addForm"
@@ -164,7 +185,6 @@
         "method" => "post",
         "name" => "acente::post"
     ]);
-    
     RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/duzenle\/([^\/]{32})$/",
         "method" => "get",

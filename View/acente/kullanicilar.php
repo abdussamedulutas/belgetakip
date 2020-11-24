@@ -38,7 +38,7 @@
                                 
                             </div>
                             <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#add-personel">Yeni Kullanıcı Ekle</button>
+                                <button class="btn btn-primary" onclick="createKullanici()">Yeni Kullanıcı Ekle</button>
                             </div>
                             <div class="col-md-12">
                                 <table class="table table-bordered table-striped table-hover datatablepin">
@@ -74,16 +74,34 @@
 		</div>
     </div>
     <script>
+        function createKullanici()
+        {
+            Server.request({
+                action:"tumacenteler"
+            },function(json){
+                $("#acenteler").html(Object.values(json.data).map(function(e){
+                    return `<option value="${e.id}">${e.name}</option>`
+                }).join('')).trigger("change");
+                $("#add-personel").modal("show");
+            });
+        };
         function Duzenle(btn,id)
         {
-            Server.getKullaniciInfo(id,btn,function(data){
-                for(var name in data) if(name != "image"){
-                    $("#edit-personel").find("[name='"+name+"']").length != 0 && $("#edit-personel").find("[name='"+name+"']").val(data[name]);
-                };
-                if(data.image){
-                    $("#edit-personel").find("img").attr("src","uploads/"+data.image)
-                };
-                $("#edit-personel").modal("show");
+            Server.request({
+                action:"tumacenteler"
+            },function(json){
+                $("#acenteler").html(Object.values(json.data).map(function(e){
+                    return `<option value="${e.id}">${e.name}</option>`
+                }).join('')).trigger("change");
+                Server.getKullaniciInfo(id,btn,function(data){
+                    for(var name in data) if(name != "image"){
+                        $("#edit-personel").find("[name='"+name+"']").length != 0 && $("#edit-personel").find("[name='"+name+"']").val(data[name]);
+                    };
+                    if(data.image){
+                        $("#edit-personel").find("img").attr("src","uploads/"+data.image)
+                    };
+                    $("#edit-personel").modal("show");
+                });
             });
         }
         function Sil(btn,id)
@@ -160,6 +178,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label>Acente</label>
+                                    <select class="select2" id="acenteler" name="acente"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
@@ -205,7 +231,6 @@
                                     <label>E-Mail Adresi</label>
                                     <input type="text" name="email" class="form-control">
                                 </div>
-
                                 <div class="col-sm-6">
                                     <label>Profil Resmi (varsa Değiştirilecek)</label>
                                     <input type="file" name="image" class="form-control">

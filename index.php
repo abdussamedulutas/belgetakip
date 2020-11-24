@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
     include("MVC/Engine.php");
     HandleRoute();
     if(!isset($MVC_currentRouter) || !file_exists("Controller/$MVC_currentRouter->name.php"))

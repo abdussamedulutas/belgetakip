@@ -3,7 +3,7 @@
     include("Model/User.php");
     include("Model/Form.php");
     include("Model/Acente.php");
-    include("Model/Notification.php");
+    include("Model/Notes.php");
 
     $main = new class extends Controller{
         public function viewFiles()
@@ -24,10 +24,25 @@
             $data = $form->getFileForm($id);
             permission("admin|kullanici|personel");
             global $workspaceDir;
+            $status = $file->getFileStatus($id);
+            $note = new Notes();
+            $notes = $note->get($id);
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/file",(object)[
                 "userPanelLink"=>$userPanelLink,
-                "form"=>$data
+                "form"=>$data,
+                "order"=>getUrlTokens()[2],
+                "status"=>$status,
+                "notes"=>$notes
+            ]);
+        }
+        public function eksikler()
+        {
+            permission("admin|kullanici|personel");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("dosya/eksik",(object)[
+                "userPanelLink"=>$userPanelLink
             ]);
         }
         public function viewForms()
@@ -48,6 +63,15 @@
                 "userPanelLink"=>$userPanelLink
             ]);
         }
+        public function sondurum()
+        {
+            permission("admin");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("dosya/sondurum",(object)[
+                "userPanelLink"=>$userPanelLink
+            ]);
+        }
         public function post()
         {
             global $workspaceDir;
@@ -57,26 +81,62 @@
             $acente = new Acente();
             switch(Request::post("action"))
             {
+                case "sendEvrak":{
+                    permission("admin|personel");
+                    if(Request::file("file")){
+                        $newName = Request::acceptFile("file");
+                        if(!$newName){
+                            Response::soap("fail","NO_FILE");
+                        }
+                    }else{
+                        Response::soap("fail","NO_FILE");
+                        return;
+                    };
+                    $file = new File();
+                    $file->createEvrak(
+                        Request::post("requireid"),
+                        $_SESSION["userid"],
+                        Request::post("fileid"),
+                        $newName
+                    );
+                    Response::soap("success","OK");
+                    break;
+                }
+                case "sendNote":{
+                    permission("admin|personel");
+                    $note = new Notes();
+                    $notes = $note->add(
+                        Request::post("fileid"),
+                        Request::post("text"),
+                        $_SESSION["userid"],
+                        Request::post("type")
+                    );
+                    Response::soap("success","OK");
+                    break;
+                }
+                case "deleteNote":{
+                    permission("admin|personel");
+                    $note = new Notes();
+                    $note->delete(Request::post("id"));
+                    Response::soap("success","OK");
+                    break;
+                }
                 case "tumpersoneller":{
-                    permission( "admin");
                     $allAcente = $acente->getAcentePersonelAll();
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
                 case "tumacenteler":{
-                    permission( "admin");
                     $allAcente = $acente->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "tumformislemleri":{
-                    permission( "admin");
                     $reqforms = $form->getRequiredForms();
                     Response::soap("success","FORMREQTYPE_ALL",$reqforms);
                     break;
                 }
                 case "tumformlar":{
-                    permission( "admin");
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
                     break;
@@ -88,7 +148,6 @@
                     break;
                 }
                 case "saveFile":{
-                    permission( "admin");
                     $form = new Form();
                     $fileid = $file->createFile(
                         Request::post("name"),
@@ -125,12 +184,10 @@
                     break;
                 }
                 case "changeFile":{
-                    permission( "admin");
                     Response::soap("success","CHANGED_FILE");
                     break;
                 }
                 case "deleteFile":{
-                    permission( "admin");
                     Response::soap("success","DELETED_FILE");
                     break;
                 }
@@ -138,9 +195,19 @@
                     permission("admin|personel|kullanici");
                     if($_SESSION["role"] == "admin"){
                         $kle = $file->getAllFiles();
-                    }else{
+                    }else if($_SESSION["role"] == "kullanici"){
+                        $kle = $file->getAllFilesForAcente($_SESSION["acente"]);
+                    }else if($_SESSION["role"] == "personel"){
                         $kle = $file->getAllFilesForUser($_SESSION["userid"]);
-                    }
+                    };
+                    $note = new Notes();
+                    foreach($kle as $Ofile)
+                    {
+                        $Ofile->evraklar = $file->getFileStatus($Ofile->id);
+                        $Ofile->notes = $note->get($Ofile->id);
+                        $Ofile->form = $form->getFileForm($Ofile->id);
+                        unset($Ofile->form["Form"]);
+                    };
                     $types = $form->getAllType();
                     $acenteler = $acente->getAll();
                     $personeller = $users->getAll('personel');

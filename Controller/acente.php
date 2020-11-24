@@ -111,15 +111,22 @@
                     }
                     break;
                 }
-                case "getPersonelInfo":{
+                case "getKullaniciInfo":
+                case "getPersonelInfo":
+                case "getAdminInfo":{
                     $user = new User();
                     $id = Request::post("id");
                     $personel = $user->get($id);
-                    if(count($personel) != 0){
-                        Response::soap("success","PERSONEL_INFO",$personel[0]);
+                    if($personel != false){
+                        Response::soap("success","USER_INFO",$personel);
                     }else{
                         SendStatus(404);
                     }
+                    break;
+                }
+                case "tumacenteler":{
+                    $allAcente = (new Acente())->getAll();
+                    Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "deletePersonel":{
@@ -202,17 +209,6 @@
                     }
                     break;
                 }
-                case "getKullaniciInfo":{
-                    $user = new User();
-                    $id = Request::post("id");
-                    $personel = $user->get($id);
-                    if(count($personel) != 0){
-                        Response::soap("success","PERSONEL_INFO",$personel[0]);
-                    }else{
-                        SendStatus(404);
-                    }
-                    break;
-                }
                 case "deleteKullanici":{
                     $user = new User();
                     $id = Request::post("id");
@@ -243,7 +239,7 @@
                         $newName = $personel->image;
                     }
                     $user = new User();
-                    if($user->updateKullanici(
+                    if($user->update(
                         $id,
                         Request::post("name"),
                         Request::post("surname"),
@@ -253,7 +249,7 @@
                     )){
                         Response::soap("success","PERSONEL_UPDATE");
                     }else{
-                        SendStatus(500);
+                        SendStatus(200);
                     }
                     break;
                 }
@@ -285,22 +281,12 @@
                         'kullanici',
                         Request::post("email"),
                         $newName,
-                        Request::post("password1")
+                        Request::post("password1"),
+                        Request::post("acente")
                     )){
                         Response::soap("success","PERSONEL_CREATEDPERSONEL");
                     }else{
                         SendStatus(500);
-                    }
-                    break;
-                }
-                case "getAdminInfo":{
-                    $user = new User();
-                    $id = Request::post("id");
-                    $personel = $user->get($id);
-                    if($personel != false){
-                        Response::soap("success","PERSONEL_INFO",$personel);
-                    }else{
-                        SendStatus(404);
                     }
                     break;
                 }

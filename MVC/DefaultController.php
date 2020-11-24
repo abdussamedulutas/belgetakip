@@ -1,6 +1,6 @@
 <?php
     class Model {
-        public function Model()
+        public function __construct()
         {
             if(session_status() != PHP_SESSION_ACTIVE) session_start();
             ConnectDatabase();
@@ -124,7 +124,7 @@
         public static $changedData = [];
         public static $createdData = [];
         public static $loaded = false;
-        public function Settings(){
+        public function __construct(){
             $this->load();
         }
         public function load()

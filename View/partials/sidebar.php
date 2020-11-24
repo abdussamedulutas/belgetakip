@@ -9,7 +9,7 @@
 						</div>
 						<div class="category-content sidebar-user">
 							<div class="media">
-								<a href="#" class="media-left"><img src="assets/images/placeholder.jpg" class="img-circle img-sm" alt=""></a>
+								<a href="#" class="media-left"><img src="uploads/<?=userimage()?>" class="img-circle img-sm" alt=""></a>
 								<div class="media-body">
 									<span class="media-heading text-semibold"><?=username();?></span>
 									<div class="text-size-mini text-muted">
@@ -17,7 +17,7 @@
 									</div>
 								</div>
 								<div class="media-right media-middle">
-									<ul class="icons-list">
+									<ul class="icons-list" style="display:none">
 										<li>
 											<a href="<?="$data->userPanelLink/account"?>"><i class="icon-cog3"></i></a>
 										</li>
@@ -29,8 +29,9 @@
 							<ul class="navigation navigation-main navigation-accordion">
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
+								<li><a href="<?="$data->userPanelLink/sondurum"?>"><i class="icon-checkmark4"></i> <span>Son Gelişmeler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
-								<li><a href="<?="$data->userPanelLink/dosya/ekle"?>"><i class="icon-file-plus"></i> <span>Dosya Ekle</span></a></li>
+								<li><a href="<?="$data->userPanelLink/eksikevraklar"?>"><i class="icon-file-minus"></i> <span>Eksik Evraklar</span></a></li>
 								<li>
 									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>

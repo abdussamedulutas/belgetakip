@@ -1,35 +1,42 @@
 <?php
     class Notes extends Model
     {
-        public function add($formid,$text)
+        public function add($fileid,$text,$user,$type)
         {
             global $db;
             try{
                 $pre = $db->prepare("INSERT
                     INTO form_notes
                     SET `id`= :id,
-                        `formid`=UNHEX(:formid),
+                        `file_id`= UNHEX(:fileid),
+                        `type`= :type,
+                        `user`= :user,
                         `text` = :text,
                         createdate=NOW()
                 ");
                 $id = getRandom();
                 $pre->bindParam("id", $id);
-                $pre->bindParam("formid",$formid);
+                $pre->bindParam("type",$type);
+                $pre->bindParam("fileid",$fileid);
+                $pre->bindParam("user",$user);
                 $pre->bindParam("text",$text);
                 return $pre->execute();
             }catch(Exception $i){
                 exit;
             }
         }
-        public function get($formid)
+        public function get($fileid)
         {
             global $db;
             try{
-                $pre = $db->prepare("SELECT HEX(id) as id,`text` FROM form_notes WHERE `formid`= UNHEX(:formid) AND deletedate is null");
-                $pre->bindParam("formid",$formid);
+                $pre = $db->prepare("SELECT form_notes.createdate as tarih,HEX(form_notes.id) as id,form_notes.`text`,form_notes.`type`,HEX(form_notes.`user`) as user,`user`.`name` as username,`user`.`surname` as usersurname FROM form_notes
+                INNER JOIN user ON user.id = form_notes.user
+                WHERE `file_id`= UNHEX(:fileid) AND form_notes.deletedate is null AND user.deletedate is null ORDER BY form_notes.createdate DESC");
+                $pre->bindParam("fileid",$fileid);
                 $pre->execute();
-                return $pre->fetch(PDO::FETCH_OBJ);
+                return $pre->fetchall(PDO::FETCH_OBJ);
             }catch(Exception $i){
+                var_dump($i);
                 exit;
             }
         }

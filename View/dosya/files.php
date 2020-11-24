@@ -19,9 +19,9 @@
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
 		<div class="page-content">
-            <?php if($_SESSION["role"]=="admin"): ?>
+            <?php if(ipermission("admin")): ?>
 			<?php include(__DIR__."/../partials/sidebar.php");?>
-            <?php elseif($_SESSION["role"]=="personel"): ?>
+            <?php elseif(ipermission("personel|kullanici")): ?>
 			<?php include(__DIR__."/../partials/personel-sidebar.php");?>
             <?php endif;?>
 			<div class="content-wrapper">
@@ -40,10 +40,15 @@
                                         <thead>
                                             <tr>
                                                 <th width="1%">Dosya Numarası</th>
+                                                <th></th>
+                                                <th>İlgili Personel</th>
                                                 <th>Acente</th>
-                                                <th>Acente Personeli</th>
-                                                <th>Form Adı</th>
-                                                <th>İşlem</th>
+                                                <th>Hasar Tarihi</th>
+                                                <th>Dosya Geliş T.</th>
+                                                <th>Müvekkil</th>
+                                                <th>Taraf Şti</th>
+                                                <th>Evraklar</th>
+                                                <th width="1%">İşlem</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -61,6 +66,15 @@
     var tumpersoneller = false;
     var tumformislemleri = false;
     var data = null;
+    function getField(obj,name)
+    {
+        for(var column of obj){
+            if(column.name == name)
+            {
+                return column.text
+            }
+        };
+    }
     function pinfo()
     {
         var p = block("#pinpanel");
@@ -68,18 +82,25 @@
             Server.request({
                 action:"getFiles"
             },function(json){
-                    p();
+                p();
                 data = json.data;
                 var lastAdded = null;
                 $("#filepanel").DataTable().clear().draw();
                 var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
                     lastAdded = db.add([
-                        file.order,
-                        `${file.name}`,
-                        `${json.data.Acente[file.acente].name}`,
-                        `${json.data.Personel[file.personel].name}`,
-                        `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Formlar</a>`
+                        `Dosya no:${file.order}`,
+                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'Mağdurun konumu')}</span>`+
+                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'Tazminat Türü')}</span>`+
+                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'Tanzim Türü')}</span>`,
+                        json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
+                        json.data.Acente[file.acente].name,
+                        getField(file.form.FormData,'Hasar Tarihi'),
+                        getField(file.form.FormData,'Dosya Geliş Tarihi'),
+                        getField(file.form.FormData,'Müvekkil'),
+                        getField(file.form.FormData,'Taraf Şirketi'),
+                        `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
+                        `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
                     ]);
                 };
                 if(lastAdded) lastAdded.draw();

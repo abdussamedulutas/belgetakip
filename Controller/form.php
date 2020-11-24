@@ -2,6 +2,8 @@
     include("Model/User.php");
     include("Model/Form.php");
     include("Model/Notes.php");
+    include("Model/File.php");
+    include("Model/Acente.php");
 
     $main = new class extends Controller{
         public function viewSettings()
@@ -78,6 +80,57 @@
             global $workspaceDir;
             switch(Request::post("action"))
             {
+                case "getFilesI":{
+                    $file = new File();
+                    $acente = new Acente();
+                    $user = new User();
+                    permission("admin|personel|kullanici");
+                    if($_SESSION["role"] == "admin"){
+                        $kle = $file->getAllI();
+                    }else{
+                        $kle = $file->getAllIForUser($_SESSION["userid"]);
+                    };
+                    foreach($kle as $file)
+                    {
+                        $file->acente = $acente->getAcente($file->acente);
+                        $file->personel = $user->get($file->personel);
+                    };
+                    Response::soap("success","FILES_ALL",$kle);
+                    break;
+                }
+                case "getFiles":{
+                    permission("admin|personel|kullanici");
+                    if($_SESSION["role"] == "admin"){
+                        $kle = $file->getAllForUser();
+                    }else{
+                        $kle = $file->getAllForUser($_SESSION["userid"]);
+                    };
+                    $note = new Notes();
+                    foreach($kle as $Ofile)
+                    {
+                        $Ofile->evraklar = $file->getFileStatus($Ofile->id);
+                        $Ofile->notes = $note->get($Ofile->id);
+                        $Ofile->form = $form->getFileForm($Ofile->id);
+                        unset($Ofile->form["Form"]);
+                    };
+                    $types = $form->getAllType();
+                    $acenteler = $acente->getAll();
+                    $personeller = $users->getAll('personel');
+                    $personels = [];
+                    foreach($personeller as $p){
+                        $personels[$p->id] = $p;
+                    };
+                    $acentes = [];
+                    foreach($acenteler as $p){
+                        $acentes[$p->id] = $p;
+                    };
+                    Response::soap("success","FILES_ALL",[
+                        "Acente"=>$acentes,
+                        "Files"=>$kle,
+                        "Personel"=>$personels
+                    ]);
+                    break;
+                }
                 case "updateReqFile":{
                     permission("admin");
                     $form = new Form();
