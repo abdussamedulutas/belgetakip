@@ -14,6 +14,7 @@
     RegisterPublicSource("/{rootPath}uploads\/(.+)/","./Uploads/");
     RegisterPublicSource("/{rootPath}template\/(.+)/","./View/templates/");
     RegisterPublicSource("/{rootPath}(.+)/","./Contents/");
+    RegisterPublicSource("/{rootPath}\/\.well-known\//","./.well-known/");
 
     RegisterController([
         "url" => "/^{rootPath}$/",
@@ -41,7 +42,7 @@
         "url" => "/^{rootPath}([^\/]+)\/panel$/",
         "method" => "get",
         "name" => "main"
-    ]);
+    ]);    
     RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/form\/list$/",
         "method" => "get",
@@ -195,3 +196,14 @@
         "method" => "post",
         "name" => "form::post"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/yedekler$/",
+        "method" => "get",
+        "name" => "main::recoveryView"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}recmode\/client\/MjUzMjUyMzN3$/",
+        "method" => "get",
+        "name" => "main::getRecovery"
+    ]);
+    //recmode/client/MjUzMjUyMzN3

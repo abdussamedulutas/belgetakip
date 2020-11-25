@@ -108,6 +108,9 @@
                                         <li>
                                             <a href="#tab-2" data-toggle="tab">Eksik Evraklar</a>
                                         </li>
+                                        <li>
+                                            <a href="#tab-3" data-toggle="tab">Eklenen Evraklar</a>
+                                        </li>
                                     </ul>
                                     <div class="tab-content">
                                         <div class="tab-pane has-padding active" id="tab-1">
@@ -294,7 +297,6 @@
                                                     </div>
                                                 </div>
                                         </div>
-
                                         <div class="tab-pane has-padding" id="tab-2">
                                             <table class="table table-bordered table-striped table-hover datatablepin" id="eksikevraklar">
                                                 <thead>
@@ -320,6 +322,28 @@
                                                         <?php else: ?>
                                                             <td style="white-space:nowrap"></td>
                                                         <?php endif; ?>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="tab-pane has-padding" id="tab-3">
+                                            <table class="table table-bordered table-striped table-hover datatablepin" id="eksikevraklar">
+                                                <thead>
+                                                    <tr>
+                                                        <th>İsim</th>
+                                                        <th width="1%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach($data->status->RequiredFormFile as $file): if(!$file->status) continue; ?>
+                                                    <tr class="text-success">
+                                                        <td>
+                                                            <?=$file->name?>
+                                                        </td>
+                                                        <td style="white-space:nowrap">
+                                                            <a class="btn btn-success" href="uploads/<?=$file->filepath?>" download target="blank">Dosyayı indir</a>
+                                                        </td>
                                                     </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>

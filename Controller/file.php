@@ -56,7 +56,7 @@
         }
         public function addForm()
         {
-            permission("admin");
+            permission("personel|kullanici|admin");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/addform",(object)[
@@ -65,7 +65,7 @@
         }
         public function sondurum()
         {
-            permission("admin");
+            permission("personel|kullanici|admin");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/sondurum",(object)[
@@ -115,39 +115,45 @@
                     break;
                 }
                 case "deleteNote":{
-                    permission("admin|personel");
+                    permission("admin");
                     $note = new Notes();
                     $note->delete(Request::post("id"));
                     Response::soap("success","OK");
                     break;
                 }
                 case "tumpersoneller":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $acente->getAcentePersonelAll();
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
                 case "tumacenteler":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $acente->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "tumformislemleri":{
+                    permission("admin|personel|kullanici");
                     $reqforms = $form->getRequiredForms();
                     Response::soap("success","FORMREQTYPE_ALL",$reqforms);
                     break;
                 }
                 case "tumformlar":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
                     break;
                 }
                 case "getFields":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     $fields = $form->getFields(Request::post("id"));
                     Response::soap("success","FORMTYPE_ALL",$fields);
                     break;
                 }
                 case "saveFile":{
+                    permission("admin");
                     $form = new Form();
                     $fileid = $file->createFile(
                         Request::post("name"),
@@ -174,11 +180,7 @@
                     break;
                 }
                 case "getTypes":{
-                    $types = $form->getAllType();
-                    Response::soap("success","ALL_TYPES",$types);
-                    break;
-                }
-                case "getTypes":{
+                    permission("admin|personel|kullanici");
                     $types = $form->getAllType();
                     Response::soap("success","ALL_TYPES",$types);
                     break;

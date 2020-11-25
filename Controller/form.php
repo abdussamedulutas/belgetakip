@@ -56,6 +56,7 @@
         }
         public function editForm()
         {
+            permission("admin");
             global $workspaceDir;
             $id = getUrlTokens()[2];
 
@@ -160,6 +161,7 @@
                     break;
                 }
                 case "addNote":{
+                    permission("admin|personel");
                     $note = new Notes();
                     $note->add(
                         Request::post("formid"),
@@ -169,6 +171,7 @@
                     break;
                 }
                 case "removeNote":{
+                    permission("admin");
                     $note = new Notes();
                     $note->delete(
                         Request::post("id")
@@ -177,6 +180,7 @@
                     break;
                 }
                 case "editNote":{
+                    permission("admin");
                     $note = new Notes();
                     $note->edit(
                         Request::post("id"),
@@ -207,12 +211,14 @@
                     break;
                 }
                 case "getFields":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     $fields = $form->getFields(Request::post("id"));
                     Response::soap("success","FORMTYPE_ALL",$fields);
                     break;
                 }
                 case "changeFieldType":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     if($form->changeFieldType(Request::post("id"),Request::post("name")))
                         Response::soap("success","CHANGE_TYPE");
@@ -221,6 +227,7 @@
                     break;
                 }
                 case "createFormType":{
+                    permission("admin");
                     $form = new Form();
                     if($form->createType(Request::post("name")))
                         Response::soap("success","CREATE_FORM");
@@ -229,6 +236,7 @@
                     break;
                 }
                 case "updateFormType":{
+                    permission("admin");
                     $form = new Form();
                     if($form->updateType(Request::post("id"),Request::post("name")))
                         Response::soap("success","CREATE_FORM");
@@ -237,6 +245,7 @@
                     break;
                 }
                 case "deleteFormType":{
+                    permission("admin");
                     $form = new Form();
                     if($form->deleteType(Request::post("id")))
                         Response::soap("success","CREATE_FORM");
@@ -245,30 +254,35 @@
                     break;
                 }
                 case "formpanel":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     $types = $form->getFields(Request::post("id"));
                     Response::soap("success","GET_FORMPANEL",$types);
                     break;
                 }
                 case "createfield":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->createField(Request::post("name"));
                     Response::soap("success","CREATE_FIELD");
                     break;
                 }
                 case "updateField":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->updateField(Request::post("id"),Request::post("name"));
                     Response::soap("success","UPDATE_FIELD");
                     break;
                 }
                 case "updateFieldOrder":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->updateField(Request::post("id"),Request::post("name"),Request::post("order"));
                     Response::soap("success","UPDATE_FIELD");
                     break;
                 }
                 case "deleteField":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->deleteField(Request::post("id"));
                     Response::soap("success","DELETE_VARIABLE");
@@ -276,24 +290,28 @@
                 }
                 
                 case "createvariable":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->createVariable(Request::post("id"),Request::post("name"));
                     Response::soap("success","CREATE_VARIABLE");
                     break;
                 }
                 case "updatevariable":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->updateVariable(Request::post("id"),Request::post("name"));
                     Response::soap("success","UPDATE_VARIABLE");
                     break;
                 }
                 case "deletevariable":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->deleteVariable(Request::post("id"));
                     Response::soap("success","DELETE_VARIABLE");
                     break;
                 }
                 case "requiredformpanel":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     $forms = $form->getAllType();
                     $reqforms = $form->getRequiredForms();
@@ -309,24 +327,28 @@
                     break;
                 }
                 case "createreqform":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->createRequiredForm(Request::post("name"));
                     Response::soap("success","CREATE_REQUIREDFORM");
                     break;
                 }
                 case "updatereqformname":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->updateRequiredFormName(Request::post("id"),Request::post("name"));
                     Response::soap("success","UPDATE_REQUIREDFORM");
                     break;
                 }
                 case "updatereqformlist":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->updateRequiredFormList(Request::post("id"),Request::post("list"));
                     Response::soap("success","UPDATE_REQUIREDFORM");
                     break;
                 }
                 case "deletereqform":{
+                    permission("admin");
                     $form = new Form();
                     $types = $form->deleteRequiredForm(Request::post("id"));
                     Response::soap("success","DELETE_REQUIREDFORM");

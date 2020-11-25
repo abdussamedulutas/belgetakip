@@ -7,14 +7,6 @@
 			<div class="navbar-text">
 				&copy; 2020. <a href="#" class="navbar-link"></a> by <a href="http://toymedya.com" class="navbar-link" target="_blank">Toy Medya</a>
 			</div>
-
-			<div class="navbar-right">
-				<ul class="nav navbar-nav">
-					<li><a href="#">About</a></li>
-					<li><a href="#">Terms</a></li>
-					<li><a href="#">Contact</a></li>
-				</ul>
-			</div>
 		</div>
     </div>
 	<style>

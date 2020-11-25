@@ -48,6 +48,7 @@
 										<li><a href="<?="$data->userPanelLink/kullanicilar"?>">Kullanıcılar</a></li>
 									</ul>
 								</li>
+								<li><a href="<?="$data->userPanelLink/yedekler"?>"><i class="icon-history"></i> <span>Veri Yedekleri</span></a></li>
 							</ul>
 						</div>
 					</div>

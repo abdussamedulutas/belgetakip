@@ -20,6 +20,7 @@
                 }
             }else Response::tempRedirect("$workspaceDir/login");
         }
+        
         public function redirectpanel()
         {
             global $workspaceDir;
@@ -28,5 +29,32 @@
                 $safe = safeName($_SESSION["name"]);
                 Response::tempRedirect("$workspaceDir/$safe/dosyalar");
             }else Response::tempRedirect("$workspaceDir/login");
+        }
+        public function recoveryView()
+        {
+            permission("admin");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            $config = readConfig();
+            Response::view("recovery",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "config"=>$config
+            ]);
+        }
+        public function getRecovery()
+        {
+            permission("admin");
+            if($g = Request::get("date"))
+            {
+                ImportDatabase($g);
+                echo "$g tarihli veritabanı Yedeği başarıyla alındı";
+                exit;
+            };
+            if(ExportDatabase())
+            {
+                echo "Veritabanı Yedeği başarıyla alındı";
+            }else{
+                echo "Veritabanı Yedeğı alınmadı veya zaten bu günün yedeği alınmış durumda";
+            }
         }
     };
