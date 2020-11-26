@@ -38,14 +38,17 @@
 								<div class="col-md-6">
 									<p class="text-justify">
 										Veri yedeklemeleri <a href="https://toymedya.com">Toy Medya</a> tarafından yapılmaktadır.
-										Sistem içerisine yüklenmiş evrak dosyaları ve kullanıcı profil foroğrafları yedeklenmemektedir bunun haricinde
-										acente, formlar, dosyalar, sistem kullanıcılarını (yönetici bilgileri, personel bilgileri, kullanıcı bilgileri) bilgileri, 
-										zorunluk evraklar, dosyalara takiben üzerinde tutulmuş notlar/gelişme, sistem ayarları ve diğer sistem bilgileride yedekleme içeriklerine dahildir.<br>
-										Ayrıca sistem üzerinden yapılan değiştirmeler dışında her hangi bir veriyi silme gibi işlemler yedeklemelerin haricin geri getirilebilmektedir.
+										Sistem içerisine yüklenmiş evrak dosyaları ve kullanıcı profil foroğrafları haricinde
+										acente, formlar, dosyala bilgileri , sistem kullanıcılarını (yönetici bilgileri, personel bilgileri, kullanıcı bilgileri) bilgileri, 
+										zorunlu evraklar, dosyalara takiben üzerinde tutulmuş notlar/gelişme, sistem ayarları ve diğer sistem bilgileride yedekleme içeriklerine dahildir.<br>
 										<br><br>
-										Yedekten geri alma işlemi web sitesi arayüzünden yapılamamaktadır, geri alma talebinizi <a href="https://toymedya.com">Toy Medya</a> telefon hattı veya
-										<a href="mail:toymedya@gmail.com">toymedya@gmail.com</a> üzerinden mail göndererek gerçekleştirebilirsiniz
-										<br>
+										Yedekten geri alma işlemi web sitesi arayüzünden yapılamamaktadır, geri alma işlemini <a href="https://toymedya.com">Toy Medya</a> telefon hattı veya
+										<a href="mail:toymedya@gmail.com">toymedya@gmail.com</a> üzerinden mail talebinizi ileterek yapabilirsiniz.
+										Sistem tasarımı gereği arayüz üzerinden <b>kalıcı olarak veri silemezsiniz</b>, kaldırmak istediğiniz evraklar, dosyalar, gelişmeler, personel verileri gibi veriler yanlızca arayüzden gizlenir. <br>
+										Bunun bir avantajı olarak sistem üzerinden yapılan veri üzerinde <b>değişimeler</b> (isim değişiklikleri, email değişikliği, Evrak adı değişikliği vs)
+										dışında her hangi bir veriyi silme / kaldırma türevi işlemler yedekleme ile geri alma işlemine gerek kalmadan yapılabilmektedir.
+										Verilerin bütünlüğünü korumak ve geri alma işlemi sırasında girilen verilerin kaybolmaması amacıyla işlem sırasında sistem kendisini 30 saniye - 10 dakika kadar
+										kapatacaktır, işlem bittiğinde tekrar otomatik olarak aktif hizmet durumuna geçecektir
 									</p>
 									<p>
 										Bu tablo yanlızca bilgilendirme amaçlıdır

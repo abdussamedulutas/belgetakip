@@ -28,7 +28,6 @@
 						<div class="category-content no-padding">
 							<ul class="navigation navigation-main navigation-accordion">
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
-								<li><a href="<?="$data->userPanelLink/panel"?>"><i class="icon-copy2"></i> <span>Panel</span></a></li>
 								<li><a href="<?="$data->userPanelLink/sondurum"?>"><i class="icon-checkmark4"></i> <span>Son Gelişmeler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
 								<li><a href="<?="$data->userPanelLink/eksikevraklar"?>"><i class="icon-file-minus"></i> <span>Eksik Evraklar</span></a></li>
@@ -48,7 +47,6 @@
 										<li><a href="<?="$data->userPanelLink/kullanicilar"?>">Kullanıcılar</a></li>
 									</ul>
 								</li>
-								<li><a href="<?="$data->userPanelLink/yedekler"?>"><i class="icon-history"></i> <span>Veri Yedekleri</span></a></li>
 							</ul>
 						</div>
 					</div>

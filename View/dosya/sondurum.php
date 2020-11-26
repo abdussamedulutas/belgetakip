@@ -69,6 +69,7 @@
                 return column.text
             }
         };
+        return "";
     }
     function pinfo()
     {

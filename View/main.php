@@ -22,76 +22,7 @@
 			<?php include("partials/sidebar.php");?>
 			<div class="content-wrapper">
 				<div class="row">
-					<div class="col-md-7">
-						<div class="panel panel-flat ">
-							<div class="panel-heading">
-								<h6 class="panel-title">
-								Güncel Dosyalar
-								<div class="heading-elements">
-									<ul class="icons-list">
-										<li><a data-action="collapse"></a></li>
-										<li><a data-action="close"></a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="panel-body">
-
-							</div>
-						</div>
-					</div>
-					<div class="col-md-5">
-						<div class="panel panel-flat ">
-							<div class="panel-heading">
-								<h6 class="panel-title">
-								Personeller
-								<div class="heading-elements">
-									<ul class="icons-list">
-										<li><a data-action="collapse"></a></li>
-										<li><a data-action="close"></a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="panel-body">
-
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-7">
-						<div class="panel panel-flat ">
-							<div class="panel-heading">
-								<h6 class="panel-title">
-								Güncel Evraklar
-								<div class="heading-elements">
-									<ul class="icons-list">
-										<li><a data-action="collapse"></a></li>
-										<li><a data-action="close"></a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="panel-body">
-
-							</div>
-						</div>
-					</div>
-					<div class="col-md-5">
-						<div class="panel panel-flat ">
-							<div class="panel-heading">
-								<h6 class="panel-title">
-								Personeller
-								<div class="heading-elements">
-									<ul class="icons-list">
-										<li><a data-action="collapse"></a></li>
-										<li><a data-action="close"></a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="panel-body">
-
-							</div>
-						</div>
-					</div>
+					
 				</div>
 			</div>
 		</div>

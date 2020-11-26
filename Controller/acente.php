@@ -65,14 +65,12 @@
             switch(Request::post("action"))
             {
                 case "getAcenteList":{
-                    permission("personel");
                     $acente = new Acente();
                     $personeller = $acente->getAll();
                     Response::soap("success","ALL_ACENTE",$personeller);
                     break;
                 }
                 case "createAcente":{
-                    permission("admin");
                     $acente = new Acente();
                     $name = Request::post("name");
                     if($acente->createAcente($name)){
@@ -83,7 +81,6 @@
                     break;
                 }
                 case "deleteAcente":{
-                    permission("admin");
                     $acente = new Acente();
                     $id = Request::post("id");
                     if($acente->deleteAcente($id)){
@@ -94,7 +91,6 @@
                     break;
                 }
                 case "changeAcenteName":{
-                    permission("admin");
                     global $workspaceDir;
                     $acente = new Acente();
                     $id = Request::post("id");
@@ -118,7 +114,6 @@
                 case "getKullaniciInfo":
                 case "getPersonelInfo":
                 case "getAdminInfo":{
-                    permission("personel");
                     $user = new User();
                     $id = Request::post("id");
                     $personel = $user->get($id);
@@ -130,13 +125,11 @@
                     break;
                 }
                 case "tumacenteler":{
-                    permission("personel");
                     $allAcente = (new Acente())->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "deletePersonel":{
-                    permission("admin");
                     $user = new User();
                     $id = Request::post("id");
                     if($user->delete($id)){
@@ -147,7 +140,6 @@
                     break;
                 }
                 case "editPersonel":{
-                    permission("admin");
                     $id = Request::post("id");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
@@ -182,7 +174,6 @@
                     break;
                 }
                 case "createPersonel":{
-                    permission("admin");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
                     Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
@@ -219,7 +210,6 @@
                     break;
                 }
                 case "deleteKullanici":{
-                    permission("admin");
                     $user = new User();
                     $id = Request::post("id");
                     if($user->delete($id)){
@@ -230,7 +220,6 @@
                     break;
                 }
                 case "editKullanici":{
-                    permission("admin");
                     $id = Request::post("id");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
@@ -265,7 +254,6 @@
                     break;
                 }
                 case "createKullanici":{
-                    permission("admin");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
                     Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
@@ -303,7 +291,6 @@
                     break;
                 }
                 case "deleteAdmin":{
-                    permission("admin");
                     $user = new User();
                     $id = Request::post("id");
                     if($user->delete($id)){
@@ -314,7 +301,6 @@
                     break;
                 }
                 case "editAdmin":{
-                    permission("admin");
                     $id = Request::post("id");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
@@ -349,7 +335,6 @@
                     break;
                 }
                 case "createAdmin":{
-                    permission("admin");
                     global $workspaceDir;
                     Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
                     Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");

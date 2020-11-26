@@ -35,7 +35,7 @@
                                 <div class="col-xs-6 text-right">
                                     <?php if($_SESSION["role"]=="admin"): ?><button class="btn btn-success" onclick="create()">Yeni Ekle</button><?php endif;?>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-12 table-responsive">
                                     <table class="table table-bordered table-striped table-hover datatablepin" id="filepanel">
                                         <thead>
                                             <tr>
@@ -74,7 +74,8 @@
                 return column.text
             }
         };
-    }
+        return "";
+    };
     function pinfo()
     {
         var p = block("#pinpanel");

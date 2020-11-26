@@ -17,7 +17,7 @@
         public function varifyUser($email,$password)
         {
             global $db;
-            $user = $db->prepare("SELECT * FROM `user` WHERE `email` = :email AND `password` = MD5(:password) AND deletetime is null LIMIT 1");
+            $user = $db->prepare("SELECT * FROM `user` WHERE `email` = :email AND `password` = MD5(:password) AND deletedate is null LIMIT 1");
             $user->bindParam("email",$email);
             $user->bindParam("password",$password);
             $user->execute();

@@ -18,7 +18,7 @@
 					</a>
 
 					<ul class="dropdown-menu dropdown-menu-right">
-						<li><a href="<?=$workspaceDir?>/<?=safeName($_SESSION["name"])?>/logout"><i class="icon-switch2"></i> Çıkış Yap</a></li>
+						<li><a href="<?=$workspaceDir?>/<?=safeName($_SESSION["name"])?>/logout"><i class="icon-switch2"></i> Logout</a></li>
 					</ul>
 				</li>
 			</ul>

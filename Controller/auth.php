@@ -24,7 +24,7 @@
                 $_SESSION["acente"] = $user->acente_id;
                 $safe = safeName($_SESSION["name"]);
                 Response::soap("success","login",[
-                    "newURL"=>"$workspaceDir/$safe/panel"
+                    "newURL"=>"$workspaceDir/$safe/sondurum"
                 ]);
             }else{
                 //sleep(3);
@@ -38,7 +38,7 @@
             global $workspaceDir;
             if(isset($_SESSION["user"])){
                 $safe = safeName($_SESSION["name"]);
-                Response::tempRedirect("$workspaceDir/$safe/panel");
+                Response::tempRedirect("$workspaceDir/$safe/sondurum");
             }else{
                 Response::view("login");
             }

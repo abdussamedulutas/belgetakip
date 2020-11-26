@@ -94,6 +94,12 @@
 										</tr>
 									</tbody>
 								</table>
+                                <?php if(ipermission("admin")): ?>
+                                <div class="col-md-12 text-right mt-5">
+                                    <button class="btn btn-primary" onclick="edit()"> Güncelle </button>
+                                    <button class="btn btn-danger"> Kaldır </button>
+                                </div>
+                                <?php endif; ?>
 							</div>
 						</div>
 					</div>
@@ -442,6 +448,153 @@
             </div>
         </div>
     </div>
+
+    <script>
+    var tumacenteler = false;
+    var tumpersoneller = false;
+    var tumformislemleri = false;
+    var data = null;
+    function getField(obj,name)
+    {
+        for(var column of obj){
+            if(column.name == name)
+            {
+                return column.text
+            }
+        };
+    }
+    var tumacenteler,tumpersoneller;
+    $(function(){
+        Server.request({
+            action:"tumacenteler"
+        },function(json){
+            tumacenteler = json.data
+        })
+        Server.request({
+            action:"tumpersoneller"
+        },function(json){
+            tumpersoneller = json.data;
+        })
+    });
+    function edit()
+    {
+        autoCommit = true;
+        if(!tumacenteler) return;
+
+        $("#acente").html(
+        tumacenteler.map(function(acente){
+            return `<option value="${acente.id}">${acente.name}</option>`
+        }));
+        $("#acente").trigger("change");
+        $("#personel").html(tumpersoneller.map(function(pers){
+            return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
+        }));
+        $("#personel").trigger("change");
+        $("#addfile").modal("show");
+        autoCommit = false;
+    }
+    </script>
+	<div id="addfile" class="modal fade">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title">Dosya Güncelleme</h5>
+                </div>
+                <form class="modal-body" id="createform">
+                    <input type="hidden" name="id" value="<?=$data->status->File->id?>">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Dosya İsmi</label>
+                                <input type="text" id="fname" name="name" class="form-control" value="<?=$data->status->File->name?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>İlgili Acente</label>
+                                <select class="select2 no-search" id="acente" name="acente">
+                                    <option value="RO">Acente Seç</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Acente Personeli</label>
+                                <select class="select2 no-search" id="personel" name="personel">
+                                    <option value="RO">Personel Seç</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-striped table-hover datatablepin no-paginate no-searching no-order" id="newformdata">
+                                    <thead>
+                                        <tr>
+                                            <th>İsim</th>
+                                            <th width="50%">Değer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-primary" onclick="Server.updateFile()">Gönder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var data = <?=json_encode($data->form["FormData"])?>;
+        var values = {};
+        data.map(function(val){
+            values[val.field] = val;
+        });
+        $(function(){
+            Server.request({
+                action:"getFields"
+            },function(json){
+                var last;
+                $("#newformdata").DataTable().clear()
+                for(var k of json.data){
+                    last = $("#newformdata").DataTable().row.add([
+                        `${k.name}`,
+                        input(k.type,k.id,k.variables)
+                    ])
+                };
+                last.draw();
+                reinitialize();
+            })
+            function input(type,id,valuec)
+            {
+                var selectedValue = values[id];
+                switch(type)
+                {
+                    case "select": return `<select class="select2 field_data" name="${id}"><option>Seçin</option>`+valuec.map(function(value){return `<option value="${value.id}" ${selectedValue?value.id==selectedValue.textid?"selected":"":""}>${value.name}</option>`}).join('')+`</select>`;
+                    case "text": return `<input class="form-control field_data" name="${id}" value='${selectedValue.text}'>`;
+                    case "date": return `<input type="date" class="form-control field_data" name="${id}" value="${selectedValue.text}">`;
+                }
+            };
+            Server.updateFile = function()
+            {
+                var t = new FormData($("#createform")[0]);
+                t.append("action","updateFile");
+                Server.request(t,function(json){
+                    //window.location.reload();
+                })
+            };
+        });
+    </script>
+    <style>
+    .nav-tabs:before{
+        content:'' !important;
+        display:none !important;
+    }
+    </style>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
 </body>

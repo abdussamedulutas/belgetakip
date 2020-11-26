@@ -82,7 +82,7 @@
         public function getFileStatus($fileid)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,name,HEX(acente_id) as acente_id,HEX(personel_id) as personel_id,`order` FROM `file` WHERE deletedate is null AND id = UNHEX(:id)");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name`,HEX(acente_id) as acente_id,HEX(personel_id) as personel_id,`order` FROM `file` WHERE deletedate is null AND id = UNHEX(:id)");
             $pre->bindParam("id", $fileid);
             $pre->execute();
             $file = $pre->fetch(PDO::FETCH_OBJ);
@@ -90,7 +90,7 @@
             $pre->bindParam("fileid", $fileid);
             $pre->execute();
             $form_file = $pre->fetchall(PDO::FETCH_OBJ);
-            $pre = $db->prepare("SELECT HEX(id) as id,name FROM `form_require` WHERE deletedate is null");
+            $pre = $db->prepare("SELECT HEX(id) as id,`name` FROM `form_require` WHERE deletedate is null");
             $pre->execute();
             $form_required = $pre->fetchall(PDO::FETCH_OBJ);
             $eksik = 0;
@@ -98,13 +98,13 @@
             foreach($form_required as $require)
             {
                 $flag = false;
-                foreach($form_file as $file)
+                foreach($form_file as $filec)
                 {
-                    if($file->requireid == $require->id)
+                    if($filec->requireid == $require->id)
                     {
                         $flag = true;
                         $require->status = true;
-                        $require->filepath = $file->filepath;
+                        $require->filepath = $filec->filepath;
                         break;
                     }
                 };
@@ -165,16 +165,15 @@
             $pre->execute();
             return $pre->fetch(PDO::FETCH_OBJ);
         }
-        public function updateFile($name,$forms,$acente,$personel)
+        public function updateFile($id,$name,$acente,$personel)
         {
             global $db;
-            $id = getRandom();
-            $pre = $db->prepare("INSERT INTO `file` SET
-                id = UNHEX(:id),
+            $pre = $db->prepare("UPDATE `file` SET
                 `name` = :name,
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
                 modifydate = NOW()
+                WHERE id = UNHEX(:id)
             ");
             $pre->bindParam("id", $id);
             $pre->bindParam("acente", $acente);

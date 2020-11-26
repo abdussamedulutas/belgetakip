@@ -243,15 +243,15 @@
                 exit;
             }
         }
-        public function updateValue($field,$text)
+        public function updateValue($field,$formid,$text)
         {
             global $db;
             $pre = $db->prepare("UPDATE `values`
                 SET `text` = :text
-                WHERE
-                    `field` = UNHEX(:field)
+                WHERE `field` = UNHEX(:field) AND `formid` = UNHEX(:formid)
             ");
             $pre->bindParam("field",$field);
+            $pre->bindParam("formid",$formid);
             $pre->bindParam("text",$text);
             if($pre->execute())
             {
@@ -383,5 +383,13 @@
                 "FormData" => $kle,
                 "Form" => $form
             ];
+        }
+        public function get($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT user,`file_id` FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
+            $pre->bindParam("id",$id);
+            $pre->execute();
+            return $pre->fetch(PDO::FETCH_OBJ);
         }
     };
