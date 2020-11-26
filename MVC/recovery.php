@@ -15,6 +15,7 @@
             return binarylikevalue($value);
         }
     };
+    
     function textlikevalue($text)
     {
         if($text == "0000-00-00 00:00:00")

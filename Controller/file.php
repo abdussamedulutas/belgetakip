@@ -20,6 +20,11 @@
             $id = getUrlTokens()[2];
             $form = new Form();
             $file = new File();
+            if($file->getFileNum($id) == false)
+            {
+                SendStatus(404);
+                exit;
+            };
             $id = bin2hex($file->getFileNum($id)->id);
             $data = $form->getFileForm($id);
             permission("admin|kullanici|personel");
@@ -92,6 +97,7 @@
                         Response::soap("fail","NO_FILE");
                         return;
                     };
+                    
                     $file = new File();
                     $file->createEvrak(
                         Request::post("requireid"),
@@ -105,6 +111,9 @@
                 case "sendNote":{
                     permission("admin|personel");
                     $note = new Notes();
+                    Request::validation("POST","fileid",["require"=>true],"Dosya kimliği geçersiz");
+                    Request::validation("POST","text",["require"=>true],"Yapılan açıklama geçersiz");
+                    Request::validation("POST","type",["require"=>true],"Bildirilen veri geçersiz");
                     $notes = $note->add(
                         Request::post("fileid"),
                         Request::post("text"),
@@ -122,32 +131,38 @@
                     break;
                 }
                 case "tumpersoneller":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $acente->getAcentePersonelAll();
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
                 case "tumacenteler":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $acente->getAll();
                     Response::soap("success","ACENTE_ALL",$allAcente);
                     break;
                 }
                 case "tumformislemleri":{
+                    permission("admin|personel|kullanici");
                     $reqforms = $form->getRequiredForms();
                     Response::soap("success","FORMREQTYPE_ALL",$reqforms);
                     break;
                 }
                 case "tumformlar":{
+                    permission("admin|personel|kullanici");
                     $allAcente = $form->getAllType();
                     Response::soap("success","FORMTYPE_ALL",$allAcente);
                     break;
                 }
                 case "getFields":{
+                    permission("admin|personel|kullanici");
                     $form = new Form();
                     $fields = $form->getFields(Request::post("id"));
                     Response::soap("success","FORMTYPE_ALL",$fields);
                     break;
                 }
                 case "saveFile":{
+                    permission("admin");
                     $form = new Form();
                     $fileid = $file->createFile(
                         Request::post("name"),
@@ -195,6 +210,7 @@
                     break;
                 }
                 case "getTypes":{
+                    permission("admin|personel|kullanici");
                     $types = $form->getAllType();
                     Response::soap("success","ALL_TYPES",$types);
                     break;
@@ -204,11 +220,13 @@
                     Response::soap("success","ALL_TYPES",$types);
                     break;
                 }
-                case "changeFile":{
-                    Response::soap("success","CHANGED_FILE");
-                    break;
-                }
                 case "deleteFile":{
+                    permission("admin");
+                    $id = Request::post("id");
+                    if($file->getFileId($id) == false){
+                        SendStatus(404);
+                        exit;
+                    }else $file->deleteFile($id);
                     Response::soap("success","DELETED_FILE");
                     break;
                 }

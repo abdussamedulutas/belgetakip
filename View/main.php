@@ -10,7 +10,7 @@
 </head>
 <?php
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel"
+		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
 <body class="navbar-bottom navbar-top">

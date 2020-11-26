@@ -10,7 +10,7 @@
 </head>
 <?php
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel"
+		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
 <body class="navbar-bottom navbar-top">
@@ -41,7 +41,7 @@
 									</ul>
 								</div>
 							</div>
-							<div class="panel-body">
+							<div class="panel-body table-responsive">
 								<table class="table table-bordered folding mb-15">
 									<tbody>
 										<?php foreach($data->form["FormData"] as $field): ?>

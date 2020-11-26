@@ -11,7 +11,7 @@
 <?php
     global $url;
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel",
+		"Anasayfa" => "$data->userPanelLink/sondurum",
 		"Dosyalar" => "$data->userPanelLink/dosyalar"
     ];
     function addRemoveTD($note)
@@ -51,7 +51,7 @@
 									</ul>
 								</div>
 							</div>
-							<div class="panel-body">
+							<div class="panel-body table-responsive">
 								<table class="table table-bordered folding mb-15">
 									<tbody>
                                         <tr>
@@ -97,7 +97,7 @@
                                 <?php if(ipermission("admin")): ?>
                                 <div class="col-md-12 text-right mt-5">
                                     <button class="btn btn-primary" onclick="edit()"> Güncelle </button>
-                                    <button class="btn btn-danger"> Kaldır </button>
+                                    <button class="btn btn-danger" onclick="removeFile()"> Kaldır </button>
                                 </div>
                                 <?php endif; ?>
 							</div>
@@ -137,7 +137,7 @@
                                                     </ul>
 
                                                     <div class="tab-content">
-                                                        <div class="tab-pane has-padding active" id="tab1">
+                                                        <div class="tab-pane has-padding active table-responsive" id="tab1">
                                                             <table class="table table-bordered table-striped table-hover datatablepin">
                                                                 <thead>
                                                                     <tr>
@@ -178,7 +178,7 @@
                                                             <?php endif; ?>
                                                         </div>
 
-                                                        <div class="tab-pane has-padding" id="tab2">
+                                                        <div class="tab-pane has-padding table-responsive" id="tab2">
                                                             <table class="table table-bordered table-striped table-hover datatablepin">
                                                             <thead>
                                                                     <tr>
@@ -219,7 +219,7 @@
                                                             <?php endif; ?>
                                                         </div>
 
-                                                        <div class="tab-pane has-padding" id="tab3">
+                                                        <div class="tab-pane has-padding table-responsive" id="tab3">
                                                             <table class="table table-bordered table-striped table-hover datatablepin">
                                                                 <thead>
                                                                     <tr>
@@ -260,7 +260,7 @@
                                                             <?php endif; ?>
                                                         </div>
 
-                                                        <div class="tab-pane has-padding" id="tab4">
+                                                        <div class="tab-pane has-padding table-responsive" id="tab4">
                                                             <table class="table table-bordered table-striped table-hover datatablepin">
                                                             <thead>
                                                                     <tr>
@@ -303,7 +303,7 @@
                                                     </div>
                                                 </div>
                                         </div>
-                                        <div class="tab-pane has-padding" id="tab-2">
+                                        <div class="tab-pane has-padding table-responsive" id="tab-2">
                                             <table class="table table-bordered table-striped table-hover datatablepin" id="eksikevraklar">
                                                 <thead>
                                                     <tr>
@@ -333,7 +333,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="tab-pane has-padding" id="tab-3">
+                                        <div class="tab-pane has-padding table-responsive" id="tab-3">
                                             <table class="table table-bordered table-striped table-hover datatablepin" id="eksikevraklar">
                                                 <thead>
                                                     <tr>
@@ -527,7 +527,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 table-responsive">
                                 <table class="table table-bordered table-striped table-hover datatablepin no-paginate no-searching no-order" id="newformdata">
                                     <thead>
                                         <tr>
@@ -543,7 +543,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
-                    <button type="submit" class="btn btn-primary" onclick="Server.updateFile()">Gönder</button>
+                    <button type="submit" class="btn btn-primary" onclick="Server.updateFile(this)">Gönder</button>
                 </div>
             </div>
         </div>
@@ -579,15 +579,40 @@
                     case "date": return `<input type="date" class="form-control field_data" name="${id}" value="${selectedValue.text}">`;
                 }
             };
-            Server.updateFile = function()
+            Server.updateFile = function(btn)
             {
+                var b = blockbtn(btn);
                 var t = new FormData($("#createform")[0]);
                 t.append("action","updateFile");
                 Server.request(t,function(json){
-                    //window.location.reload();
+                    setTimeout(function(){
+                        b();
+                        window.location.reload();
+                    },500);
                 })
             };
         });
+        function removeFile()
+        {
+            Notify.confirm({
+                title:"Uyarı",
+                text:"Bu dosya silindiğinde evraklar ve gelişmelerde gösterilemeyecek yinede silmek istediğinize emin misiniz?",
+                confirmText:"Evet, Sil",
+                confirm:function(){
+                    var k = Notify.progress("Dosya Silme","Dosya silme isteği iletiliyor");
+                    Server.request({
+                        action:"deleteFile",
+                        id:"<?=$data->status->File->id?>"
+                    },function(json){
+                        k();
+                        Notify.progress("Dosya Silme","Dosya silme işlemi başarılı");
+                        setTimeout(function(){
+                            window.location = "<?="$data->userPanelLink/dosyalar"?>";
+                        },1000);
+                    })
+                }
+            });
+        }
     </script>
     <style>
     .nav-tabs:before{

@@ -206,4 +206,9 @@
         "method" => "get",
         "name" => "main::getRecovery"
     ]);
+    RegisterController([
+        "url" => "/^{rootPath}review$/",
+        "method" => "get",
+        "name" => "main::review"
+    ]);
     //recmode/client/MjUzMjUyMzN3

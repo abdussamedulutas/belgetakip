@@ -10,7 +10,7 @@
 </head>
 <?php
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel"
+		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
 <body class="navbar-bottom navbar-top">
@@ -54,7 +54,7 @@
 										Bu tablo yanlızca bilgilendirme amaçlıdır
 									</p>
 								</div>
-								<div class="col-md-6">
+								<div class="col-md-6 table-responsive">
 									<table class="table table-bordered table-striped table-hover datatablepin no-searching inited" id="formpanel">
 										<thead>
 											<tr>

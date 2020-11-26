@@ -11,7 +11,7 @@
 <?php
     global $url;
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel",
+		"Anasayfa" => "$data->userPanelLink/sondurum",
 		"Dosyalar" => "$data->userPanelLink/dosyalar"
 	];
 ?>
@@ -39,7 +39,7 @@
 									</ul>
 								</div>
 							</div>
-							<div class="panel-body">
+							<div class="panel-body table-responsive">
 								<table class="table table-bordered folding mb-15" id="eksikler">
                                     <thead>
                                         <tr>

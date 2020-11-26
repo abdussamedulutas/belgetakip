@@ -783,3 +783,11 @@ function block(id)
 }
 reinitialize();
 window.wait2 = (window.requestIdleCallback !== undefined ? window.requestIdleCallback : function(C){setTimeout(C,1)});
+function blockbtn(btn)
+{
+    var btnText = $(btn).html();
+    $(btn).html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    return function(){
+        $(btn).html(btnText).removeAttr("disabled");
+    }
+}

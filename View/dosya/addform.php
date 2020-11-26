@@ -10,7 +10,7 @@
 </head>
 <?php
 	$breadcrumb = [
-		"Anasayfa" => "$data->userPanelLink/panel"
+		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
 <body class="navbar-bottom navbar-top">
@@ -33,7 +33,7 @@
 							</div>
 						</div>
 						<div class="panel-body" id="pane">
-                            <form class="col-md-6 col-md-push-3" id="form">
+                            <form class="col-md-6 col-md-push-3 table-responsive" id="form">
                                 <table class="table table-bordered table-striped table-hover datatablepin no-paginate no-searching no-order" id="formpanel">
                                     <thead>
                                         <tr>

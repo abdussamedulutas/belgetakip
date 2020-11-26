@@ -328,7 +328,7 @@
     }
     function writeConfig($data)
     {
-        return file_put_contents(__DIR__."/config.json",json_encode($data));
+        return file_put_contents(__DIR__."/config.json",json_encode($data,JSON_PRETTY_PRINT));
     }
     include(__DIR__."/recovery.php");
     $recoveryConfig = readConfig();
