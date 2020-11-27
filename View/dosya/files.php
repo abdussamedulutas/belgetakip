@@ -200,7 +200,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
-                    <button type="submit" class="btn btn-primary actionbtn" onclick="Server.createFile()">Gönder</button>
+                    <button type="submit" class="btn btn-primary actionbtn" onclick="Server.createFile(this)">Gönder</button>
                 </div>
             </div>
         </div>
@@ -230,12 +230,15 @@
                     case "date": return `<input type="date" class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
                 }
             };
-            Server.createFile = function()
+            Server.createFile = function(btn)
             {
+                var p = blockbtn(btn);
                 var t = new FormData($("#createform")[0]);
                 t.append("action","saveFile");
                 Server.request(t,function(json){
-                    window.location = json.data.newURL;
+                    wait2(function(){
+                        window.location = json.data.newURL;
+                    });
                 })
             };
         });

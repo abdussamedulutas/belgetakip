@@ -97,7 +97,7 @@
                                 <?php if(ipermission("admin")): ?>
                                 <div class="col-md-12 text-right mt-5">
                                     <button class="btn btn-primary" onclick="edit()"> Güncelle </button>
-                                    <button class="btn btn-danger" onclick="removeFile()"> Kaldır </button>
+                                    <button class="btn btn-danger" onclick="removeFile(this)"> Kaldır </button>
                                 </div>
                                 <?php endif; ?>
 							</div>
@@ -168,10 +168,10 @@
                                                                 <div class="col-md-12">
                                                                     <h2>Hasar için gelişme gönder</h2>
                                                                 </div>
-                                                                <div class="col-md-11">
+                                                                <div class="col-md-12 mt-5">
                                                                     <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
                                                                 </div>
-                                                                <div class="col-md-1">
+                                                                <div class="col-md-12 mt-5">
                                                                     <button class="btn btn-success" onclick="sendNote(this,'Hasar')">Gönder</button>
                                                                 </div>
                                                             </div>
@@ -209,10 +209,10 @@
                                                                 <div class="col-md-12">
                                                                     <h2>Adli tıp için gelişme gönder</h2>
                                                                 </div>
-                                                                <div class="col-md-11">
+                                                                <div class="col-md-12 mt-5">
                                                                     <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
                                                                 </div>
-                                                                <div class="col-md-1">
+                                                                <div class="col-md-12 mt-5">
                                                                     <button class="btn btn-success" onclick="sendNote(this,'Adli Tıp')">Gönder</button>
                                                                 </div>
                                                             </div>
@@ -250,10 +250,10 @@
                                                                 <div class="col-md-12">
                                                                     <h2>Avukat için gelişme gönder</h2>
                                                                 </div>
-                                                                <div class="col-md-11">
+                                                                <div class="col-md-12 mt-5">
                                                                     <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
                                                                 </div>
-                                                                <div class="col-md-1">
+                                                                <div class="col-md-12 mt-5">
                                                                     <button class="btn btn-success" onclick="sendNote(this,'Avukat')">Gönder</button>
                                                                 </div>
                                                             </div>
@@ -291,10 +291,10 @@
                                                                 <div class="col-md-12">
                                                                     <h2>İş kazası için gelişme gönder</h2>
                                                                 </div>
-                                                                <div class="col-md-11">
+                                                                <div class="col-md-12 mt-5">
                                                                     <textarea class="form-control" placeholder="Gelişme ekle"></textarea>
                                                                 </div>
-                                                                <div class="col-md-1">
+                                                                <div class="col-md-12 mt-5">
                                                                     <button class="btn btn-success" onclick="sendNote(this,'İş Kazası')">Gönder</button>
                                                                 </div>
                                                             </div>
@@ -592,20 +592,19 @@
                 })
             };
         });
-        function removeFile()
+        function removeFile(btn)
         {
             Notify.confirm({
                 title:"Uyarı",
                 text:"Bu dosya silindiğinde evraklar ve gelişmelerde gösterilemeyecek yinede silmek istediğinize emin misiniz?",
                 confirmText:"Evet, Sil",
                 confirm:function(){
-                    var k = Notify.progress("Dosya Silme","Dosya silme isteği iletiliyor");
+                    var ktt = Notify.progress("Dosya Silme","Dosya silme isteği iletiliyor");
                     Server.request({
                         action:"deleteFile",
                         id:"<?=$data->status->File->id?>"
                     },function(json){
-                        k();
-                        Notify.progress("Dosya Silme","Dosya silme işlemi başarılı");
+                        Notify.successText("Dosya Silme","Dosya silme işlemi başarılı",ktt);
                         setTimeout(function(){
                             window.location = "<?="$data->userPanelLink/dosyalar"?>";
                         },1000);
