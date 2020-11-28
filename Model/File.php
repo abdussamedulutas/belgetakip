@@ -82,7 +82,19 @@
         public function getFileStatus($fileid)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,`name`,HEX(acente_id) as acente_id,HEX(personel_id) as personel_id,`order` FROM `file` WHERE deletedate is null AND id = UNHEX(:id)");
+            $pre = $db->prepare("SELECT
+                HEX(file.id) as id,
+                file.`name`,
+                HEX(file.acente_id) as acente_id,
+                HEX(file.personel_id) as personel_id,
+                file.`order`,user.`name` as personelname,
+                user.`surname` as personelsurname,
+                `file`.createdate as createdate,
+                `acente`.name as acentename
+                FROM `file`
+                INNER JOIN user ON user.id = file.personel_id
+                INNER JOIN acente ON acente.id = file.acente_id
+                WHERE file.deletedate is null AND file.id = UNHEX(:id)");
             $pre->bindParam("id", $fileid);
             $pre->execute();
             $file = $pre->fetch(PDO::FETCH_OBJ);
@@ -256,10 +268,12 @@
                 `order` as 'order',
                 HEX(acente_id) as 'acente',
                 hex(form_notes.user) as 'personel',
+                form_notes.createdate AS createdate,
+                form_notes.id as note_id,
                 `text`
                 FROM `file`
                 INNER JOIN form_notes ON form_notes.file_id = file.id
-                WHERE file.deletedate is null AND form_notes.deletedate is null ORDER BY form_notes.createdate ASC, file.createdate ASC
+                WHERE file.deletedate is null AND form_notes.deletedate is null ORDER BY form_notes.createdate DESC, file.createdate DESC
             ");
             if($pre->execute())
             {
@@ -277,10 +291,40 @@
                 `name` as 'name',
                 `order` as 'order',
                 HEX(acente_id) as 'acente',
+                form_notes.createdate AS createdate,
+                `text`,
                 hex(personel_id) as 'personel',
+                form_notes.id as note_id,
                 lastinsetdate FROM `file`
                 INNER JOIN form_notes ON form_notes.file_id = file.id
-                WHERE file.deletedate is null AND form_notes.deletedate is null AND personel_id = :user ORDER BY form_notes.createdate ASC, file.createdate ASC
+                WHERE file.deletedate is null AND form_notes.deletedate is null AND personel_id = :user ORDER BY form_notes.createdate desc, file.createdate desc
+            ");
+            $pre->bindParam("user",$id);
+            if($pre->execute())
+            {
+                return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getAllIForAcente($id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT
+                HEX(file.id) as 'id',
+                file.`name` as 'name',
+                `order` as 'order',
+                HEX(file.acente_id) as 'acente',
+                form_notes.createdate AS createdate,
+                hex(personel_id) as 'personel',
+                form_notes.id as note_id,
+                `text`,
+                lastinsetdate
+                FROM `file`
+                INNER JOIN form_notes ON form_notes.file_id = file.id
+                INNER JOIN user ON user.acente_id = file.acente_id
+                WHERE  file.deletedate is null AND form_notes.deletedate is null AND user.id = :user ORDER BY form_notes.createdate desc, file.createdate desc
             ");
             $pre->bindParam("user",$id);
             if($pre->execute())

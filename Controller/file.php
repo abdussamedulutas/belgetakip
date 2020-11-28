@@ -70,7 +70,7 @@
         }
         public function sondurum()
         {
-            permission("admin");
+            permission("admin|kullanici|personel");
             global $workspaceDir;
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("dosya/sondurum",(object)[
@@ -200,13 +200,14 @@
                         SendStatus(404);
                         exit;
                     };
+                    $formid = $form->getFileFormId($id);
                     foreach($fields as $field)
                     {
                         $value = Request::post($field->id);
-                        $form->updateValue($field->id,$id,$value);
+                        $form->updateValue($field->id,$formid,$value);
                     };
                     $file->updateFile($id,$name,$acente,$personel);
-                    Response::soap("success","UPDATE_FILE");
+                    Response::soap("success","UPDATE_FILE",true);
                     break;
                 }
                 case "getTypes":{

@@ -23,7 +23,7 @@
             global $workspaceDir;
 
             $acente = new User();
-            $kullanicilar = $acente->getAll('kullanici');
+            $kullanicilar = $acente->getAllWithAcente('kullanici');
 
             $userPanelLink = $workspaceDir."/".$_SESSION["name"];
             Response::view("acente/kullanicilar",(object)[

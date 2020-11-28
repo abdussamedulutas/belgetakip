@@ -90,7 +90,7 @@
         {
             swal({
                 title: "Dikkat",
-                text: "Personel silme işlemi gerçekleştirmek istediğinize emin misiniz?",
+                text: "Personel silme işlemi gerçekleştirmek istediğinize emin misiniz?\nPersonel silme işlemi gerçekleştirmeden önce personel bilgilerinin kullanıldığı dosyalarda personeli değiştirmenizi öneririz",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#EF5350",

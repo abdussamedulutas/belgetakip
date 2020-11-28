@@ -1,6 +1,20 @@
 function Notify(){};
 function Server(){};
 
+var dd = function(x,d){
+    return ("00" + x).slice(d||-2)
+};
+function Tarih(date)
+{
+    var _d = new Date(date);
+    var year = dd(_d.getFullYear(),4);
+    var month = dd(_d.getMonth()+1,2);
+    var day = dd(_d.getDate(),2);
+    var hour = dd(_d.getHours(),2);
+    var minute = dd(_d.getMinutes(),2);
+    return `${hour}:${minute} | ${day}/${month}/${year}`;
+}
+
 Server._ajax = function(url,data,callback,error,uploadEvent){
     var xhttp;
     if (window.XMLHttpRequest) {

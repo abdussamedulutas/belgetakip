@@ -303,11 +303,11 @@
 										</tr>
 									</thead>
 									<tbody>
-										<?php foreach($data->user as $degerler): ?>
+										<?php foreach($data->degerler as $row): ?>
 										<tr>
 											<?=rid($row->id)?>
 											<?=tid($row->formid)?>
-											<?=text($row->field)?>
+											<?=tid($row->field)?>
 											<?=text($row->text)?>
 										</tr>
 										<?php endforeach; ?>

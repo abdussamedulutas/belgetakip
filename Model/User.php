@@ -78,6 +78,30 @@
                 exit;
             }
         }
+        public function getAllWithAcente($role)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT
+                HEX(user.id) as id,
+                user.name as name,
+                user.surname as surname,
+                user.image as image,
+                user.role as role,
+                user.email as email,
+                acente.id as acenteid,
+                acente.name as acentename
+            FROM user
+            INNER JOIN acente ON acente.id = user.acente_id
+            WHERE user.deletedate is null AND role = :role");
+            $pre->bindParam("role", $role);
+            if($pre->execute())
+            {
+                return $pre->fetchall(PDO::FETCH_OBJ);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
         public function get($id)
         {
             global $db;

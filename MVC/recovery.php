@@ -186,6 +186,7 @@
     }
     function getRecoveryName($name = -1)
     {
+        date_default_timezone_set('UTC');
         if($name == -1)
         {
             $name = date("Y-m-d",time());

@@ -85,8 +85,10 @@
                     $acente = new Acente();
                     $user = new User();
                     permission("admin|personel|kullanici");
-                    if($_SESSION["role"] == "admin"){
+                    if(ipermission("admin")){
                         $kle = $file->getAllI();
+                    }else if(ipermission("kullanici")){
+                        $kle = $file->getAllIForAcente($_SESSION["userid"]);
                     }else{
                         $kle = $file->getAllIForUser($_SESSION["userid"]);
                     };

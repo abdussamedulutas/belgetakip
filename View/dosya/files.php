@@ -45,7 +45,7 @@
                                                 <th>Acente</th>
                                                 <th>Hasar Tarihi</th>
                                                 <th>Dosya Geliş T.</th>
-                                                <th>Müvekkil</th>
+                                                <th>Müvekkil İsmi</th>
                                                 <th>Taraf Şti</th>
                                                 <th>Evraklar</th>
                                                 <th width="1%">İşlem</th>
@@ -66,10 +66,10 @@
     var tumpersoneller = false;
     var tumformislemleri = false;
     var data = null;
-    function getField(obj,name)
+    function getField(obj,id)
     {
         for(var column of obj){
-            if(column.name == name)
+            if(column.field == id)
             {
                 return column.text
             }
@@ -91,15 +91,15 @@
                 for(var file of json.data.Files){
                     lastAdded = db.add([
                         `Dosya no:${file.order}`,
-                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'Mağdurun konumu')}</span>`+
-                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'Tazminat Türü')}</span>`+
-                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'Tanzim Türü')}</span>`,
+                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span>`+
+                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span>`+
+                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span>`,
                         json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
                         json.data.Acente[file.acente].name,
-                        getField(file.form.FormData,'Hasar Tarihi'),
-                        getField(file.form.FormData,'Dosya Geliş Tarihi'),
-                        getField(file.form.FormData,'Müvekkil'),
-                        getField(file.form.FormData,'Taraf Şirketi'),
+                        getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
+                        getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
+                        getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
+                        getField(file.form.FormData,'91A88B64D7685A98AC35414143DE41DA'),
                         `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
                         `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
                     ]);

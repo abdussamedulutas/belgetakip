@@ -33,11 +33,16 @@
         }
     };
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top  sidebar-xs">
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
 		<div class="page-content">
+            <?php if(ipermission("admin")): ?>
+			<?php include(__DIR__."/../partials/sidebar.php");?>
+            <?php elseif(ipermission("personel|kullanici")): ?>
+			<?php include(__DIR__."/../partials/personel-sidebar.php");?>
+            <?php endif;?>
 			<div class="content-wrapper">
 				<div class="row">
                     <div class="col-md-5">
@@ -81,6 +86,12 @@
 												Dosya Kimliği
 											</td>
 											<td width="50%">
+                                                <?php
+                                                    if(isset($data->status->File->name))
+                                                    {
+                                                        echo "<b>".$data->status->File->name."</b><br>";
+                                                    }
+                                                ?>
                                                 <?=bin2hex($data->form["Form"]->file_id)?>
 											</td>
 										</tr>
@@ -89,7 +100,39 @@
 												Personel
 											</td>
 											<td>
+                                                <?php
+                                                    if(isset($data->status->File->personelname))
+                                                    {
+                                                        echo "<b>".$data->status->File->personelname." ".$data->status->File->personelsurname."</b><br>";
+                                                    }
+                                                ?>
                                                 <?=bin2hex($data->form["Form"]->user)?>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Acente
+											</td>
+											<td>
+                                                <?php
+                                                    if(isset($data->status->File->acentename))
+                                                    {
+                                                        echo $data->status->File->acentename;
+                                                    }
+                                                ?>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Oluşturma Tarihi
+											</td>
+											<td>
+                                                <?php
+                                                    if(isset($data->status->File->createdate))
+                                                    {
+                                                        echo $data->status->File->createdate;
+                                                    }
+                                                ?>
 											</td>
 										</tr>
 									</tbody>
@@ -587,7 +630,7 @@
                 Server.request(t,function(json){
                     setTimeout(function(){
                         b();
-                        window.location.reload();
+                       // window.location.reload();
                     },500);
                 })
             };

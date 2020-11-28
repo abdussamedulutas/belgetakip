@@ -48,6 +48,7 @@
                                             <th>İsim</th>
                                             <th>Soyisim</th>
                                             <th>E-Posta Adresi</th>
+                                            <th>Acente</th>
                                             <th width="1%"></th>
                                         </tr>
                                     </thead>
@@ -58,6 +59,7 @@
                                             <td><?=$kullanici->name?></td>
                                             <td><?=$kullanici->surname?></td>
                                             <td><?=$kullanici->email?></td>
+                                            <td><?=$kullanici->acentename?></td>
                                             <td style="white-space:nowrap">
                                                 <button class="btn btn-default" onclick="Duzenle(this,'<?=$kullanici->id?>');">Düzenle</button>
                                                 <button class="btn btn-danger" onclick="Sil(this,'<?=$kullanici->id?>');">Kaldır</button>

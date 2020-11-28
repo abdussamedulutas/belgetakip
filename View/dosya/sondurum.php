@@ -40,19 +40,8 @@
 								</div>
 							</div>
 							<div class="panel-body table-responsive">
-								<table class="table table-bordered folding mb-15" id="eksikler">
-                                    <thead>
-                                        <tr>
-                                            <th width="15%">Dosya Numarası</th>
-                                            <th width="15%">İlgili Personel</th>
-                                            <th width="15%">Dosya Adı</th>
-                                            <th>Eklenen Gelişme</th>
-                                            <th width="1%">İşlem</th>
-                                        </tr>
-                                    </thead>
-									<tbody>
-									</tbody>
-								</table>
+								<ul class="media-list media-list-linked" id="partofkey">
+								</ul>
 							</div>
 						</div>
 					</div>
@@ -82,17 +71,39 @@
                 p();
                 data = json.data;
                 var lastAdded = null;
-                $("#eksikler").DataTable().clear().draw();
-                var db = $("#eksikler").DataTable().row;
+                $("#partofkey").html("");
+				var content = [];
                 for(var file of json.data){
-					lastAdded = db.add([
-						`Dosya no:${file.order}`,
-						file.personel.name + " " + file.personel.surname,
-						file.name,
-						file.text,
-						`<a class="btn btn-success" href="<?=$data->userPanelLink?>/dosya/${file.order}">Dosyaya Git</a>`
-					]);
+					content.push(`
+					<li class="media">
+						<div class="media-link cursor-pointer collapsed" data-toggle="collapse" data-target="#no_${file.note_id}" aria-expanded="false">
+							<div class="media-left"><img src="${file.personel.image?"uploads/"+file.personel.image:"assets/images/placeholder.jpg"}" class="img-circle img-md" alt=""></div>
+							<div class="media-body">
+								<div class="media-heading text-semibold">Dosya No: ${file.order} - ${Tarih(file.createdate)}</div>
+								<span class="text-muted">${file.text}</span>
+							</div>
+							<div class="media-right media-middle text-nowrap">
+								<i class="icon-menu7 display-block"></i>
+							</div>
+						</div>
+						<div class="collapse" id="no_${file.note_id}" aria-expanded="false" style="height: 0px;">
+							<div class="contact-details row">
+								<div class="col-xs-6">
+									<ul class="list-extended list-unstyled list-icons">
+										<li><i class="icon-user-tie position-left"></i> <b>Personel :</b> ${file.personel.name} ${file.personel.surname}</li>
+										<li><i class="icon-location3 position-left"></i> <b>Acente:</b> ${file.acente.name} </li>
+									</ul>
+								</div>
+								<div class="col-xs-6">
+									<ul class="list-extended list-unstyled list-icons text-right">
+										<li><a class="btn btn-success" href="<?=$data->userPanelLink?>/dosya/${file.order}">Aç</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</li>`);
                 };
+				$("#partofkey").html(content.join(''));
                 if(lastAdded) lastAdded.draw();
                 else{
                     p=null

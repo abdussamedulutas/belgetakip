@@ -253,7 +253,9 @@
             $pre->bindParam("field",$field);
             $pre->bindParam("formid",$formid);
             $pre->bindParam("text",$text);
-            if($pre->execute())
+            $res = $pre->execute();
+
+            if($res)
             {
                 return;
             }else{
@@ -322,6 +324,19 @@
             {
                 $id = $pre->fetch()["id"];
                 return $this->getForm($id);
+            }else{
+                var_dump($db->errorInfo());
+                exit;
+            }
+        }
+        public function getFileFormId($file_id)
+        {
+            global $db;
+            $pre = $db->prepare("SELECT HEX(id) as id FROM `forms` WHERE `file_id` = UNHEX(:fileid) LIMIT 1");
+            $pre->bindParam("fileid",$file_id);
+            if($pre->execute())
+            {
+                return $pre->fetch()["id"];
             }else{
                 var_dump($db->errorInfo());
                 exit;
