@@ -35,7 +35,10 @@
             $pre->bindParam("filepath", $path);
             if(!$pre->execute()){
                 var_dump($pre->errorInfo());
-            }else return $id;
+            }else{
+                $this->lastInsetFile($fileid);
+                return $id;
+            }
         }
         public function updateEvrak($id,$filepath)
         {
@@ -158,6 +161,13 @@
             if(!$pre->execute()){
                 var_dump($pre->errorInfo());
             }else return $id;
+        }
+        public function lastInsetFile($id)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE `file` SET `lastinsetdate` = NOW() WHERE `id` =  UNHEX(:id) LIMIT 1");
+            $pre->bindParam("id",$id);
+            return $pre->execute();
         }
         public function getFileId($id)
         {

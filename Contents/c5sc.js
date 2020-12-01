@@ -741,6 +741,9 @@ function reinitialize()
     });
     $(".datatablepin:not(.inited)").each(function(){
         $(this).DataTable({
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             colReorder: true,
             fixedHeader: {
                 header: true,

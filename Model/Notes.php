@@ -7,7 +7,7 @@
             try{
                 $pre = $db->prepare("INSERT
                     INTO form_notes
-                    SET `id`= :id,
+                    SET `id`= UNHEX(:id),
                         `file_id`= UNHEX(:fileid),
                         `type`= :type,
                         `user`= :user,
@@ -20,10 +20,19 @@
                 $pre->bindParam("fileid",$fileid);
                 $pre->bindParam("user",$user);
                 $pre->bindParam("text",$text);
-                return $pre->execute();
+                $k = $pre->execute();
+                $this->lastInsetFile($fileid);
+                return $k;
             }catch(Exception $i){
-                exit;
+                var_dump($i);
             }
+        }
+        public function lastInsetFile($id)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE `file` SET `lastinsetdate` = NOW() WHERE `id` =  UNHEX(:id) LIMIT 1");
+            $pre->bindParam("id",$id);
+            return $pre->execute();
         }
         public function get($fileid)
         {

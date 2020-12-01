@@ -246,21 +246,24 @@
         public function updateValue($field,$formid,$text)
         {
             global $db;
-            $pre = $db->prepare("UPDATE `values`
-                SET `text` = :text
-                WHERE `field` = UNHEX(:field) AND `formid` = UNHEX(:formid)
-            ");
-            $pre->bindParam("field",$field);
-            $pre->bindParam("formid",$formid);
-            $pre->bindParam("text",$text);
-            $res = $pre->execute();
-
-            if($res)
-            {
-                return;
+            if($this->getValue($field)){
+                $pre = $db->prepare("UPDATE `values`
+                    SET `text` = :text
+                    WHERE `field` = UNHEX(:field) AND `formid` = UNHEX(:formid)
+                ");
+                $pre->bindParam("field",$field);
+                $pre->bindParam("formid",$formid);
+                $pre->bindParam("text",$text);
+                $res = $pre->execute();
+                if($res)
+                {
+                    return;
+                }else{
+                    var_dump($db->errorInfo());
+                    exit;
+                }
             }else{
-                var_dump($db->errorInfo());
-                exit;
+                return $this->saveValue($field,$formid,$text);
             }
         }
         public function deleteValue($id)

@@ -30,7 +30,9 @@
 								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
 								<li><a href="<?="$data->userPanelLink/sondurum"?>"><i class="icon-checkmark4"></i> <span>Son Gelişmeler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
+								<li><a href="<?="$data->userPanelLink/hatirlatma"?>"><i class="icon-address-book"></i> <span>Hatırlatmalar</span> </a></li>
 								<li><a href="<?="$data->userPanelLink/eksikevraklar"?>"><i class="icon-file-minus"></i> <span>Eksik Evraklar</span></a></li>
+								<li><a href="<?="$data->userPanelLink/acenteler"?>"><i class="icon-address-book"></i> <span>Acenteler</span> </a></li>
 								<li>
 									<a href="#"><i class="icon-drawer3"></i> <span>Form işlemleri</span></a>
 									<ul>
@@ -42,7 +44,6 @@
 									<a href="#"><i class="icon-users4"></i> <span>Acente & Personel</span></a>
 									<ul>
 										<li><a href="<?="$data->userPanelLink/yoneticiler"?>">Yöneticiler</a></li>
-										<li><a href="<?="$data->userPanelLink/acenteler"?>">Acenteler</a></li>
 										<li><a href="<?="$data->userPanelLink/personeller"?>">Personeller</a></li>
 										<li><a href="<?="$data->userPanelLink/kullanicilar"?>">Kullanıcılar</a></li>
 									</ul>

@@ -15,6 +15,15 @@
                 "userPanelLink"=>$userPanelLink
             ]);
         }
+        public function viewHatirlatici()
+        {
+            permission("admin|kullanici|personel");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("dosya/hatirlatici",(object)[
+                "userPanelLink"=>$userPanelLink
+            ]);
+        }
         public function viewFile()
         {
             $id = getUrlTokens()[2];

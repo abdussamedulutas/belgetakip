@@ -79,6 +79,16 @@
         "name" => "file::viewFiles"
     ]);
     RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/hatirlatma$/",
+        "method" => "get",
+        "name" => "file::viewHatirlatici"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/hatirlatma$/",
+        "method" => "post",
+        "name" => "file::post"
+    ]);
+    RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/dosyalar$/",
         "method" => "post",
         "name" => "file::post"

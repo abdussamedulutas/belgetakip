@@ -33,6 +33,7 @@
                                     <h2 style="margin-top:0">Dosyalar</h2>
                                 </div>
                                 <div class="col-xs-6 text-right">
+                                    <button class="btn btn-success">Excel'e Aktar</button>
                                     <?php if($_SESSION["role"]=="admin"): ?><button class="btn btn-success" onclick="create()">Yeni Ekle</button><?php endif;?>
                                 </div>
                                 <div class="col-md-12 table-responsive">

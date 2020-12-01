@@ -614,7 +614,7 @@
             })
             function input(type,id,valuec)
             {
-                var selectedValue = values[id];
+                var selectedValue = values[id] || {text:""};
                 switch(type)
                 {
                     case "select": return `<select class="select2 field_data" name="${id}"><option>Seçin</option>`+valuec.map(function(value){return `<option value="${value.id}" ${selectedValue?value.id==selectedValue.textid?"selected":"":""}>${value.name}</option>`}).join('')+`</select>`;
