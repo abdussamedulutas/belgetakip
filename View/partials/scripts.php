@@ -6,13 +6,13 @@
 	<script src="js/plugins/forms/styling/switchery.min.js"></script>
 	<script src="js/plugins/forms/styling/uniform.min.js"></script>
 	<script src="js/plugins/forms/selects/bootstrap_multiselect.js"></script>
-	<script src="js/plugins/ui/moment/moment.min.js"></script>
 	<script src="js/plugins/pickers/daterangepicker.js"></script>
 	<script src="js/plugins/ui/headroom/headroom.min.js"></script>
 	<script src="js/plugins/ui/headroom/headroom_jquery.min.js"></script>
 	<script src="js/core/app.js"></script>
 	<script src="assets/js/plugins/notifications/jgrowl.min.js"></script>
 	<script src="assets/js/plugins/ui/moment/moment.min.js"></script>
+	<script src="assets/js/plugins/ui/moment/moment_locales.min.js"></script>
 	<script src="assets/js/plugins/pickers/daterangepicker.js"></script>
 	<script src="assets/js/plugins/pickers/anytime.min.js"></script>
 	<script src="assets/js/plugins/pickers/pickadate/picker.js"></script>
@@ -26,6 +26,4 @@
 	<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
     <script src="js/pages/layout_navbar_main_hideable.js"></script>
 	<script src="c5sc.js"></script>
-
-
-	
+    <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>

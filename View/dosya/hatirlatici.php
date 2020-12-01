@@ -29,12 +29,9 @@
 					<div class="col-md-12">
                         <div class="panel panel-flat" id="pinpanel">
                             <div class="panel-body">
-                                <div class="col-xs-6">
+                                <div class="col-xs-8">
                                     <h2 style="margin-top:0">Hatırlatmalar</h2>
-                                    <p>Sigorta Başvurusu üzerinden 15 gün geçmiş dosyalar</p>
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <button class="btn btn-success">Excel'e Aktar</button>
+                                    <p>Sigorta Başvurusu üzerinden 15 gün geçmiş (<span id="olddate"></span> tarihinden önce) dosyalar</p>
                                 </div>
                                 <div class="col-md-12 table-responsive">
                                     <table class="table table-bordered table-striped table-hover datatablepin" id="filepanel">
@@ -48,7 +45,7 @@
                                                 <th>Dosya Geliş T.</th>
                                                 <th>Müvekkil İsmi</th>
                                                 <th>Taraf Şti</th>
-                                                <th>Evraklar</th>
+                                                <th>hareketsizlik</th>
                                                 <th width="1%">İşlem</th>
                                             </tr>
                                         </thead>
@@ -92,9 +89,9 @@
                 for(var file of json.data.Files){
                     var df = getField(file.form.FormData,'166EF8D7BB247111578C2E1F6BB0C484');
                     var date1 = moment(df);
-                    var date2 = moment().subtract('days', -15);
-
-                    if(moment(date2).isAfter(date1)) continue;
+                    var date2 = moment().subtract('days',15);
+                    var D = moment(date1).locale("tr").fromNow();
+                    if(moment(date1).isAfter(date2)) continue;
 
                     lastAdded = db.add([
                         `Dosya no:${file.order}`,
@@ -107,7 +104,7 @@
                         getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
                         getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
                         getField(file.form.FormData,'91A88B64D7685A98AC35414143DE41DA'),
-                        `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
+                        `${D}`,
                         `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
                     ]);
                 };
@@ -136,6 +133,12 @@
         },function(json){
             tumpersoneller = json.data;
         })
+        $("#olddate").html(moment().subtract('days',15).locale("tr").format("LL"));
+        wait2(function(){
+            var text = `<button class="btn btn-success text-left ml-10" onclick="toExcel('#filepanel','Hatırlatma')">Excel'e Aktar</button>`;
+            $(".datatable-header").append(text);
+            $(".switch").bootstrapSwitch();
+        });
     });
     function create()
     {
@@ -252,5 +255,8 @@
     </script>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
+    <script type="text/javascript" src="assets/js/plugins/forms/styling/uniform.min.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/forms/styling/switchery.min.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/forms/styling/switch.min.js"></script>
 </body>
 </html>

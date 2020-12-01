@@ -33,7 +33,6 @@
                                     <h2 style="margin-top:0">Dosyalar</h2>
                                 </div>
                                 <div class="col-xs-6 text-right">
-                                    <button class="btn btn-success">Excel'e Aktar</button>
                                     <?php if($_SESSION["role"]=="admin"): ?><button class="btn btn-success" onclick="create()">Yeni Ekle</button><?php endif;?>
                                 </div>
                                 <div class="col-md-12 table-responsive">
@@ -54,10 +53,6 @@
                                         </thead>
                                         <tbody></tbody>
                                     </table>
-                                </div>
-                                <div class="col-md-12 table-responsive">
-                                    <input type="checkbox" id="idv34">
-                                    <label for="idv34">Yanlızca 45 gün boyunca işlem yapılmamış dosyaları göster</label>
                                 </div>
                             </div>
                         </div>
@@ -94,17 +89,17 @@
                 $("#filepanel").DataTable().clear().draw();
                 var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
-                    if(idv34.checked){
+                    if(vidv34){
                         var df = file.lastinsetdate;
                         var date1 = moment(df);
-                        var date2 = moment().subtract('days', -45);
-                        if(moment(date2).isAfter(date1)) continue;
+                        var date2 = moment().subtract('days', 45);
+                        if(moment(date1).isAfter(date2)) continue;
                     }
                     lastAdded = db.add([
                         `Dosya no:${file.order}`,
-                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span>`+
-                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span>`+
-                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span>`,
+                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span>&nbsp;\t`+
+                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span>&nbsp;\t`+
+                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span>&nbsp;\t`,
                         json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
                         json.data.Acente[file.acente].name,
                         getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
@@ -128,10 +123,8 @@
     }
     $(document).ready(function(){
         pinfo();
-        $("#idv34").change(function(){
-            pinfo();
-        });
     });
+    var vidv34 = false;
     $(function(){
         Server.request({
             action:"tumacenteler"
@@ -142,7 +135,19 @@
             action:"tumpersoneller"
         },function(json){
             tumpersoneller = json.data;
-        })
+        });
+
+        wait2(function(){
+            var text = `<div class="checkbox checkbox-switch" style="margin:3px 10px;float:left;">
+                    <input type="checkbox" onchange="vidv34=this.checked;pinfo();$(\`[for='vm0b']\`).animate({width:'toggle'})" data-on-text="Açık" data-off-text="Kapalı" class="switch" data-size="mini" id="vm0b">
+                <label for="vm0b" style="white-space:nowrap;display:none">
+                    ${moment().locale("tr").subtract('days', 45).format("LL")} tarihinden beri kayıtlar
+                </label>
+            </div>
+            <button class="btn btn-success text-left ml-10" onclick="toExcel('#filepanel','Dosyalar')">Excel'e Aktar</button>`;
+            $("#filepanel_wrapper .datatable-header").append(text);
+            $(".switch").bootstrapSwitch();
+        });
     });
     function create()
     {
@@ -259,5 +264,11 @@
     </script>
 	<?php include(__DIR__."/../partials/footer.php"); ?>
 	<?php include(__DIR__."/../partials/scripts.php"); ?>
+    <script type="text/javascript" src="assets/js/plugins/forms/styling/uniform.min.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/forms/styling/switchery.min.js"></script>
+	<script type="text/javascript" src="assets/js/plugins/forms/styling/switch.min.js"></script>
+    <style>
+    
+    </style>
 </body>
 </html>

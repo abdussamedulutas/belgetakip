@@ -4,6 +4,15 @@ function Server(){};
 var dd = function(x,d){
     return ("00" + x).slice(d||-2)
 };
+
+function toExcel(pin,name)
+{
+    $(pin).table2excel({
+        name: name,
+        filename: name+".xls",
+        preserveColors: false // set to true if you want background colors and font colors preserved
+    });
+}
 function Tarih(date)
 {
     var _d = new Date(date);
@@ -741,9 +750,6 @@ function reinitialize()
     });
     $(".datatablepin:not(.inited)").each(function(){
         $(this).DataTable({
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
             colReorder: true,
             fixedHeader: {
                 header: true,
