@@ -55,6 +55,10 @@
                                         <tbody></tbody>
                                     </table>
                                 </div>
+                                <div class="col-md-12 table-responsive">
+                                    <input type="checkbox" id="idv34">
+                                    <label for="idv34">Yanlızca 45 gün boyunca işlem yapılmamış dosyaları göster</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -90,6 +94,12 @@
                 $("#filepanel").DataTable().clear().draw();
                 var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
+                    if(idv34.checked){
+                        var df = file.lastinsetdate;
+                        var date1 = moment(df);
+                        var date2 = moment().subtract('days', -45);
+                        if(moment(date2).isAfter(date1)) continue;
+                    }
                     lastAdded = db.add([
                         `Dosya no:${file.order}`,
                         `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span>`+
@@ -118,6 +128,9 @@
     }
     $(document).ready(function(){
         pinfo();
+        $("#idv34").change(function(){
+            pinfo();
+        });
     });
     $(function(){
         Server.request({
