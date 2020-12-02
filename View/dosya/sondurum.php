@@ -15,7 +15,7 @@
 		"Dosyalar" => "$data->userPanelLink/dosyalar"
 	];
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
@@ -50,16 +50,24 @@
 		</div>
 	</div>
     <script>
-    function getField(obj,name)
+    function getField(obj,id)
     {
         for(var column of obj){
-            if(column.name == name)
+            if(column.type == "date")
             {
-                return column.text
+                if(column.field == id)
+                {
+                    return moment(column.text).format("DD/MM/YYYY")
+                }
+            }else{
+                if(column.field == id)
+                {
+                    return column.text
+                }
             }
         };
         return "";
-    }
+    };
     function pinfo()
     {
 		var editMode = <?=ipermission("admin|personel") ? "true":"false";?>;
@@ -73,13 +81,19 @@
                 var lastAdded = null;
                 $("#partofkey").html("");
 				var content = [];
+				var empty = true;
                 for(var file of json.data){
+					var D = moment(file.createdate).locale("tr");
+					var E24saatOnce = moment().subtract(24,"hours").locale("tr");
+					if(moment(D).isBefore(E24saatOnce)) continue;
+					D = D.fromNow();
+					empty = false;
 					content.push(`
 					<li class="media">
 						<div class="media-link cursor-pointer collapsed" data-toggle="collapse" data-target="#no_${file.note_id}" aria-expanded="false">
 							<div class="media-left"><img src="${file.personel.image?"uploads/"+file.personel.image:"assets/images/placeholder.jpg"}" class="img-circle img-md" alt=""></div>
 							<div class="media-body">
-								<div class="media-heading text-semibold">Dosya No: ${file.order} - ${Tarih(file.createdate)}</div>
+								<div class="media-heading text-semibold">Dosya No: ${file.order} - ${Tarih(file.createdate)} <span class="text-muted">(${D})</span></div>
 								<span class="text-muted">${file.text}</span>
 							</div>
 							<div class="media-right media-middle text-nowrap">
@@ -103,6 +117,16 @@
 						</div>
 					</li>`);
                 };
+				if(empty){
+					content.push(`
+					<li class="media">
+						<div class="media-link cursor-pointer">
+							<div class="media-body">
+								<div class="media-heading text-semibold">Son 24 saatte her hangi bir gelişme olmadı</div>
+							</div>
+						</div>
+					</li>`);
+				}
 				$("#partofkey").html(content.join(''));
                 if(lastAdded) lastAdded.draw();
                 else{

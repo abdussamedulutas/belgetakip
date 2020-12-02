@@ -202,24 +202,27 @@
     };
     function permission($permissions)
     {
-        global $workspaceDir;
+        global $workspaceDir,$MVC_purl;
+        $prl = $MVC_purl->path;
         $split = explode("|",$permissions);
-        
         if(isset($_SESSION["user"]))
         {
             foreach($split as $role)
                 if($role == $_SESSION["role"])
                     return;
-            Response::tempRedirect("$workspaceDir/login");
-            exit;
+            if(Request::method() == "POST"){
+                SendStatus(403);
+            }else{
+                Response::tempRedirect("$workspaceDir/login?redir=$prl");
+            }
         }else if(count($split) != 0){
             if(Request::method() == "POST"){
                 SendStatus(403);
             }else{
-                SendStatus(403);
+                Response::tempRedirect("$workspaceDir/login?redir=$prl");
             }
-            exit;
         }
+        exit;
     };
     function ipermission($permissions)
     {

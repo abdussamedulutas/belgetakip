@@ -13,7 +13,7 @@
 		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
@@ -65,13 +65,22 @@
     var tumacenteler = false;
     var tumpersoneller = false;
     var tumformislemleri = false;
+    var tumavukatlar = false;
     var data = null;
     function getField(obj,id)
     {
         for(var column of obj){
-            if(column.field == id)
+            if(column.type == "date")
             {
-                return column.text
+                if(column.field == id)
+                {
+                    return moment(column.text).format("DD/MM/YYYY")
+                }
+            }else{
+                if(column.field == id)
+                {
+                    return column.text
+                }
             }
         };
         return "";
@@ -95,20 +104,22 @@
                         var date2 = moment().subtract('days', 45);
                         if(moment(date1).isAfter(date2)) continue;
                     }
-                    lastAdded = db.add([
-                        `Dosya no:${file.order}`,
-                        `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span>&nbsp;\t`+
-                        `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span>&nbsp;\t`+
-                        `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span>&nbsp;\t`,
-                        json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
-                        json.data.Acente[file.acente].name,
-                        getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
-                        getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
-                        getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
-                        getField(file.form.FormData,'91A88B64D7685A98AC35414143DE41DA'),
-                        `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
-                        `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
-                    ]);
+                    try{
+                        lastAdded = db.add([
+                            `Dosya no:${file.order}`,
+                            `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span> `+
+                            `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span> `+
+                            `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span> `,
+                            json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
+                            json.data.Acente[file.acente].name,
+                            getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
+                            getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
+                            getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
+                            json.data.Avukat[file.avukat].name + " " + json.data.Avukat[file.avukat].surname,
+                            `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
+                            `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
+                        ]);
+                    }catch(i){}
                 };
                 if(lastAdded) lastAdded.draw();
                 else{
@@ -136,7 +147,12 @@
         },function(json){
             tumpersoneller = json.data;
         });
-
+        Server.request({
+            action:"tumavukatlar"
+        },function(json){
+            tumavukatlar = json.data;
+        });
+        
         wait2(function(){
             var text = `<div class="checkbox checkbox-switch" style="margin:3px 10px;float:left;">
                     <input type="checkbox" onchange="vidv34=this.checked;pinfo();$(\`[for='vm0b']\`).animate({width:'toggle'})" data-on-text="Açık" data-off-text="Kapalı" class="switch" data-size="mini" id="vm0b">
@@ -166,6 +182,12 @@
         }));
         $("#personel").trigger("change");
 
+
+        $("#avukat").html(tumavukatlar.map(function(vkt){
+            return `<option value="${vkt.id}">${vkt.name} ${vkt.surname}</option>`
+        }));
+        $("#avukat").trigger("change");
+
         $("#add-file").modal("show");
         autoCommit = false;
         
@@ -189,16 +211,22 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label>İlgili Acente</label>
                                 <select class="select2 no-search" id="acente" name="acente">
                                     <option value="RO">Acente Seç</option>
                                 </select>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label>Acente Personeli</label>
                                 <select class="select2 no-search" id="personel" name="personel">
                                     <option value="RO">Personel Seç</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>İlgili Avukat</label>
+                                <select class="select2 no-search" id="avukat" name="avukat">
+                                    <option value="RO">Avukat Seç</option>
                                 </select>
                             </div>
                         </div>

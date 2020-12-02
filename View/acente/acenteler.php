@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Acente Düzenle"?></title>
+	<title><?=$settings->get("appname") . " | Acenteler"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -13,7 +13,7 @@
 		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>

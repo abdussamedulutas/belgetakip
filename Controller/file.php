@@ -145,6 +145,12 @@
                     Response::soap("success","PERSONEL_ALL",$allAcente);
                     break;
                 }
+                case "tumavukatlar":{
+                    permission("admin|personel|kullanici");
+                    $allAcente = (new User)->getAll("avukat");
+                    Response::soap("success","AVUKAT_ALL",$allAcente);
+                    break;
+                }
                 case "tumacenteler":{
                     permission("admin|personel|kullanici");
                     $allAcente = $acente->getAll();
@@ -176,7 +182,8 @@
                     $fileid = $file->createFile(
                         Request::post("name"),
                         Request::post("acente"),
-                        Request::post("personel")
+                        Request::post("personel"),
+                        Request::post("avukat")
                     );
                     $fields = $form->getFields();
                     $values = [];
@@ -205,6 +212,7 @@
                     $name = Request::post("name");
                     $acente = Request::post("acente");
                     $personel = Request::post("personel");
+                    $avukat = Request::post("avukat");
                     if($file->getFileId($id) == false){
                         SendStatus(404);
                         exit;
@@ -215,7 +223,7 @@
                         $value = Request::post($field->id);
                         $form->updateValue($field->id,$formid,$value);
                     };
-                    $file->updateFile($id,$name,$acente,$personel);
+                    $file->updateFile($id,$name,$acente,$personel,$avukat);
                     Response::soap("success","UPDATE_FILE",true);
                     break;
                 }
@@ -260,6 +268,7 @@
                     $types = $form->getAllType();
                     $acenteler = $acente->getAll();
                     $personeller = $users->getAll('personel');
+                    $avukatlar = $users->getAll('avukat');
                     $personels = [];
                     foreach($personeller as $p){
                         $personels[$p->id] = $p;
@@ -268,10 +277,15 @@
                     foreach($acenteler as $p){
                         $acentes[$p->id] = $p;
                     };
+                    $avukats = [];
+                    foreach($avukatlar as $p){
+                        $avukats[$p->id] = $p;
+                    };
                     Response::soap("success","FILES_ALL",[
                         "Acente"=>$acentes,
                         "Files"=>$kle,
-                        "Personel"=>$personels
+                        "Personel"=>$personels,
+                        "Avukat"=>$avukats
                     ]);
                     break;
                 }

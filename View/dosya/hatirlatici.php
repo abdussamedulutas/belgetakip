@@ -13,7 +13,7 @@
 		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
@@ -64,12 +64,20 @@
     var tumpersoneller = false;
     var tumformislemleri = false;
     var data = null;
-    function getField(obj,id)
+    function getField(obj,id,crc)
     {
         for(var column of obj){
-            if(column.field == id)
+            if(column.type == "date" && crc !== false)
             {
-                return column.text
+                if(column.field == id)
+                {
+                    return moment(column.text).format("DD/MM/YYYY")
+                }
+            }else{
+                if(column.field == id)
+                {
+                    return column.text
+                }
             }
         };
         return "";
@@ -87,7 +95,7 @@
                 $("#filepanel").DataTable().clear().draw();
                 var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
-                    var df = getField(file.form.FormData,'166EF8D7BB247111578C2E1F6BB0C484');
+                    var df = getField(file.form.FormData,'166EF8D7BB247111578C2E1F6BB0C484',false);
                     var date1 = moment(df);
                     var date2 = moment().subtract('days',15);
                     var D = moment(date1).locale("tr").fromNow();

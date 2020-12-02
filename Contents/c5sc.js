@@ -153,7 +153,12 @@ Server.Login = function(form)
             setTimeout(function(){
                 Notify.successText("Kullanıcı Hesabı","Oturum Açıldı<br>Yönlendiriliyorsunuz...",progress);
                 setTimeout(function(){
-                    window.location = ans.data.newURL;
+                    var t = new URL(window.location).searchParams.get("redir");
+                    if(t){
+                        window.location = t;
+                    }else{
+                        window.location = ans.data.newURL;
+                    }
                 },500)
             },1000);
         }else if(ans.status == "fail"){
@@ -269,6 +274,23 @@ Server.deletePersonel = function(id,callback,infoCallback)
 {
     var data = new FormData();
     data.append("action","deletePersonel");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        if(ans.status == "success")
+        {
+            callback();
+        }else if(ans.status == "fail"){
+            infoCallback();
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu");
+    });
+};
+Server.deleteAvukat = function(id,callback,infoCallback)
+{
+    var data = new FormData();
+    data.append("action","deleteAvukat");
     data.append("id",id);
     data.append("language",navigator.language);
     Server._ajax(window.location.pathname,data,function(ans) {
@@ -440,6 +462,113 @@ Server.getPersonelInfo = function(id,btn,callback)
         Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
     });
 };
+
+Server.createAvukat = function(form)
+{
+    var progress = Notify.progress("Avukat Oluşturma","Avukat Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","createAvukat");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            $("#add-avukat").modal("hide");
+            Notify.successText("Avukat Oluşturma","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Avukat Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS":{
+                    Notify.failedForm("Avukat Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.editAvukat = function(form)
+{
+    var progress = Notify.progress("Avukat Düzenleme","Avukat Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","editAvukat");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            Notify.successText("Avukat Düzenleme","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Avukat Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS ":{
+                    Notify.failedForm("Avukat Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.getAvukatInfo = function(id,btn,callback)
+{
+    var progress = Notify.progress("Avukat","Avukat Bilgileri Alınıyor");
+    var btnText = $(btn).text();
+    $(btn).html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData();
+    data.append("action","getAvukatInfo");
+    data.append("id",id);
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(btn).html(btnText).removeAttr("disabled","");
+        if(ans.status == "success")
+        {
+            progress.remove();
+            callback(ans.data);
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        $(btn).html(btnText);
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
 Server.createKullanici = function(form)
 {
     var progress = Notify.progress("Kullanıcı Oluşturma","Kullanıcı Bilgileri İletiliyor");
@@ -453,7 +582,7 @@ Server.createKullanici = function(form)
         $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
         if(ans.status == "success")
         {
-            $("#add-personel").modal("hide");
+            $("#add-avukat").modal("hide");
             Notify.successText("Kullanıcı Oluşturma","Değişim kaydedildi",progress,3000);
             setTimeout(function(){
                 window.location.reload();

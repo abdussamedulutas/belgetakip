@@ -167,6 +167,17 @@
     ]);
 
     RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/avukatlar$/",
+        "method" => "get",
+        "name" => "acente::viewAvukat"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/avukatlar$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);
+
+    RegisterController([
         "url" => "/^{rootPath}([^\/]+)\/personeller$/",
         "method" => "get",
         "name" => "acente::viewPersonel"

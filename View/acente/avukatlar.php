@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Acente Düzenle"?></title>
+	<title><?=$settings->get("appname") . " | Avukatlar"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -24,28 +24,47 @@
 				<div class="row">
 					<div class="panel panel-flat">
 						<div class="panel-heading">
-							<h6 class="panel-title">Zorunlu Evrak Listesi<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
+							<h6 class="panel-title">Avukatlar<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
 							<div class="heading-elements">
 								<ul class="icons-list">
 									<li><a data-action="collapse"></a></li>
 									<li><a data-action="reload"></a></li>
+									<li><a data-action="close"></a></li>
 								</ul>
 							</div>
 						</div>
 						<div class="panel-body">
-                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                
+                            </div>
                             <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" onclick="AddReFile()">Yeni Evrak türü Ekle</button>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#add-avukat">Yeni Avukat Ekle</button>
                             </div>
                             <div class="col-md-12 table-responsive">
-                                <table class="table table-bordered table-striped table-hover datatablepin" id="pinpanel">
+                                <table class="table table-bordered table-striped table-hover datatablepin">
                                     <thead>
                                         <tr>
+                                            <th width="1%">Resim</th>
                                             <th>İsim</th>
+                                            <th>Soyisim</th>
+                                            <th>E-Posta Adresi</th>
                                             <th width="1%"></th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody>
+                                        <?php foreach($data->avukatlar as $avukat): ?>
+                                        <tr>
+                                            <td><img src="<?=isset($avukat->image)?"uploads/".$personel->image:"images/placeholder.jpg"?>" alt="" class="img img-responsize" style="max-width: 100px;max-height:100px;"></td>
+                                            <td><?=$avukat->name?></td>
+                                            <td><?=$avukat->surname?></td>
+                                            <td><?=$avukat->email?></td>
+                                            <td style="white-space:nowrap">
+                                                <button class="btn btn-default" onclick="Duzenle(this,'<?=$avukat->id?>');">Düzenle</button>
+                                                <button class="btn btn-danger" onclick="Sil(this,'<?=$avukat->id?>');">Kaldır</button>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach;    ?>
+                                    </tbody>
                                 </table>
                             </div>
 						</div>
@@ -55,91 +74,53 @@
 		</div>
     </div>
     <script>
-        function pinfo()
-		{
-			var p = block("#pinpanel");
-			setTimeout(function(){
-				Server.request({
-					action:"getReqFilesList"
-				},function(json){
-					var lastAdded = null;
-					$("#pinpanel").DataTable().clear().draw();
-					var db = $("#pinpanel").DataTable().row;
-                    for(var row of json.data){
-                        lastAdded = db.add([
-                            `${row.name}`,
-                            `<span style="white-space:nowrap"><button class="btn btn-default" onclick="updateReFile('${row.name}','${row.id}')">Düzenle</button>&nbsp;`+
-                            `<button class="btn btn-danger" onclick="removeAcente('${row.name}','${row.id}')">Kaldır</button></span>`
-                        ]);
-                    };
-                    if(lastAdded) lastAdded.draw();
-                    else{
-                        p();
-                        p=null
-                    };
-                    reinitialize();
-					setTimeout(function(){
-						p&&p();
-					},100);
-				});
-			},100);
-		};
-        $(function(){
-            pinfo();
-        });
-		function AddReFile()
-		{
-			bootbox.prompt(`Yeni evrak ismi?`, function(result) {
-				if(result){
-					Server.request({
-						action:"createReqFile",
-						name:result
-					},function(json){
-						window.location.reload()
-					})
-				}
-			});
-		};
-		function updateReFile(name,id)
-		{
-			bootbox.prompt(`<b>${name}</b> zorunlu evrağın yeni ismi?`, function(result) {
-				if(result){
-					Server.request({
-						action:"updateReqFile",
-                        id:id,
-						name:result
-					},function(json){
-						window.location.reload()
-					})
-				}
-			});
-		};
-		function removeAcente(name,id)
-		{
-			Notify.confirm({
-				title:"Dikkat!",
-				text:`${name} isimli evrak zorunluluğunu silmek istediğinize emin misiniz?`,
-				confirmText:"Evet, Sil",
-				cancelText:"İptal",
-				confirm:function(){
-					Server.request({
-						action:"deleteReqFile",
-						id:id
-					},function(json){
-						window.location.reload()
-					})
-				}
-			});
-		};
+        function Duzenle(btn,id)
+        {
+            Server.getAvukatInfo(id,btn,function(data){
+                for(var name in data) if(name != "image"){
+                    $("#edit-avukat").find("[name='"+name+"']").length != 0 && $("#edit-avukat").find("[name='"+name+"']").val(data[name]);
+                };
+                if(data.image){
+                    $("#edit-avukat").find("img").attr("src","uploads/"+data.image)
+                };
+                $("#edit-avukat").modal("show");
+            });
+        }
+        function Sil(btn,id)
+        {
+            swal({
+                title: "Dikkat",
+                text: "Avukat silme işlemi gerçekleştirmek istediğinize emin misiniz?\Avukat silme işlemi gerçekleştirmeden önce avukat bilgilerinin kullanıldığı dosyalarda avukatı değiştirmenizi öneririz",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#EF5350",
+                confirmButtonText: "Evet, Sil",
+                cancelButtonText: "Geri",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            },
+            function(isConfirm){
+                if (isConfirm) {
+                    Server.deleteAvukat(id,function(){
+                        swal.close();
+                        $(btn).closest("tr").remove();
+                        Notify.successText("Avukat Hesabı","Avukat Silme işlemi başarılı");
+                    },function(){
+                        swal.close();
+                        Notify.errorText("Avukat Hesabı","Avukat Silme işlemi başarısız");
+                    });
+                }
+            });
+        }
     </script>
-    <div id="add-personel" class="modal fade">
+    <div id="add-avukat" class="modal fade">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h5 class="modal-title">Personel Hesabı Ekle</h5>
+                    <h5 class="modal-title">Avukat Hesabı Ekle</h5>
                 </div>
-                <form onsubmit="Server.createPersonel(this);return false;">
+                <form onsubmit="Server.createAvukat(this);return false;">
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="row">
@@ -179,18 +160,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <label>Doğum Tarihi</label>
-                                    <input type="text" name="birthday" class="form-control pickadate" placeholder="Doğum Tarihi">
-                                </div>
-                                <div class="col-sm-6">
-                                    <label>Acente</label>
-                                    <input type="text" name="acente_id" readonly class="form-control" value="<?=$data->acente->id?>">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link" data-dismiss="modal">Kapat</button>
@@ -200,14 +169,14 @@
             </div>
         </div>
     </div>
-    <div id="edit-personel" class="modal fade">
+    <div id="edit-avukat" class="modal fade">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h5 class="modal-title">Personel Hesabı Düzenle</h5>
+                    <h5 class="modal-title">Avukat Hesabı Düzenle</h5>
                 </div>
-                <form onsubmit="Server.editPersonel(this);return false;">
+                <form onsubmit="Server.editAvukat(this);return false;">
                     <input type="hidden" name="id">
                     <div class="modal-body">
                         <div class="form-group">

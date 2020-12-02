@@ -33,7 +33,7 @@
         }
     };
 ?>
-<body class="navbar-bottom navbar-top  sidebar-xs">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	<?php include(__DIR__."/../partials/main.navbar.php"); ?>
 	<?php include(__DIR__."/../partials/main.header.php"); ?>
 	<div class="page-container">
@@ -73,7 +73,11 @@
 											    <?=$field->name?>
 											</td>
 											<td width="50%">
-											    <?=$field->text?>
+											    <?php if($field->type == "date" && strlen($field->text) != 0): ?>
+                                                    <?= date("d/m/Y",strtotime($field->text)); ?>
+                                                <?php else: ?>
+                                                    <?= $field->text; ?>
+											    <?php endif; ?>
                                             </td>
 										</tr>
                                         <?php endforeach; ?>
@@ -107,6 +111,20 @@
                                                     }
                                                 ?>
                                                 <?=bin2hex($data->form["Form"]->user)?>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Avukat
+											</td>
+											<td>
+                                                <?php
+                                                    if(isset($data->status->File->avukatname))
+                                                    {
+                                                        echo "<b>".$data->status->File->avukatname." ".$data->status->File->avukatsurname."</b><br>";
+                                                    }
+                                                ?>
+                                                <?=$data->status->File->avukat_id?>
 											</td>
 										</tr>
 										<tr>
@@ -495,6 +513,8 @@
     <script>
     var tumacenteler = false;
     var tumpersoneller = false;
+    var tumavukatlar = false;
+
     var tumformislemleri = false;
     var data = null;
     function getField(obj,name)
@@ -506,7 +526,6 @@
             }
         };
     }
-    var tumacenteler,tumpersoneller;
     $(function(){
         Server.request({
             action:"tumacenteler"
@@ -517,6 +536,11 @@
             action:"tumpersoneller"
         },function(json){
             tumpersoneller = json.data;
+        })
+        Server.request({
+            action:"tumavukatlar"
+        },function(json){
+            tumavukatlar = json.data;
         })
     });
     function edit()
@@ -533,6 +557,11 @@
             return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
         }));
         $("#personel").trigger("change");
+
+        $("#avukat").html(tumavukatlar.map(function(vkt){
+            return `<option value="${vkt.id}">${vkt.name} ${vkt.surname}</option>`
+        }));
+        $("#avukat").trigger("change");
         $("#addfile").modal("show");
         autoCommit = false;
     }
@@ -556,16 +585,22 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label>İlgili Acente</label>
                                 <select class="select2 no-search" id="acente" name="acente">
                                     <option value="RO">Acente Seç</option>
                                 </select>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label>Acente Personeli</label>
                                 <select class="select2 no-search" id="personel" name="personel">
                                     <option value="RO">Personel Seç</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>İlgili Avukat</label>
+                                <select class="select2 no-search" id="avukat" name="avukat">
+                                    <option value="RO">Avukat Seç</option>
                                 </select>
                             </div>
                         </div>

@@ -90,12 +90,17 @@
                 file.`name`,
                 HEX(file.acente_id) as acente_id,
                 HEX(file.personel_id) as personel_id,
-                file.`order`,user.`name` as personelname,
+                HEX(file.avukat_id) as avukat_id,
+                file.`order`,
+                `acente`.name as acentename,
+                user.`name` as personelname,
                 user.`surname` as personelsurname,
-                `file`.createdate as createdate,
-                `acente`.name as acentename
+                avukat.`name` as avukatname,
+                avukat.`surname` as avukatsurname,
+                `file`.createdate as createdate
                 FROM `file`
                 INNER JOIN user ON user.id = file.personel_id
+                LEFT JOIN user AS avukat ON avukat.id = file.avukat_id
                 INNER JOIN acente ON acente.id = file.acente_id
                 WHERE file.deletedate is null AND file.id = UNHEX(:id)");
             $pre->bindParam("id", $fileid);
@@ -139,7 +144,7 @@
                 "Tam" => $tam
             ];
         }
-        public function createFile($name,$acente,$personel)
+        public function createFile($name,$acente,$personel,$avukat)
         {
             global $db;
             $id = getRandom();
@@ -149,6 +154,7 @@
                 `name` = :name,
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
+                avukat_id = UNHEX(:avukat),
                 createdate = NOW(),
                 modifydate = NOW(),
                 `order` = :num
@@ -156,6 +162,7 @@
             $pre->bindParam("id", $id);
             $pre->bindParam("acente", $acente);
             $pre->bindParam("personel", $personel);
+            $pre->bindParam("avukat", $avukat);
             $pre->bindParam("name", $name);
             $pre->bindParam("num", $num);
             if(!$pre->execute()){
@@ -187,19 +194,21 @@
             $pre->execute();
             return $pre->fetch(PDO::FETCH_OBJ);
         }
-        public function updateFile($id,$name,$acente,$personel)
+        public function updateFile($id,$name,$acente,$personel,$avukat)
         {
             global $db;
             $pre = $db->prepare("UPDATE `file` SET
                 `name` = :name,
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
+                avukat_id = UNHEX(:avukat),
                 modifydate = NOW()
                 WHERE id = UNHEX(:id)
             ");
             $pre->bindParam("id", $id);
             $pre->bindParam("acente", $acente);
             $pre->bindParam("personel", $personel);
+            $pre->bindParam("avukat", $avukat);
             $pre->bindParam("name", $name);
             return $pre->execute();
         }
@@ -222,7 +231,8 @@
                 `order` as 'order',
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
-                hex(personel_id) as 'personel'
+                hex(personel_id) as 'personel',
+                hex(avukat_id) as 'avukat'
                 FROM `file` WHERE deletedate is null");
             if($pre->execute())
             {
@@ -241,7 +251,8 @@
                 `order` as 'order',
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
-                hex(personel_id) as 'personel'
+                hex(personel_id) as 'personel',
+                hex(avukat_id) as 'avukat'
                 FROM `file` WHERE deletedate is null AND personel_id = :user");
             $pre->bindParam("user",$id);
             if($pre->execute())
@@ -261,7 +272,8 @@
                 `order` as 'order',
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
-                hex(personel_id) as 'personel'
+                hex(personel_id) as 'personel',
+                hex(avukat_id) as 'avukat'
                 FROM `file` WHERE deletedate is null AND acente_id = :acente");
             $pre->bindParam("acente",$id);
             if($pre->execute())
@@ -282,7 +294,8 @@
                 HEX(acente_id) as 'acente',
                 hex(form_notes.user) as 'personel',
                 form_notes.createdate AS createdate,
-                form_notes.id as note_id,
+                HEX(form_notes.id) as note_id,,
+                hex(avukat_id) as 'avukat',
                 `text`
                 FROM `file`
                 INNER JOIN form_notes ON form_notes.file_id = file.id
@@ -307,7 +320,8 @@
                 form_notes.createdate AS createdate,
                 `text`,
                 hex(personel_id) as 'personel',
-                form_notes.id as note_id,
+                hex(avukat_id) as 'avukat',
+                HEX(form_notes.id) as note_id,
                 lastinsetdate FROM `file`
                 INNER JOIN form_notes ON form_notes.file_id = file.id
                 WHERE file.deletedate is null AND form_notes.deletedate is null AND personel_id = :user ORDER BY form_notes.createdate desc, file.createdate desc
@@ -331,7 +345,8 @@
                 HEX(file.acente_id) as 'acente',
                 form_notes.createdate AS createdate,
                 hex(personel_id) as 'personel',
-                form_notes.id as note_id,
+                hex(avukat_id) as 'avukat',
+                HEX(form_notes.id) as note_id,
                 `text`,
                 lastinsetdate
                 FROM `file`

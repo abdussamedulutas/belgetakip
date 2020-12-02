@@ -13,7 +13,7 @@
 		"Anasayfa" => "$data->userPanelLink/sondurum"
 	];
 ?>
-<body class="navbar-bottom navbar-top">
+<body class="navbar-bottom navbar-top sidebar-xs">
 	
 	<?php include("partials/main.navbar.php"); ?>
 	<?php include("partials/main.header.php"); ?>

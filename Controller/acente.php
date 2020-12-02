@@ -17,6 +17,20 @@
                 "acenteler"=>$acenteler
             ]);
         }
+        public function viewAvukat()
+        {
+            permission("personel|admin");
+            global $workspaceDir;
+
+            $user = new User();
+            $avukatlar = $user->getAll("avukat");
+
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("acente/avukatlar",(object)[
+                "userPanelLink"=>$userPanelLink,
+                "avukatlar"=>$avukatlar
+            ]);
+        }
         public function viewKullanici()
         {
             permission("personel|admin");
@@ -113,6 +127,7 @@
                 }
                 case "getKullaniciInfo":
                 case "getPersonelInfo":
+                case "getAvukatInfo":
                 case "getAdminInfo":{
                     $user = new User();
                     $id = Request::post("id");
@@ -134,6 +149,16 @@
                     $id = Request::post("id");
                     if($user->delete($id)){
                         Response::soap("success","DELETEPERSONEL");
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
+                case "deleteAvukat":{
+                    $user = new User();
+                    $id = Request::post("id");
+                    if($user->delete($id)){
+                        Response::soap("success","DELETEAVUKAT");
                     }else{
                         SendStatus(404);
                     }
@@ -209,11 +234,81 @@
                     }
                     break;
                 }
+                case "editAvukat":{
+                    $id = Request::post("id");
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    $user = new User();
+                    $avukat = $user->get($id);
+                    if($avukat->email != Request::post("email")){
+                        if($user->isUsableMail(Request::post("email")))
+                        {
+                            return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
+                        }
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else{
+                        $newName = $avukat->image;
+                    }
+                    $user = new User();
+                    if($user->update(
+                        $id,
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'avukat',
+                        Request::post("email"),
+                        $newName
+                    )){
+                        Response::soap("success","AVUKAT_UPDATE");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "createAvukat":{
+                    global $workspaceDir;
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    Request::validation("POST","password1",["require"=>true],"Parola alanı boş veya geçersiz");
+                    Request::validation("POST","password2",["require"=>true],"Parola alanı boş veya geçersiz");
+                    if(Request::post("password1") != Request::post("password2")){
+                        return Response::soap("fail","INVALID_FIELD",[
+                            "fieldName" => "password2",
+                            "text" => "Parolalar eşleşmiyor"
+                        ]);
+                    };
+                    $user = new User();
+                    if($user->isUsableMail(Request::post("email")))
+                    {
+                        return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail Adresi mevcut lütfen başka bir adres deneyiniz"]);
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else $newName = "";
+                    $user = new User();
+                    if($user->createUser(
+                        Request::post("name"),
+                        Request::post("surname"),
+                        'avukat',
+                        Request::post("email"),
+                        $newName,
+                        Request::post("password1")
+                    )){
+                        Response::soap("success","AVUKAT_CREATED");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
                 case "deleteKullanici":{
                     $user = new User();
                     $id = Request::post("id");
                     if($user->delete($id)){
-                        Response::soap("success","DELETEPERSONEL");
+                        Response::soap("success","DELETEKULLANICI");
                     }else{
                         SendStatus(404);
                     }
