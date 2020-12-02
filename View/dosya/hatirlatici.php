@@ -111,8 +111,8 @@
                         getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
                         getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
                         getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
-                        getField(file.form.FormData,'91A88B64D7685A98AC35414143DE41DA'),
-                        `${D}`,
+                        `${file.evraklar.File.avukatname} ${file.evraklar.File.avukatsurname}`,
+                        `${getField(file.form.FormData,'166EF8D7BB247111578C2E1F6BB0C484')}<br><span class="text-muted">${D}</span>`,
                         `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
                     ]);
                 };

@@ -19,7 +19,11 @@
                 $_SESSION["name"] = $user->name;
                 $_SESSION["surname"] = $user->surname;
                 $_SESSION["image"] = $user->image;
-                $_SESSION["role"] = $user->role;
+                if($user->role == "avukat"){
+                    $_SESSION["role"] = "personel";
+                }else{
+                    $_SESSION["role"] = $user->role;
+                }
                 $_SESSION["userid"] = $user->id;
                 $_SESSION["acente"] = $user->acente_id;
                 $safe = safeName($_SESSION["name"]);

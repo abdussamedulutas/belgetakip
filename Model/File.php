@@ -155,6 +155,7 @@
                 acente_id = UNHEX(:acente),
                 personel_id = UNHEX(:personel),
                 avukat_id = UNHEX(:avukat),
+                lastinsetdate = NOW(),
                 createdate = NOW(),
                 modifydate = NOW(),
                 `order` = :num
@@ -253,7 +254,7 @@
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
                 hex(avukat_id) as 'avukat'
-                FROM `file` WHERE deletedate is null AND personel_id = :user");
+                FROM `file` WHERE deletedate is null AND personel_id = :user OR avukat_id = :user");
             $pre->bindParam("user",$id);
             if($pre->execute())
             {
@@ -294,7 +295,7 @@
                 HEX(acente_id) as 'acente',
                 hex(form_notes.user) as 'personel',
                 form_notes.createdate AS createdate,
-                HEX(form_notes.id) as note_id,,
+                HEX(form_notes.id) as note_id,
                 hex(avukat_id) as 'avukat',
                 `text`
                 FROM `file`
