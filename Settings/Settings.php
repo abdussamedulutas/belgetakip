@@ -1,18 +1,17 @@
 <?php
     MySQLConfig([
         "Host" => "127.0.0.1",
-        "UserName" => "root",
-        "UserPassword" => "",
-        "Database" => "dosyatakip",
+        "UserName" => "u7417506_dosyatakip",
+        "UserPassword" => "u8FxCdbBwt7jiB7",
+        "Database" => "u7417506_dosyatakip",
         "Charset" => "utf8"
     ]);
-
     setSerialPath("rootPath","\/");
     $workspaceDir = "";
-
+    
     RegisterPublicSource("/{rootPath}assets\/(.+)/","./Contents/");
     RegisterPublicSource("/{rootPath}uploads\/(.+)/","./Uploads/");
-    RegisterPublicSource("/{rootPath}template\/(.+)/","./View/templates/");
+    RegisterPublicSource("/{rootPath}template\/(.+)/","./templates/");
     RegisterPublicSource("/{rootPath}(.+)/","./Contents/");
     RegisterPublicSource("/{rootPath}\/\.well-known\//","./.well-known/");
 
@@ -223,7 +222,7 @@
         "name" => "main::recoveryView"
     ]);
     RegisterController([
-        "url" => "/^{rootPath}recmode\/client\/MjUzMjUyMzN3$/",
+        "url" => "/^{rootPath}recmode$/",
         "method" => "get",
         "name" => "main::getRecovery"
     ]);
@@ -232,4 +231,14 @@
         "method" => "get",
         "name" => "main::review"
     ]);
-    //recmode/client/MjUzMjUyMzN3
+
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/hesap$/",
+        "method" => "get",
+        "name" => "acente::account"
+    ]);
+    RegisterController([
+        "url" => "/^{rootPath}([^\/]+)\/hesap$/",
+        "method" => "post",
+        "name" => "acente::post"
+    ]);

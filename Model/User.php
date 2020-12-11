@@ -58,6 +58,14 @@
             $pre->bindParam("acente", $acente);
             return $pre->execute();
         }
+        public function updatePassword($id,$password)
+        {
+            global $db;
+            $pre = $db->prepare("UPDATE `user` SET `password` = MD5(:password) WHERE `id` = :id ");
+            $pre->bindParam("id", $id);
+            $pre->bindParam("password", $password);
+            return $pre->execute();
+        }
         public function getAll($role)
         {
             global $db;
@@ -184,7 +192,7 @@
         {
             return "assets/images/placeholder.jpg";
         };
-        return $_SESSION["image"];
+        return "uploads/".$_SESSION["image"];
     }
     function userrole()
     {

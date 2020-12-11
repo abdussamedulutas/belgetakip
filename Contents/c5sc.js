@@ -77,6 +77,7 @@ Notify.errorText = function(title,text,t,delay){
         title: title,
         text: text,
         icon: 'icon-blocked',
+        showCancelButton: true,
         type: 'error'
     };
     if(t){
@@ -92,7 +93,8 @@ Notify.successText = function(title,text,t,delay){
         title: title,
         text: text,
         icon: 'icon-checkmark3',
-        type: 'success'
+        type: 'success',
+        showCancelButton: true
     };
     if(t){
         t.update(k);
@@ -110,6 +112,7 @@ Notify.progress = function(title,text,t,delay){
         type: 'info',
         icon: 'icon-spinner4 spinner',
         hide: false,
+        showCancelButton: true,
         buttons: {
             closer: false,
             sticker: false
@@ -407,6 +410,48 @@ Server.editPersonel = function(form)
     var data = new FormData(form);
     $(form).find(".validation-error-label").remove();
     data.append("action","editPersonel");
+    data.append("language",navigator.language);
+    Server._ajax(window.location.pathname,data,function(ans) {
+        $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
+        if(ans.status == "success")
+        {
+            Notify.successText("Personel Düzenleme","Değişim kaydedildi",progress,3000);
+            setTimeout(function(){
+                window.location.reload();
+            },100);
+        }else if(ans.status == "fail"){
+            switch(ans.code)
+            {
+                case "REQUIRED_FIELD":
+                case "INVALID_FIELD":{
+                    Notify.failedForm("Personel Hesabı",ans.data.text,progress,3000);
+                    var t = $("[name='"+ans.data.fieldName+"']").parent();
+                    if(t.find(".validation-error-label").length == 0){
+                        t.append("<label class='validation-error-label'>"+ans.data.text+"</label>");
+                    };
+                    break;
+                }
+                case "ALREADYEXISTS ":{
+                    Notify.failedForm("Personel Hesabı",ans.data.text,progress,3000);
+                    break;
+                }
+                default:{
+                    progress.remove();
+                }
+            }
+        }else Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    },function(){
+        Notify.errorText("Hata!","Sunucu tarafında hata oluştu",progress,3000);
+    });
+};
+Server.editSelfprofile = function(form)
+{
+    var progress = Notify.progress("Hesap Güncelleme","Hesap Bilgileri İletiliyor");
+    var btnText = $(form).find(".actionbtn").text();
+    $(form).find(".actionbtn").html(`<i class="icon-spin icon-spinner2 spinner"></i> ${btnText}`).attr("disabled","");
+    var data = new FormData(form);
+    $(form).find(".validation-error-label").remove();
+    data.append("action","updateProfile");
     data.append("language",navigator.language);
     Server._ajax(window.location.pathname,data,function(ans) {
         $(form).find(".actionbtn").html(`${btnText}`).removeAttr("disabled");
@@ -912,6 +957,7 @@ function reinitialize()
         }
     });
     $('.datatablepin:not(.inited),.pickadate:not(.inited),.select2:not(.inited)').addClass("inited");
+    $(".file-styled").uniform({fileButtonClass: 'action btn bg-warning'})
 }
 function block(id)
 {

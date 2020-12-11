@@ -77,7 +77,7 @@
         public function getEvrakFile($fileid)
         {
             global $db;
-            $pre = $db->prepare("SELECT * FROM `form_files` WHERE deletedate is null AND fileid = UNHEX(:id)");
+            $pre = $db->prepare("SELECT * FROM `form_files` WHERE deletedate is null AND fileid = UNHEX(:id) LIMIT 1");
             $pre->bindParam("fileid", $fileid);
             $pre->execute();
             return $pre->fetch(PDO::FETCH_OBJ);
@@ -102,7 +102,8 @@
                 INNER JOIN user ON user.id = file.personel_id
                 LEFT JOIN user AS avukat ON avukat.id = file.avukat_id
                 INNER JOIN acente ON acente.id = file.acente_id
-                WHERE file.deletedate is null AND file.id = UNHEX(:id)");
+                WHERE file.deletedate is null AND file.id = UNHEX(:id)
+            ");
             $pre->bindParam("id", $fileid);
             $pre->execute();
             $file = $pre->fetch(PDO::FETCH_OBJ);
@@ -233,8 +234,12 @@
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
-                hex(avukat_id) as 'avukat'
-                FROM `file` WHERE deletedate is null");
+                hex(avukat_id) as 'avukat',
+                createdate,
+                modifydate,
+                lastinsetdate
+                FROM `file` WHERE deletedate is null
+            ");
             if($pre->execute())
             {
                 return $pre->fetchall(PDO::FETCH_OBJ);
@@ -253,7 +258,10 @@
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
-                hex(avukat_id) as 'avukat'
+                hex(avukat_id) as 'avukat',
+                createdate,
+                modifydate,
+                lastinsetdate
                 FROM `file` WHERE deletedate is null AND personel_id = :user OR avukat_id = :user");
             $pre->bindParam("user",$id);
             if($pre->execute())
@@ -274,7 +282,10 @@
                 `lastinsetdate`,
                 HEX(acente_id) as 'acente',
                 hex(personel_id) as 'personel',
-                hex(avukat_id) as 'avukat'
+                hex(avukat_id) as 'avukat',
+                createdate,
+                modifydate,
+                lastinsetdate
                 FROM `file` WHERE deletedate is null AND acente_id = :acente");
             $pre->bindParam("acente",$id);
             if($pre->execute())
@@ -325,7 +336,7 @@
                 HEX(form_notes.id) as note_id,
                 lastinsetdate FROM `file`
                 INNER JOIN form_notes ON form_notes.file_id = file.id
-                WHERE file.deletedate is null AND form_notes.deletedate is null AND personel_id = :user ORDER BY form_notes.createdate desc, file.createdate desc
+                WHERE file.deletedate is null AND form_notes.deletedate is null AND (personel_id = :user OR avukat_id = :user) ORDER BY form_notes.createdate desc, file.createdate desc
             ");
             $pre->bindParam("user",$id);
             if($pre->execute())

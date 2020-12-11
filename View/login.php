@@ -35,9 +35,6 @@
 						<div class="form-group">
 							<button type="submit" class="btn btn-primary btn-block">Giriş Yap <i class="icon-circle-right2 position-right"></i></button>
 						</div>
-						<div class="text-center">
-							<a href="login_password_recover.html">Şifrenizi mi unuttunuz</a>
-						</div>
 					</div>
 				</form>
 			</div>

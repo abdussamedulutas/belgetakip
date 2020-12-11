@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `u7417506_dosyatakip`.`file` (
 	`required_forms` text COLLATE utf8mb4_general_ci,
 	`acente_id` binary(16),
 	`personel_id` binary(16),
+	`avukat_id` binary(16),
 	`lastinsetdate` datetime,
 	`createdate` datetime,
 	`modifydate` datetime,
@@ -92,11 +93,9 @@ CREATE TABLE IF NOT EXISTS `u7417506_dosyatakip`.`form_variables` (
 
 CREATE TABLE IF NOT EXISTS `u7417506_dosyatakip`.`forms` (
 	`id` binary(16) NOT NULL,
-	`type_id` binary(16) NOT NULL,
 	`file_id` binary(16),
 	`require_id` binary(16),
 	`user` binary(16) NOT NULL,
-	`data` text COLLATE utf8mb4_unicode_ci NOT NULL,
 	`createdate` datetime,
 	`modifydate` datetime,
 	`deletedate` datetime,
@@ -132,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `u7417506_dosyatakip`.`user` (
 	`birthday` datetime,
 	`image` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
 	`email` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-	`extra` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+	`extra` longtext COLLATE utf8mb4_unicode_ci,
 	`createdate` datetime,
 	`deletedate` datetime,
 	`modifydate` datetime,
@@ -170,21 +169,24 @@ INSERT INTO `u7417506_dosyatakip`.`acente` (`id`,`name`,`image`,`createdate`,`mo
 INSERT INTO `u7417506_dosyatakip`.`acente` (`id`,`name`,`image`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('86a3bc863225834cf244dfcf7840c56f'),'Sivas','','2020-11-24 14:29:08','2020-11-24 14:29:08',NULL);
 INSERT INTO `u7417506_dosyatakip`.`acente` (`id`,`name`,`image`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('c0c3ff36086b4b0708fc80f17a8e9f9c'),'Niğde','','2020-11-24 14:29:14','2020-11-24 14:29:14',NULL);
 INSERT INTO `u7417506_dosyatakip`.`acente` (`id`,`name`,`image`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('fb4ae21e062fa3c50f836cf74d779573'),'ADANA','','2020-11-24 14:29:17','2020-11-24 14:29:17',NULL);
-INSERT INTO `u7417506_dosyatakip`.`file` (`id`,`name`,`required_forms`,`acente_id`,`personel_id`,`lastinsetdate`,`createdate`,`modifydate`,`deletedate`,`order`) VALUES (UNHEX('c3b142010929f59595a7137bd2adc089'),'kafaası patlamış','',UNHEX('4c87fa5ac62b1da2e618f8431d1759e4'),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),NULL,'2020-11-27 17:17:09','2020-11-27 17:17:09',NULL,'1');
-INSERT INTO `u7417506_dosyatakip`.`file` (`id`,`name`,`required_forms`,`acente_id`,`personel_id`,`lastinsetdate`,`createdate`,`modifydate`,`deletedate`,`order`) VALUES (UNHEX('7aa54a99c1db61f25daa0bfa6650a6de'),'mesuttan gelen','',UNHEX('11d8dbc5f4cfd1084da2c48d838c6ce1'),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),NULL,'2020-11-28 13:40:00','2020-11-28 13:40:00','2020-11-28 13:40:32','2');
+INSERT INTO `u7417506_dosyatakip`.`file` (`id`,`name`,`required_forms`,`acente_id`,`personel_id`,`avukat_id`,`lastinsetdate`,`createdate`,`modifydate`,`deletedate`,`order`) VALUES (UNHEX('c3b142010929f59595a7137bd2adc089'),'kafaası patlamış','',UNHEX('11d8dbc5f4cfd1084da2c48d838c6ce1'),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),UNHEX(''),'2020-12-02 09:50:52','2020-11-27 17:17:09','2020-12-02 09:54:26',NULL,'1');
+INSERT INTO `u7417506_dosyatakip`.`file` (`id`,`name`,`required_forms`,`acente_id`,`personel_id`,`avukat_id`,`lastinsetdate`,`createdate`,`modifydate`,`deletedate`,`order`) VALUES (UNHEX('7aa54a99c1db61f25daa0bfa6650a6de'),'mesuttan gelen','',UNHEX('11d8dbc5f4cfd1084da2c48d838c6ce1'),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),UNHEX(''),NULL,'2020-11-28 13:40:00','2020-11-28 13:40:00','2020-11-28 13:40:32','2');
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('059cc94c8260ad2c5162613daa2ef5a2'),'Hasar Adli Tıp Teslim Tarihi','7','date','2020-11-24 08:51:41','2020-11-24 08:51:41',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('0b6072368adb397a71b6a742d984eb8a'),'Mağdurun konumu','2','select','2020-11-24 08:50:35','2020-11-24 08:50:35',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('21d25dcf24373baeb847f52815bbd746'),'Sigorta Şirketleri','11','select','2020-11-24 17:10:09','2020-11-24 17:10:22',NULL);
-INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('223ed9aed75b31321b0e4c7b14d4741a'),'Tazminat Türü','9','select','2020-11-24 08:51:54','2020-11-24 08:51:54',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('223ed9aed75b31321b0e4c7b14d4741a'),'Tazminat Türü','9','select','2020-11-24 08:51:54','2020-11-24 08:51:54','2020-12-01 11:49:39');
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('44a9c75c7e4763114699697a6307bd00'),'Dosya Durumu','0','select','2020-11-24 08:48:57','2020-11-24 08:48:57',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('4df05a2dae5fddf6b06cb7f9201427ab'),'Hasar  Hukuk Teslim Tarihi','6','date','2020-11-24 08:51:36','2020-11-24 08:51:36',NULL);
-INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('91a88b64d7685a98ac35414143de41da'),'Taraf Şirketi','1','select','2020-11-24 08:50:14','2020-11-24 08:50:14',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('91a88b64d7685a98ac35414143de41da'),'İlgili Avukat','1','select','2020-11-24 08:50:14','2020-12-01 11:52:44',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('9ad70292ddac62f604f79c57e78896d9'),'Müvekkil İsmi','10','text','2020-11-24 11:23:22','2020-11-28 11:44:42',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('a97169a98f9e367527ef3f39ec8dbc65'),'Hasar Tarihi','4','date','2020-11-24 08:51:16','2020-11-24 08:51:16',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('de359388539e4d1e2ad32756ed576fd6'),'Adli Tıp Hukuk Teslim Tarihi','8','date','2020-11-24 08:51:48','2020-11-24 08:51:48',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('eba9bfbf7bd43efae89813f1dac07bcd'),'Dosya Geliş Tarihi','5','date','2020-11-24 08:51:25','2020-11-24 08:51:25',NULL);
-INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Tanzim Türü','3','select','2020-11-24 08:50:57','2020-11-24 08:50:57',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Dosya Türü','3','select','2020-11-24 08:50:57','2020-12-01 11:53:04',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('166ef8d7bb247111578c2e1f6bb0c484'),'Sigorta Başvuru','12','date','2020-12-01 11:45:31','2020-12-01 11:45:31',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_fields` (`id`,`name`,`order`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('097a549f860f84424aedf9c75a6eeb59'),'Tahkim Başvuru','13','date','2020-12-01 11:45:44','2020-12-01 11:45:44',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_files` (`id`,`user`,`requireid`,`fileid`,`filepath`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('913703ac4959068516ddf940cb4ba2ee'),UNHEX('a4fa877d9c9fbcfb2ad39eaa62c9f5ba'),UNHEX('dd595578e638171bd69f0b9efea7c5d5'),UNHEX('c3b142010929f59595a7137bd2adc089'),'c0dfa3926c26ea45ff58c7f5da458fc4.xlsx','2020-11-27 17:18:14','2020-11-27 17:18:14',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_files` (`id`,`user`,`requireid`,`fileid`,`filepath`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('b7f5d0b3ea42fae246e7e04033899f85'),UNHEX('a4fa877d9c9fbcfb2ad39eaa62c9f5ba'),UNHEX('7159727ea59c6a267fb8c1ff4ce21b33'),UNHEX('c3b142010929f59595a7137bd2adc089'),'4da90eae36bf7c484865e011daee5957.jpg','2020-12-02 09:50:52','2020-12-02 09:50:52',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_notes` (`id`,`file_id`,`user`,`text`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('61653736313864666636636633633833'),UNHEX('c3b142010929f59595a7137bd2adc089'),UNHEX('a4fa877d9c9fbcfb2ad39eaa62c9f5ba'),'durumu vahim','Hasar','2020-11-27 17:17:35',NULL,NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_notes` (`id`,`file_id`,`user`,`text`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('64373962393335383834643966343439'),UNHEX('c3b142010929f59595a7137bd2adc089'),UNHEX('a4fa877d9c9fbcfb2ad39eaa62c9f5ba'),'bel kırıgı   inönü %12 rapor','Adli Tıp','2020-11-27 17:23:10',NULL,NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_notes` (`id`,`file_id`,`user`,`text`,`type`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('30376262376235313632333435363634'),UNHEX('c3b142010929f59595a7137bd2adc089'),UNHEX('c5306a3585dd5138bf7e4a8c71bbb963'),'adli evraklar tamamlandı ','Avukat','2020-11-27 17:24:15',NULL,NULL);
@@ -204,6 +206,11 @@ INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modi
 INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('7a69774fa6b472b0bacb2db942951f95'),'Gelir Belgesi','2020-11-24 08:47:30','2020-11-24 08:47:30',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('9028ea420516b019a03fc9f89e70aeeb'),'Vuk. Nüf. Kayıt Örneği','2020-11-24 08:47:45','2020-11-24 08:47:45',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('d30e0d52ba5480edaf5674b4c92073fc'),'Diğer','2020-11-24 08:48:05','2020-11-24 08:48:05',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('ce4274b3d794dddefd2e97990c5dca5a'),'Tahkim Başvurusu','2020-12-01 11:51:29','2020-12-01 11:51:29',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('720c8d8d57eaddf61f390996f393928a'),'Sigorta Başvurusu','2020-12-01 11:51:37','2020-12-01 11:51:37',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('35f877ec7cf4db5294d119748028891f'),'Tahkim Hesap Raporu','2020-12-01 11:51:46','2020-12-01 11:51:46',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('87d75ac32649bf70a1d9367e6dbc995c'),'Tahkim Kusur Raporu','2020-12-01 11:51:55','2020-12-01 11:51:55',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_require` (`id`,`name`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('77fcbe01ab9eb2159c6e663bea182a91'),'Tahkim Kararı','2020-12-01 11:52:04','2020-12-01 11:52:04',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('0af0caf76201c3e2246d730b0b26dcc2'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Vefaat Tazminaatı','0','2020-11-24 08:51:09','2020-11-24 08:51:09',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('10744252eb9739899160157ba27ebefa'),UNHEX('21d25dcf24373baeb847f52815bbd746'),'Türk Nippon Sigorta','0','2020-11-24 17:19:32','2020-11-24 17:19:32',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('1539ebc16366851579264a52ff6b255d'),UNHEX('21d25dcf24373baeb847f52815bbd746'),'Unico Sigorta','0','2020-11-24 17:19:41','2020-11-24 17:19:41',NULL);
@@ -245,8 +252,14 @@ INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`orde
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('fabdd185ff77f71328f58d81893672f8'),UNHEX('44a9c75c7e4763114699697a6307bd00'),'Derdest','0','2020-11-24 08:49:17','2020-11-24 08:49:17',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('fd0d3e54fb342610bab6e9951c825867'),UNHEX('21d25dcf24373baeb847f52815bbd746'),'Grupama Sigorta','0','2020-11-24 17:14:48','2020-11-24 17:14:48',NULL);
 INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('c7ee2762302182ebbf1ea9c1a56875f9'),UNHEX('21d25dcf24373baeb847f52815bbd746'),'Türkiye Sigorta','','2020-11-27 16:45:47','2020-11-27 16:45:47',NULL);
-INSERT INTO `u7417506_dosyatakip`.`forms` (`id`,`type_id`,`file_id`,`require_id`,`user`,`data`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('70ecca997f2459f63ad54cde0dc547e1'),UNHEX('00000000000000000000000000000000'),UNHEX('c3b142010929f59595a7137bd2adc089'),UNHEX(''),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),'','2020-11-27 17:17:09','2020-11-27 17:17:09',NULL);
-INSERT INTO `u7417506_dosyatakip`.`forms` (`id`,`type_id`,`file_id`,`require_id`,`user`,`data`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('7861c534b1c19945624b626af576016e'),UNHEX('00000000000000000000000000000000'),UNHEX('7aa54a99c1db61f25daa0bfa6650a6de'),UNHEX(''),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),'','2020-11-28 13:40:00','2020-11-28 13:40:00',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('a6046fb956d4e13b5de05a94650b2926'),UNHEX('44a9c75c7e4763114699697a6307bd00'),'Adli Tıp','','2020-12-01 11:44:31','2020-12-01 11:44:31',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('39449dfdf150d214ed67930552f106df'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Geçici İş Göremezlik','','2020-12-01 11:48:41','2020-12-01 11:48:41',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('89f6c443aa4ee1ad2e523ed2f5b91875'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Geçici Bakıcı','','2020-12-01 11:48:53','2020-12-01 11:48:53',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('ce0c98891a17fd134f7661f76834a63b'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Maddi','','2020-12-01 11:48:59','2020-12-01 11:48:59',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('441a944e1e6b296bb9c23fb7095d719b'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'Manevi','','2020-12-01 11:49:05','2020-12-01 11:49:05',NULL);
+INSERT INTO `u7417506_dosyatakip`.`form_variables` (`id`,`field_id`,`name`,`order`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('16d39d8b75526890fa1132c49fcebfa9'),UNHEX('f2d0e64de5f3425bad0811bfd26f8d81'),'8/8 Destek Tazminatı','','2020-12-01 11:49:27','2020-12-01 11:49:27',NULL);
+INSERT INTO `u7417506_dosyatakip`.`forms` (`id`,`file_id`,`require_id`,`user`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('70ecca997f2459f63ad54cde0dc547e1'),UNHEX('c3b142010929f59595a7137bd2adc089'),UNHEX(''),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),'2020-11-27 17:17:09','2020-11-27 17:17:09',NULL);
+INSERT INTO `u7417506_dosyatakip`.`forms` (`id`,`file_id`,`require_id`,`user`,`createdate`,`modifydate`,`deletedate`) VALUES (UNHEX('7861c534b1c19945624b626af576016e'),UNHEX('7aa54a99c1db61f25daa0bfa6650a6de'),UNHEX(''),UNHEX('e45fd2ee4e4a5167a99117a9be1876aa'),'2020-11-28 13:40:00','2020-11-28 13:40:00',NULL);
 INSERT INTO `u7417506_dosyatakip`.`settings` (`name`,`value`,`createdate`,`modifydate`,`deletedate`) VALUES ('appname','FormTakip','2020-11-15 21:22:35','2020-11-15 21:22:36',NULL);
 INSERT INTO `u7417506_dosyatakip`.`user` (`id`,`name`,`surname`,`password`,`role`,`acente_id`,`birthday`,`image`,`email`,`extra`,`createdate`,`deletedate`,`modifydate`) VALUES (UNHEX('13349a8a38be11709be1f6308c1e2295'),'Rıfat','kalay','45477d5e61015d7d6c1b0a31529e4d84','personel',UNHEX('00000000000000000000000000000000'),NULL,'2806584f7b72d145a1c0f888d515eca7.png','rifat_kalay58@gmail.com','','2020-11-24 14:32:06','2020-11-27 13:47:57','2020-11-24 14:32:06');
 INSERT INTO `u7417506_dosyatakip`.`user` (`id`,`name`,`surname`,`password`,`role`,`acente_id`,`birthday`,`image`,`email`,`extra`,`createdate`,`deletedate`,`modifydate`) VALUES (UNHEX('2939a0b6843da113dd2999f6e20cbc07'),'Ayhan','GÜN','d48f761c9fbfbfc83793d270da71acc1','admin',UNHEX('00000000000000000000000000000000'),NULL,'c00ed1c9f1d361710e5441fd761ee396.png','ayhan.gun@hotmail.com','','2020-11-24 14:26:04','2020-11-27 13:47:02','2020-11-24 14:26:16');
@@ -288,5 +301,7 @@ INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES
 INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES (UNHEX('832cf7f11450e99279514f76a9226bdd'),UNHEX('7861c534b1c19945624b626af576016e'),UNHEX('223ed9aed75b31321b0e4c7b14d4741a'),'728C82C8AD58B3857F1148C806C42FAA');
 INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES (UNHEX('b3e1e5406f70ab5759db754a7cf9ed94'),UNHEX('7861c534b1c19945624b626af576016e'),UNHEX('9ad70292ddac62f604f79c57e78896d9'),'njnjnjbhbvhbh');
 INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES (UNHEX('537106a3368b4f823ceac740612d37cd'),UNHEX('7861c534b1c19945624b626af576016e'),UNHEX('21d25dcf24373baeb847f52815bbd746'),'E2409CED920FC3A8D8F3AE0E7E109E82');
+INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES (UNHEX('85fd46cd0d1535942fffe8884c72355a'),UNHEX('70ecca997f2459f63ad54cde0dc547e1'),UNHEX('166ef8d7bb247111578c2e1f6bb0c484'),'2020-06-15');
+INSERT INTO `u7417506_dosyatakip`.`values` (`id`,`formid`,`field`,`text`) VALUES (UNHEX('e3f3e5c91739235d1f59b32d45733941'),UNHEX('70ecca997f2459f63ad54cde0dc547e1'),UNHEX('097a549f860f84424aedf9c75a6eeb59'),'');
 
 COMMIT;

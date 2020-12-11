@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Dosyalar ve Formlar"?></title>
+	<title><?=$settings->get("appname") . " | Dosyalar ve Evraklar"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -33,12 +33,13 @@
                                     <h2 style="margin-top:0">Dosyalar</h2>
                                 </div>
                                 <div class="col-xs-6 text-right">
-                                    <?php if($_SESSION["role"]=="admin"): ?><button class="btn btn-success" onclick="create()">Yeni Ekle</button><?php endif;?>
+                                    <?php if(ipermission("admin|kullanici")): ?><button class="btn btn-success" onclick="create(this)">Yeni Ekle</button><?php endif;?>
                                 </div>
                                 <div class="col-md-12 table-responsive">
                                     <table class="table table-bordered table-striped table-hover datatablepin" id="filepanel">
                                         <thead>
-                                            <tr>
+                                            <tr style="white-space: nowrap">
+                                                <th width="1%">İşlem</th>
                                                 <th width="1%">Dosya Numarası</th>
                                                 <th></th>
                                                 <th>İlgili Personel</th>
@@ -48,7 +49,10 @@
                                                 <th>Müvekkil İsmi</th>
                                                 <th>Taraf Şti</th>
                                                 <th>Evraklar</th>
-                                                <th width="1%">İşlem</th>
+                                                <th>Sigorta Şti</th>
+                                                <th>Ekleme T.</th>
+                                                <th>Değiştirme T.</th>
+                                                <th>Son Geliş. T</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -67,23 +71,31 @@
     var tumformislemleri = false;
     var tumavukatlar = false;
     var data = null;
-    function getField(obj,id)
+    function getField(obj,id,f)
     {
         for(var column of obj){
             if(column.type == "date")
             {
                 if(column.field == id)
                 {
-                    return moment(column.text).format("DD/MM/YYYY")
+                    if(moment(column.text).isValid()){
+                        return moment(column.text).format("DD/MM/YYYY")
+                    }else{
+                        return !f ? "<span class='text-muted'>Girilmedi</span>" : "";
+                    }
                 }
             }else{
                 if(column.field == id)
                 {
-                    return column.text
+                    if(column.text != null && column.text.length == 0){
+                        return !f ? "<span class='text-muted'>Girilmedi</span>" : "";
+                    }else{
+                        return column.text
+                    }
                 }
             }
         };
-        return "";
+        return !f ? "<span class='text-muted'>Girilmedi</span>" : "";
     };
     function pinfo()
     {
@@ -106,10 +118,11 @@
                     }
                     try{
                         lastAdded = db.add([
+                            `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`,
                             `Dosya no:${file.order}`,
-                            `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A')}</span> `+
-                            `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A')}</span> `+
-                            `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81')}</span> `,
+                            `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A','display-block mb-5 badge badge-success',true)}</span> `+
+                            `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A','display-block mb-5 badge badge-primary',true)}</span> `+
+                            `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81','display-block badge badge-info',true)}</span> `,
                             json.data.Personel[file.personel].name + " " + json.data.Personel[file.personel].surname,
                             json.data.Acente[file.acente].name,
                             getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
@@ -117,7 +130,10 @@
                             getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
                             json.data.Avukat[file.avukat].name + " " + json.data.Avukat[file.avukat].surname,
                             `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
-                            `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
+                            getField(file.form.FormData,'21D25DCF24373BAEB847F52815BBD746'),
+                            `${moment(file.createdate).locale("tr").format("LLL")}`,
+                            `${moment(file.modifydate).locale("tr").format("LLL")}`,
+                            `${moment(file.lastinsetdate).locale("tr").format("LLL")}`
                         ]);
                     }catch(i){}
                 };
@@ -137,22 +153,6 @@
     });
     var vidv34 = false;
     $(function(){
-        Server.request({
-            action:"tumacenteler"
-        },function(json){
-            tumacenteler = json.data
-        })
-        Server.request({
-            action:"tumpersoneller"
-        },function(json){
-            tumpersoneller = json.data;
-        });
-        Server.request({
-            action:"tumavukatlar"
-        },function(json){
-            tumavukatlar = json.data;
-        });
-        
         wait2(function(){
             var text = `<div class="checkbox checkbox-switch" style="margin:3px 10px;float:left;">
                     <input type="checkbox" onchange="vidv34=this.checked;pinfo();$(\`[for='vm0b']\`).animate({width:'toggle'})" data-on-text="Açık" data-off-text="Kapalı" class="switch" data-size="mini" id="vm0b">
@@ -165,32 +165,93 @@
             $(".switch").bootstrapSwitch();
         });
     });
-    function create()
+    var tumacenteler = false,tumpersoneller = false,tumavukatlar = false, fields = false;
+    async function allVeri()
     {
-        autoCommit = true;
-        if(!tumacenteler) return;
+        return await new Promise(ok =>{
+            function send(){
+                if(tumacenteler && tumpersoneller && tumavukatlar){
+                    ok({
+                        tumacenteler:tumacenteler,
+                        tumpersoneller:tumpersoneller,
+                        tumavukatlar:tumavukatlar
+                    })
+                }
+            }
+            !tumacenteler && Server.request({
+                action:"tumacenteler"
+            },function(json){
+                tumacenteler = json.data
+                send();
+            })
+            !tumpersoneller && Server.request({
+                action:"tumpersoneller"
+            },function(json){
+                tumpersoneller = json.data;
+                send();
+            });
+            !tumavukatlar && Server.request({
+                action:"tumavukatlar"
+            },function(json){
+                tumavukatlar = json.data;
+                send();
+            });
+            function input(type,id,values)
+            {
+                switch(type)
+                {
+                    case "select": return `<select class="select2 field_data" name="${id}"><option>Seçin</option>`+values.map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`;
+                    case "text": return `<input class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
+                    case "date": return `<input type="date" class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
+                }
+            };
+            Server.request({
+                action:"getFields"
+            },function(json){
+                fields = true;
+                var last;
+                $("#newformdata").DataTable().clear()
+                for(var k of json.data){
+                    last = $("#newformdata").DataTable().row.add([
+                        `${k.name}`,
+                        input(k.type,k.id,k.variables)
+                    ])
+                };
+                last.draw();
+                reinitialize();
+            })
+            send();
+        });
+    };
+    var requieredAcente = "<?=$_SESSION["acente"] == "" || $_SESSION["acente"] == null ? "_" : bin2hex($_SESSION["acente"])?>";
+    function create(th)
+    {
+        var ttp = function(i){
+            return requieredAcente == "_" ? "" : requieredAcente.toString().toUpperCase() == i.toString().toUpperCase() ? "" : "disabled"
+        }
+        var t = blockbtn(th);
+        allVeri().then(function(obj){
+            t();
+            $("#acente").html(
+            obj.tumacenteler.map(function(acente){
+                return `<option value="${acente.id}" ${ttp(acente.id)}>${acente.name}</option>`
+            }));
+            $("#acente").trigger("change");
 
-        $("#acente").html(
-        tumacenteler.map(function(acente){
-            return `<option value="${acente.id}">${acente.name}</option>`
-        }));
-        $("#acente").trigger("change");
+
+            $("#personel").html(obj.tumpersoneller.map(function(pers){
+                return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
+            }));
+            $("#personel").trigger("change");
 
 
-        $("#personel").html(tumpersoneller.map(function(pers){
-            return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
-        }));
-        $("#personel").trigger("change");
+            $("#avukat").html(obj.tumavukatlar.map(function(vkt){
+                return `<option value="${vkt.id}">${vkt.name} ${vkt.surname}</option>`
+            }));
+            $("#avukat").trigger("change");
 
-
-        $("#avukat").html(tumavukatlar.map(function(vkt){
-            return `<option value="${vkt.id}">${vkt.name} ${vkt.surname}</option>`
-        }));
-        $("#avukat").trigger("change");
-
-        $("#add-file").modal("show");
-        autoCommit = false;
-        
+            $("#add-file").modal("show");
+        })
     }
     </script>
 	<div id="add-file" class="modal fade">
@@ -254,29 +315,6 @@
     </div>
     <script>
         $(function(){
-            Server.request({
-                action:"getFields"
-            },function(json){
-                var last;
-                $("#newformdata").DataTable().clear()
-                for(var k of json.data){
-                    last = $("#newformdata").DataTable().row.add([
-                        `${k.name}`,
-                        input(k.type,k.id,k.variables)
-                    ])
-                };
-                last.draw();
-                reinitialize();
-            })
-            function input(type,id,values)
-            {
-                switch(type)
-                {
-                    case "select": return `<select class="select2 field_data" name="${id}"><option>Seçin</option>`+values.map(function(value){return `<option value="${value.id}">${value.name}</option>`}).join('')+`</select>`;
-                    case "text": return `<input class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
-                    case "date": return `<input type="date" class="form-control field_data" name="${id}" placeholder='Bir şeyler yazın'>`;
-                }
-            };
             Server.createFile = function(btn)
             {
                 var p = blockbtn(btn);

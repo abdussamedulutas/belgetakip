@@ -80,7 +80,6 @@
         }
         public function getRecovery()
         {
-            permission("admin");
             if($g = Request::get("date"))
             {
                 ImportDatabase($g);

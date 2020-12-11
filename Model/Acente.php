@@ -3,7 +3,7 @@
     {
         public function isUsableName($name)
         {
-            $user = $this->query("SELECT * FROM acente WHERE `name` = :name AND deletedate is null LIMIT 1",[
+            $user = $this->query("SELECT * FROM acente WHERE `name` = binary :name AND deletedate is null LIMIT 1",[
                 "name" => $name
             ]);
             if(count($user) == 0)
@@ -24,13 +24,13 @@
                 $cvp = $pre->execute();
                 return $id;
             }catch(Exception $i){
-                exit;
+                var_dump($i);
             }
         }
         public function getAcente($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT HEX(id) as id,name,image FROM acente WHERE id = UNHEX(:id) AND deletedate is NULL  LIMIT 1");
+            $pre = $db->prepare("SELECT HEX(id) as id,name FROM acente WHERE id = UNHEX(:id) AND deletedate is NULL  LIMIT 1");
             $pre->bindParam("id", $id);
             if($pre->execute())
             {

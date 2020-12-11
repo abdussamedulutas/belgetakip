@@ -21,7 +21,6 @@
         {
             permission("personel|admin");
             global $workspaceDir;
-
             $user = new User();
             $avukatlar = $user->getAll("avukat");
 
@@ -29,6 +28,15 @@
             Response::view("acente/avukatlar",(object)[
                 "userPanelLink"=>$userPanelLink,
                 "avukatlar"=>$avukatlar
+            ]);
+        }
+        public function account()
+        {
+            permission("personel|admin|kullanici");
+            global $workspaceDir;
+            $userPanelLink = $workspaceDir."/".$_SESSION["name"];
+            Response::view("acente/profil",(object)[
+                "userPanelLink"=>$userPanelLink
             ]);
         }
         public function viewKullanici()
@@ -164,6 +172,30 @@
                     }
                     break;
                 }
+                case "isPassword":{
+                    sleep(1);
+                    $user = new User();
+                    $old = Request::post("oldPass");
+                    $verif = $user->varifyUser($_SESSION["user"],$old);
+                    Response::soap("success","PASSWORD_VERIFY",$verif != false);
+                    break;
+                }
+                case "changePassword":{
+                    $user = new User();
+                    $old = Request::post("oldPass");
+                    $new = Request::post("newPass");
+                    $verif = $user->varifyUser($_SESSION["user"],$old);
+                    if($verif == false){
+                        Response::soap("fail","CHANGED_PASSWORD");
+                        return;
+                    };
+                    if($user->updatePassword($_SESSION["userid"],$new)){
+                        Response::soap("success","CHANGED_PASSWORD");
+                    }else{
+                        SendStatus(404);
+                    }
+                    break;
+                }
                 case "editPersonel":{
                     $id = Request::post("id");
                     global $workspaceDir;
@@ -189,6 +221,40 @@
                         Request::post("name"),
                         Request::post("surname"),
                         'personel',
+                        Request::post("email"),
+                        $newName
+                    )){
+                        Response::soap("success","PERSONEL_UPDATE");
+                    }else{
+                        SendStatus(500);
+                    }
+                    break;
+                }
+                case "updateProfile":{
+                    global $workspaceDir;
+                    $id = bin2hex($_SESSION["userid"]);
+                    Request::validation("POST","name",["require"=>true],"İsim alanı boş veya geçersiz");
+                    Request::validation("POST","surname",["require"=>true],"Soyisim alanı boş veya geçersiz");
+                    Request::validation("POST","email",["require"=>true],"E-Mail Adresi alanı boş veya geçersiz");
+                    $user = new User();
+                    $personel = $user->get($id);
+                    if($personel->email != Request::post("email")){
+                        if($user->isUsableMail(Request::post("email")))
+                        {
+                            return Response::soap("fail","ALREADYEXISTS",["text"=>"E-Mail mevcut lütfen başka bir adres deneyiniz"]);
+                        }
+                    };
+                    if(Request::file("image")){
+                        $newName = Request::acceptFile("image");
+                    }else{
+                        $newName = $personel->image;
+                    }
+                    $user = new User();
+                    if($user->update(
+                        $id,
+                        Request::post("name"),
+                        Request::post("surname"),
+                        $personel->role,
                         Request::post("email"),
                         $newName
                     )){

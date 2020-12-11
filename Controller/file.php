@@ -96,7 +96,7 @@
             switch(Request::post("action"))
             {
                 case "sendEvrak":{
-                    permission("admin|personel");
+                    permission("admin|personel|kullanici");
                     if(Request::file("file")){
                         $newName = Request::acceptFile("file");
                         if(!$newName){
@@ -118,7 +118,7 @@
                     break;
                 }
                 case "sendNote":{
-                    permission("admin|personel");
+                    permission("admin|personel|kullanici");
                     $note = new Notes();
                     Request::validation("POST","fileid",["require"=>true],"Dosya kimliği geçersiz");
                     Request::validation("POST","text",["require"=>true],"Yapılan açıklama geçersiz");
@@ -177,7 +177,7 @@
                     break;
                 }
                 case "saveFile":{
-                    permission("admin");
+                    permission("admin|kullanici");
                     $form = new Form();
                     $fileid = $file->createFile(
                         Request::post("name"),

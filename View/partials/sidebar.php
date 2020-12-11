@@ -9,7 +9,7 @@
 						</div>
 						<div class="category-content sidebar-user">
 							<div class="media">
-								<a href="#" class="media-left"><img src="uploads/<?=userimage()?>" class="img-circle img-sm" alt=""></a>
+								<a href="#" class="media-left"><img src="<?=userimage()?>" class="img-circle img-sm" alt=""></a>
 								<div class="media-body">
 									<span class="media-heading text-semibold"><?=username();?></span>
 									<div class="text-size-mini text-muted">
@@ -17,9 +17,9 @@
 									</div>
 								</div>
 								<div class="media-right media-middle">
-									<ul class="icons-list" style="display:none">
+									<ul class="icons-list">
 										<li>
-											<a href="<?="$data->userPanelLink/account"?>"><i class="icon-cog3"></i></a>
+											<a href="<?="$data->userPanelLink/hesap"?>"><i class="icon-cog"></i></a>
 										</li>
 									</ul>
 								</div>
@@ -27,7 +27,7 @@
 						</div>
 						<div class="category-content no-padding">
 							<ul class="navigation navigation-main navigation-accordion">
-								<li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
+								<li class="navigation-header"><span>Menü</span> <i class="icon-menu" title="Menü"></i></li>
 								<li><a href="<?="$data->userPanelLink/sondurum"?>"><i class="icon-checkmark4"></i> <span>Son Gelişmeler</span></a></li>
 								<li><a href="<?="$data->userPanelLink/dosyalar"?>"><i class="icon-file-text2"></i> <span>Dosyalar</span></a></li>
 								<li><a href="<?="$data->userPanelLink/hatirlatma"?>"><i class="icon-alarm"></i> <span>Hatırlatmalar</span> </a></li>

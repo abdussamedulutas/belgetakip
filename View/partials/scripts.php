@@ -25,5 +25,5 @@
 	<script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 	<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
     <script src="js/pages/layout_navbar_main_hideable.js"></script>
-	<script src="c5sc.js"></script>
-    <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+	<script src="c5sc.js?v=<?=rand(900,9000)?>.<?=rand(1000,10000)?>"></script>
+    <script src="jquery.table2excel.min.js"></script>

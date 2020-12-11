@@ -113,7 +113,6 @@
                         $Ofile->evraklar = $file->getFileStatus($Ofile->id);
                         $Ofile->notes = $note->get($Ofile->id);
                         $Ofile->form = $form->getFileForm($Ofile->id);
-                        unset($Ofile->form["Form"]);
                     };
                     $types = $form->getAllType();
                     $acenteler = $acente->getAll();

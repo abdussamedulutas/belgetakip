@@ -246,7 +246,7 @@
         public function updateValue($field,$formid,$text)
         {
             global $db;
-            if($this->getValue($field)){
+            if($this->getValue($field,$formid) != false){
                 $pre = $db->prepare("UPDATE `values`
                     SET `text` = :text
                     WHERE `field` = UNHEX(:field) AND `formid` = UNHEX(:formid)
@@ -280,12 +280,13 @@
                 exit;
             }
         }
-        public function getValue($field)
+        public function getValue($field,$formid)
         {
             global $db;
             $id = getRandom();
-            $pre = $db->prepare("SELECT `text` FROM  `values` WHERE field = UNHEX(:field) LIMIT 1");
+            $pre = $db->prepare("SELECT `text` FROM  `values` WHERE field = UNHEX(:field) AND formid = UNHEX(:formid) LIMIT 1");
             $pre->bindParam("field",$field);
+            $pre->bindParam("formid",$formid);
             if($pre->execute())
             {
                 return $pre->fetch(PDO::FETCH_OBJ);
@@ -361,7 +362,7 @@
         public function getForm($id)
         {
             global $db;
-            $pre = $db->prepare("SELECT user,`file_id` FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
+            $pre = $db->prepare("SELECT user,`file_id`,HEX(id) as id FROM forms WHERE `id` = UNHEX(:id) AND deletedate is null LIMIT 1");
             $pre->bindParam("id",$id);
             $pre->execute();
             $form = $pre->fetch(PDO::FETCH_OBJ);
@@ -393,8 +394,13 @@
                     
                     $variableId = $this->getValue($field->field,$id);
                     $value = $this->getVariable($variableId->text);
-                    $field->text = $value->name;
-                    $field->textid = $variableId->text;
+                    if($value != false){
+                        $field->text = $value->name;
+                        $field->textid = $variableId->text;
+                    }else{
+                        $field->text = "";
+                        $field->textid = "";
+                    }
                 };
             };
             return [

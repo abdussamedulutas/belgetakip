@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Dosyalar"?></title>
+	<title><?=$settings->get("appname") . " | Son Durum"?></title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php

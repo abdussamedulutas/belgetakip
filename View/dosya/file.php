@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?=$settings->get("appname") . " | Dosyalar"?></title>
+	<title><?=$settings->get("appname") . " | "?><?=$data->order?> Numaralı Dosya</title>
 	<?php include(__DIR__."/../partials/styles.php"); ?>
 </head>
 <?php
@@ -82,9 +82,7 @@
 										</tr>
                                         <?php endforeach; ?>
 									</tbody>
-								</table>
-								<table class="table table-bordered folding text-muted">
-									<tbody>
+									<tbody class="text-muted">
 										<tr>
 											<td>
 												Dosya Kimliği
@@ -224,7 +222,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Hasar için gelişme gönder</h2>
@@ -265,7 +263,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Adli tıp için gelişme gönder</h2>
@@ -306,7 +304,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Avukat için gelişme gönder</h2>
@@ -347,7 +345,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel")): ?>
+                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>İş kazası için gelişme gönder</h2>
@@ -382,7 +380,7 @@
                                                         <td style="white-space:nowrap">
                                                             Eksik Evrak
                                                         </td>
-                                                        <?php if(ipermission("admin|personel")): ?>
+                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
                                                             <td style="white-space:nowrap">
                                                                 <button class="btn btn-success" onclick="sendFormFile('<?=$file->id?>','<?=$file->name?>')">Ekle</button>
                                                             </td>
@@ -665,7 +663,7 @@
                 Server.request(t,function(json){
                     setTimeout(function(){
                         b();
-                       // window.location.reload();
+                        window.location.reload();
                     },500);
                 })
             };

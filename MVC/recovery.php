@@ -73,7 +73,7 @@
         $sql = [];
         foreach($fields as $tname => $columns)
         {
-            $rows[] = "CREATE TABLE IF NOT EXISTS `$dbname`.`$tname` (\n";
+            $rows[] = "DROP TABLE `$dbname`.`$tname`;\nCREATE TABLE IF NOT EXISTS `$dbname`.`$tname` (\n";
             foreach($columns as $name => $column)
             {
                 if($name == "_INDEX_")
