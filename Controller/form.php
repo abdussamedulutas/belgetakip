@@ -102,21 +102,38 @@
                 }
                 case "getFiles":{
                     permission("admin|personel|kullanici");
-                    if($_SESSION["role"] == "admin"){
-                        $kle = $file->getAllForUser();
+                    $file = new File();
+                    $form = new Form();
+                    $acente = new Acente();
+                    $users = new User();
+                    $count = Request::post("count");
+                    if(is_null($count) || empty($count)) $count = 90000000;
+                    $start = Request::post("start");
+                    if(is_null($start) || empty($start)) $start = 0;
+                    if(ipermission("admin")){
+                        $kle = $file->getAllI();
+                    }else if(ipermission("kullanici")){
+                        $kle = $file->getAllIForAcente($_SESSION["userid"]);
                     }else{
-                        $kle = $file->getAllForUser($_SESSION["userid"]);
+                        $kle = $file->getAllIForUser($_SESSION["userid"]);
                     };
-                    $note = new Notes();
+                    
+                    foreach($kle as $file)
+                    {
+                        $file->acente = $acente->getAcente($file->acente);
+                        $file->personel = $users->get($file->personel);
+                    };
+                    $file = new File();
                     foreach($kle as $Ofile)
                     {
                         $Ofile->evraklar = $file->getFileStatus($Ofile->id);
-                        $Ofile->notes = $note->get($Ofile->id);
                         $Ofile->form = $form->getFileForm($Ofile->id);
+                        unset($Ofile->form["Form"]);
                     };
                     $types = $form->getAllType();
                     $acenteler = $acente->getAll();
                     $personeller = $users->getAll('personel');
+                    $avukatlar = $users->getAll('avukat');
                     $personels = [];
                     foreach($personeller as $p){
                         $personels[$p->id] = $p;
@@ -125,10 +142,15 @@
                     foreach($acenteler as $p){
                         $acentes[$p->id] = $p;
                     };
+                    $avukats = [];
+                    foreach($avukatlar as $p){
+                        $avukats[$p->id] = $p;
+                    };
                     Response::soap("success","FILES_ALL",[
                         "Acente"=>$acentes,
                         "Files"=>$kle,
-                        "Personel"=>$personels
+                        "Personel"=>$personels,
+                        "Avukat"=>$avukats
                     ]);
                     break;
                 }

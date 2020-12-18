@@ -81,22 +81,21 @@
                                             </td>
 										</tr>
                                         <?php endforeach; ?>
-									</tbody>
-									<tbody class="text-muted">
 										<tr>
 											<td>
-												Dosya Kimliği
+												Dosya Açıklaması
 											</td>
 											<td width="50%">
                                                 <?php
                                                     if(isset($data->status->File->name))
                                                     {
-                                                        echo "<b>".$data->status->File->name."</b><br>";
+                                                        echo $data->status->File->name;
                                                     }
                                                 ?>
-                                                <?=bin2hex($data->form["Form"]->file_id)?>
 											</td>
 										</tr>
+									</tbody>
+									<tbody class="text-muted">
 										<tr>
 											<td>
 												Personel
@@ -108,7 +107,6 @@
                                                         echo "<b>".$data->status->File->personelname." ".$data->status->File->personelsurname."</b><br>";
                                                     }
                                                 ?>
-                                                <?=bin2hex($data->form["Form"]->user)?>
 											</td>
 										</tr>
 										<tr>
@@ -122,7 +120,6 @@
                                                         echo "<b>".$data->status->File->avukatname." ".$data->status->File->avukatsurname."</b><br>";
                                                     }
                                                 ?>
-                                                <?=$data->status->File->avukat_id?>
 											</td>
 										</tr>
 										<tr>
@@ -146,7 +143,7 @@
                                                 <?php
                                                     if(isset($data->status->File->createdate))
                                                     {
-                                                        echo $data->status->File->createdate;
+                                                        echo date("d/m/Y H:i:s",strtotime($data->status->File->createdate));
                                                     }
                                                 ?>
 											</td>
@@ -222,7 +219,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
+                                                            <?php if(ipermission("admin|personel")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Hasar için gelişme gönder</h2>
@@ -263,7 +260,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
+                                                            <?php if(ipermission("admin|personel")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Adli tıp için gelişme gönder</h2>
@@ -304,7 +301,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
+                                                            <?php if(ipermission("admin|personel")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>Avukat için gelişme gönder</h2>
@@ -345,7 +342,7 @@
                                                                 </tbody>
                                                                  <?php endforeach; ?>
                                                             </table>
-                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
+                                                            <?php if(ipermission("admin|personel")): ?>
                                                             <div class="row send-note">
                                                                 <div class="col-md-12">
                                                                     <h2>İş kazası için gelişme gönder</h2>
@@ -380,7 +377,7 @@
                                                         <td style="white-space:nowrap">
                                                             Eksik Evrak
                                                         </td>
-                                                            <?php if(ipermission("admin|personel|kullanici")): ?>
+                                                            <?php if(ipermission("admin|personel")): ?>
                                                             <td style="white-space:nowrap">
                                                                 <button class="btn btn-success" onclick="sendFormFile('<?=$file->id?>','<?=$file->name?>')">Ekle</button>
                                                             </td>
@@ -517,12 +514,9 @@
     var data = null;
     function getField(obj,name)
     {
-        for(var column of obj){
+        for(var column of obj)
             if(column.name == name)
-            {
-                return column.text
-            }
-        };
+                return column.text;
     }
     $(function(){
         Server.request({
@@ -541,6 +535,10 @@
             tumavukatlar = json.data;
         })
     });
+    
+    var selectedAv = "<?=$data->status->File->avukat_id?>";
+    var selectedPers = "<?=$data->status->File->personel_id?>";
+    var selectedAcente = "<?=$data->status->File->acente_id?>";
     function edit()
     {
         autoCommit = true;
@@ -548,16 +546,16 @@
 
         $("#acente").html(
         tumacenteler.map(function(acente){
-            return `<option value="${acente.id}">${acente.name}</option>`
+            return `<option value="${acente.id}" ${selectedAcente==acente.id?"selected":""}>${acente.name}</option>`
         }));
         $("#acente").trigger("change");
         $("#personel").html(tumpersoneller.map(function(pers){
-            return `<option value="${pers.id}">${pers.name} ${pers.surname}</option>`
+            return `<option value="${pers.id}" ${selectedPers==pers.id?"selected":""}>${pers.name} ${pers.surname}</option>`
         }));
         $("#personel").trigger("change");
 
         $("#avukat").html(tumavukatlar.map(function(vkt){
-            return `<option value="${vkt.id}">${vkt.name} ${vkt.surname}</option>`
+            return `<option value="${vkt.id}" ${selectedAv==vkt.id?"selected":""}>${vkt.name} ${vkt.surname}</option>`
         }));
         $("#avukat").trigger("change");
         $("#addfile").modal("show");

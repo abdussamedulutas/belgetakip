@@ -67,11 +67,15 @@
     function getField(obj,id,crc)
     {
         for(var column of obj){
-            if(column.type == "date" && crc !== false)
+            if(column.type == "date")
             {
                 if(column.field == id)
                 {
-                    return moment(column.text).format("DD/MM/YYYY")
+                    if(moment(column.text).isValid()){
+                        return moment(column.text).format("DD/MM/YYYY")
+                    }else{
+                        return "<span class='text-muted'>Girilmedi</span>";
+                    }
                 }
             }else{
                 if(column.field == id)
@@ -112,7 +116,7 @@
                         getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
                         getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
                         `${file.evraklar.File.avukatname} ${file.evraklar.File.avukatsurname}`,
-                        `${getField(file.form.FormData,'166EF8D7BB247111578C2E1F6BB0C484')}<br><span class="text-muted">${D}</span>`,
+                        `${moment(file.lastinsetdate).locale("tr").fromNow()}<br><span class="text-muted">${moment(file.lastinsetdate).locale("tr").format("DD/MM/YYYY")}</span>`,
                         `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`
                     ]);
                 };

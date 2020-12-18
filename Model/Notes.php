@@ -38,7 +38,7 @@
         {
             global $db;
             try{
-                $pre = $db->prepare("SELECT form_notes.createdate as tarih,HEX(form_notes.id) as id,form_notes.`text`,form_notes.`type`,HEX(form_notes.`user`) as user,`user`.`name` as username,`user`.`surname` as usersurname FROM form_notes
+                $pre = $db->prepare("SELECT form_notes.createdate as tarih,HEX(form_notes.id) as id,form_notes.`text`,user,form_notes.`type`,HEX(form_notes.`user`) as user,`user`.`name` as username,`user`.`surname` as usersurname FROM form_notes
                 INNER JOIN user ON user.id = form_notes.user
                 WHERE `file_id`= UNHEX(:fileid) AND form_notes.deletedate is null AND user.deletedate is null ORDER BY form_notes.createdate DESC");
                 $pre->bindParam("fileid",$fileid);

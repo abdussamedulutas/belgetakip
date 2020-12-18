@@ -901,6 +901,38 @@ Server.request = function(obj,callback)
 };
 function reinitialize()
 {
+    jQuery.fn.DataTable.ext.type.search.string = function ( data ) {
+        return ! data ?
+            '' :
+            typeof data === 'string' ?
+                data
+                    .replace( /έ/g, 'ε')
+                    .replace( /ύ/g, 'υ')
+                    .replace( /ό/g, 'ο')
+                    .replace( /ώ/g, 'ω')
+                    .replace( /ά/g, 'α')
+                    .replace( /ί/g, 'ι')
+                    .replace( /ή/g, 'η')
+                    .replace( /\n/g, ' ' )
+                    .replace( /[áÁ]/g, 'a' )
+                    .replace( /[éÉ]/g, 'e' )
+                    .replace( /[íÍ]/g, 'i' )
+                    .replace( /[óÓ]/g, 'o' )
+                    .replace( /[úÚ]/g, 'u' )
+                    .replace( /ê/g, 'e' )
+                    .replace( /î/g, 'i' )
+                    .replace( /ô/g, 'o' )
+                    .replace( /è/g, 'e' )
+                    .replace( /ï/g, 'i' )
+                    .replace( /ü/g, 'u' )
+                    .replace( /ã/g, 'a' )
+                    .replace( /õ/g, 'o' )
+                    .replace( /ç/g, 'c' )
+                    .replace( /ì/g, 'i' ) :
+                data;
+    };
+    $.uniform.defaults.fileDefaultHtml = "Bir dosya seçiniz";
+    $.uniform.defaults.fileButtonHtml = "Dosya Seç";
     $.extend($.fn.dataTable.defaults, {
         autoWidth: false,
         dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
@@ -929,7 +961,16 @@ function reinitialize()
                 header: true,
                 footer: true
             },
-            paginate:false,
+            columnDefs: !$(this).hasClass("files") ? [ {
+                targets: 1,
+                type: "num"
+            } ] : [],
+            caseInsensitive: false,
+            "search": {
+                "caseInsensitive": true
+            },
+            "order": [[ 1, 'desc' ]],
+            paginate:$(this).hasClass("paginate"),
             searching:!$(this).hasClass("no-searching"),
             ordering: !$(this).hasClass("no-order")
         });

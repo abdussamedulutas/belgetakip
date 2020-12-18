@@ -118,7 +118,7 @@
                     break;
                 }
                 case "sendNote":{
-                    permission("admin|personel|kullanici");
+                    permission("admin|personel");
                     $note = new Notes();
                     Request::validation("POST","fileid",["require"=>true],"Dosya kimliği geçersiz");
                     Request::validation("POST","text",["require"=>true],"Yapılan açıklama geçersiz");
@@ -177,7 +177,7 @@
                     break;
                 }
                 case "saveFile":{
-                    permission("admin|kullanici");
+                    permission("admin|personel");
                     $form = new Form();
                     $fileid = $file->createFile(
                         Request::post("name"),
@@ -250,12 +250,16 @@
                 }
                 case "getFiles":{
                     permission("admin|personel|kullanici");
+                    $count = Request::post("count");
+                    if(is_null($count) || empty($count)) $count = 90000000;
+                    $start = Request::post("start");
+                    if(is_null($start) || empty($start)) $start = 0;
                     if($_SESSION["role"] == "admin"){
-                        $kle = $file->getAllFiles();
+                        $kle = $file->getAllFiles($start,$count);
                     }else if($_SESSION["role"] == "kullanici"){
-                        $kle = $file->getAllFilesForAcente($_SESSION["acente"]);
+                        $kle = $file->getAllFilesForAcente($_SESSION["acente"],$start,$count);
                     }else if($_SESSION["role"] == "personel"){
-                        $kle = $file->getAllFilesForUser($_SESSION["userid"]);
+                        $kle = $file->getAllFilesForUser($_SESSION["userid"],$start,$count);
                     };
                     $note = new Notes();
                     foreach($kle as $Ofile)

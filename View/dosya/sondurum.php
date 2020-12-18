@@ -74,26 +74,33 @@
         var p = block("#pinpanel");
         setTimeout(function(){
             Server.request({
-                action:"getFilesI"
+                action:"getFiles"
             },function(json){
                 p();
                 data = json.data;
                 var lastAdded = null;
                 $("#partofkey").html("");
 				var content = [];
+				var roles = {
+					'admin':'Yönetici',
+					'personel':"Personel",
+					"avukat":"Avukat"
+				}
 				var empty = true;
-                for(var file of json.data){
+                for(var file of json.data.Files){
 					var D = moment(file.createdate).locale("tr");
 					var E24saatOnce = moment().subtract(24,"hours").locale("tr");
 					if(moment(D).isBefore(E24saatOnce)) continue;
 					D = D.fromNow();
 					empty = false;
+					var müvekkil = getField(file.form.FormData,"9AD70292DDAC62F604F79C57E78896D9");
 					content.push(`
 					<li class="media">
 						<div class="media-link cursor-pointer collapsed" data-toggle="collapse" data-target="#no_${file.note_id}" aria-expanded="false">
 							<div class="media-left"><img src="${file.personel.image?"uploads/"+file.personel.image:"assets/images/placeholder.jpg"}" class="img-circle img-md" alt=""></div>
 							<div class="media-body">
 								<div class="media-heading text-semibold">Dosya No: ${file.order} - ${Tarih(file.createdate)} <span class="text-muted">(${D})</span></div>
+								<div class="media-heading text-semibold">Müvekkil : ${getField(file.form.FormData,"9AD70292DDAC62F604F79C57E78896D9")}</div>
 								<span class="text-muted">${file.text}</span>
 							</div>
 							<div class="media-right media-middle text-nowrap">
@@ -104,7 +111,7 @@
 							<div class="contact-details row">
 								<div class="col-xs-6">
 									<ul class="list-extended list-unstyled list-icons">
-										<li><i class="icon-user-tie position-left"></i> <b>Personel :</b> ${file.personel.name} ${file.personel.surname}</li>
+										<li><i class="icon-user-tie position-left"></i> <b>Ekleyen ${roles[file.personel.role]} :</b> ${file.personel.name} ${file.personel.surname}</li>
 										<li><i class="icon-location3 position-left"></i> <b>Acente:</b> ${file.acente.name} </li>
 									</ul>
 								</div>

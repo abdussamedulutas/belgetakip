@@ -224,7 +224,7 @@
             $pre->bindParam("id", $id);
             return $pre->execute();
         }
-        public function getAllFiles()
+        public function getAllFiles($start = 0, $count = 10000)
         {
             global $db;
             $pre = $db->prepare("SELECT
@@ -239,6 +239,7 @@
                 modifydate,
                 lastinsetdate
                 FROM `file` WHERE deletedate is null
+                ORDER BY file.createdate DESC LIMIT $start, $count
             ");
             if($pre->execute())
             {
@@ -248,7 +249,7 @@
                 exit;
             }
         }
-        public function getAllFilesForUser($id)
+        public function getAllFilesForUser($id,$start = 0, $count = 10000)
         {
             global $db;
             $pre = $db->prepare("SELECT
@@ -261,8 +262,11 @@
                 hex(avukat_id) as 'avukat',
                 createdate,
                 modifydate,
-                lastinsetdate
-                FROM `file` WHERE deletedate is null AND personel_id = :user OR avukat_id = :user");
+                lastinsetdate,
+                deletedate
+                FROM `file` WHERE file.deletedate is null AND (personel_id = :user OR avukat_id = :user)
+                ORDER BY file.createdate DESC LIMIT $start, $count
+            ");
             $pre->bindParam("user",$id);
             if($pre->execute())
             {
@@ -272,7 +276,7 @@
                 exit;
             }
         }
-        public function getAllFilesForAcente($id)
+        public function getAllFilesForAcente($id,$start = 0, $count = 10000)
         {
             global $db;
             $pre = $db->prepare("SELECT
@@ -286,7 +290,9 @@
                 createdate,
                 modifydate,
                 lastinsetdate
-                FROM `file` WHERE deletedate is null AND acente_id = :acente");
+                FROM `file` WHERE deletedate is null AND acente_id = :acente
+                ORDER BY file.createdate DESC LIMIT $start, $count
+            ");
             $pre->bindParam("acente",$id);
             if($pre->execute())
             {

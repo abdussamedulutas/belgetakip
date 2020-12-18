@@ -104,10 +104,10 @@
                     Server.deleteYonetici(id,function(){
                         swal.close();
                         $(btn).closest("tr").remove();
-                        Notify.successText("Personel Hesabı","Personel Silme işlemi başarılı");
+                        Notify.successText("Yönetici Hesabı","Yönetici Silme işlemi başarılı");
                     },function(){
                         swal.close();
-                        Notify.errorText("Personel Hesabı","Personel Silme işlemi başarısız");
+                        Notify.errorText("Yönetici Hesabı","Yönetici Silme işlemi başarısız");
                     });
                 }
             });

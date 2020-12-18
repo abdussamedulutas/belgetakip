@@ -33,20 +33,20 @@
                                     <h2 style="margin-top:0">Dosyalar</h2>
                                 </div>
                                 <div class="col-xs-6 text-right">
-                                    <?php if(ipermission("admin|kullanici")): ?><button class="btn btn-success" onclick="create(this)">Yeni Ekle</button><?php endif;?>
+                                    <?php if(ipermission("admin|personel")): ?><button class="btn btn-success" onclick="create(this)">Yeni Ekle</button><?php endif;?>
                                 </div>
                                 <div class="col-md-12 table-responsive">
-                                    <table class="table table-bordered table-striped table-hover datatablepin" id="filepanel">
+                                    <table class="table table-bordered table-striped table-hover datatablepin files paginate" id="filepanel">
                                         <thead>
                                             <tr style="white-space: nowrap">
                                                 <th width="1%">İşlem</th>
-                                                <th width="1%">Dosya Numarası</th>
+                                                <th width="1%">Dos. No.</th>
                                                 <th></th>
-                                                <th>İlgili Personel</th>
+                                                <th>İlg. Pers.</th>
                                                 <th>Acente</th>
-                                                <th>Hasar Tarihi</th>
-                                                <th>Dosya Geliş T.</th>
-                                                <th>Müvekkil İsmi</th>
+                                                <th>Hasar T.</th>
+                                                <th>Dosya Gel. T.</th>
+                                                <th>Müv. İsmi</th>
                                                 <th>Taraf Şti</th>
                                                 <th>Evraklar</th>
                                                 <th>Sigorta Şti</th>
@@ -97,17 +97,19 @@
         };
         return !f ? "<span class='text-muted'>Girilmedi</span>" : "";
     };
-    function pinfo()
+    async function pinfo(start,count)
     {
-        var p = block("#pinpanel");
+        return await new Promise(function(ok){
         setTimeout(function(){
             Server.request({
-                action:"getFiles"
+                action:"getFiles",
+                count:count,
+                start:start
             },function(json){
-                p();
+                console.log(json.data.Files.length)
                 data = json.data;
                 var lastAdded = null;
-                $("#filepanel").DataTable().clear().draw();
+                if(start == 0) $("#filepanel").DataTable().clear().draw();
                 var db = $("#filepanel").DataTable().row;
                 for(var file of json.data.Files){
                     if(vidv34){
@@ -119,7 +121,7 @@
                     try{
                         lastAdded = db.add([
                             `<a class="btn btn-primary" href="<?=$data->userPanelLink?>/dosya/${file.order}">Detaylar</a>`,
-                            `Dosya no:${file.order}`,
+                            `${file.order}`,
                             `<span class="display-block mb-5 badge badge-success">${getField(file.form.FormData,'0B6072368ADB397A71B6A742D984EB8A','display-block mb-5 badge badge-success',true)}</span> `+
                             `<span class="display-block mb-5 badge badge-primary">${getField(file.form.FormData,'223ED9AED75B31321B0E4C7B14D4741A','display-block mb-5 badge badge-primary',true)}</span> `+
                             `<span class="display-block badge badge-info">${getField(file.form.FormData,'F2D0E64DE5F3425BAD0811BFD26F8D81','display-block badge badge-info',true)}</span> `,
@@ -127,7 +129,7 @@
                             json.data.Acente[file.acente].name,
                             getField(file.form.FormData,'A97169A98F9E367527EF3F39EC8DBC65'),
                             getField(file.form.FormData,'EBA9BFBF7BD43EFAE89813F1DAC07BCD'),
-                            getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9'),
+                            `<b>${getField(file.form.FormData,'9AD70292DDAC62F604F79C57E78896D9')}</b>`,
                             json.data.Avukat[file.avukat].name + " " + json.data.Avukat[file.avukat].surname,
                             `${file.evraklar.Eksik} evrak eksik<br>${file.evraklar.Tam} evrak girilmiş`,
                             getField(file.form.FormData,'21D25DCF24373BAEB847F52815BBD746'),
@@ -141,15 +143,25 @@
                 else{
                     p=null
                 };
+                ok(lastAdded ? true : false);
                 reinitialize();
-                setTimeout(function(){
-                    p&&p();
-                },100);
             });
         },100);
+        })
     }
     $(document).ready(function(){
-        pinfo();
+        (async () => {
+            var p = block("#pinpanel");
+            var t = true;
+            var k = 0;
+            while(true)
+            {
+                t &= await pinfo(k*50,50);
+                p&&p()
+                if(!t) return;
+                k++;
+            }
+        })()
     });
     var vidv34 = false;
     $(function(){
@@ -223,18 +235,14 @@
             send();
         });
     };
-    var requieredAcente = "<?=$_SESSION["acente"] == "" || $_SESSION["acente"] == null ? "_" : bin2hex($_SESSION["acente"])?>";
     function create(th)
     {
-        var ttp = function(i){
-            return requieredAcente == "_" ? "" : requieredAcente.toString().toUpperCase() == i.toString().toUpperCase() ? "" : "disabled"
-        }
         var t = blockbtn(th);
         allVeri().then(function(obj){
             t();
             $("#acente").html(
             obj.tumacenteler.map(function(acente){
-                return `<option value="${acente.id}" ${ttp(acente.id)}>${acente.name}</option>`
+                return `<option value="${acente.id}">${acente.name}</option>`
             }));
             $("#acente").trigger("change");
 
@@ -262,14 +270,6 @@
                     <h5 class="modal-title">Yeni Dosya Aç</h5>
                 </div>
                 <form class="modal-body" id="createform">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <label>Dosya İsmi</label>
-                                <input type="text" id="fname" name="name" class="form-control">
-                            </div>
-                        </div>
-                    </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-4">
@@ -304,6 +304,14 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label>Açıklama:</label>
+                                    <textarea class="form-control" id="fname" name="name" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
                 <div class="modal-footer">
@@ -322,6 +330,7 @@
                 t.append("action","saveFile");
                 Server.request(t,function(json){
                     wait2(function(){
+                        p()
                         window.location = json.data.newURL;
                     });
                 })
